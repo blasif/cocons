@@ -1,0 +1,25 @@
+Package: svcov
+Type: Package
+Title: Spatially-Varying Covariance Functions For Gaussian Processes
+Version: 0.1
+Author: Federico Blasi
+Authors@R: c(person("Federico", "Blasi", email = "federico.blasi@uzh.ch",
+  role = c("aut", "cre")),
+  person("Reinhard", "Furrer",
+  role = c("ctb"))
+  )
+Maintainer: Federico Blasi <federico.blasi@uzh.ch>
+Description: Gaussian Processes with flexible covariance functions 
+Encoding: UTF-8
+LazyData: true
+License: GPL (>= 2)
+Depends:  R (>= 3.5.0)
+Imports:  Rcpp (>= 1.0.10),
+          spam (>= 2.9.1),
+          fields,
+          optimParallel,
+          methods,
+          knitr
+LinkingTo: Rcpp, BH
+RoxygenNote: 7.2.3
+VignetteBuilder: knitr
