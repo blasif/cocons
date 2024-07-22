@@ -23,7 +23,7 @@ setClass("coco", slots = list(
   model.list = "list",
   info = 'list',
   output = "list"
-), package = "coco", prototype = list(output = list()))
+), package = "cocons", prototype = list(output = list()))
 
 ###############################################################################-
 # Methods ----------------------------------------------------------------------
