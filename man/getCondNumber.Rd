@@ -2,18 +2,18 @@
 % Please edit documentation in R/getFunctions.R
 \name{getCondNumber}
 \alias{getCondNumber}
-\title{Computes the condition number of the associated correlation matrix of the fitted svcov object}
+\title{Computes the condition number of the associated correlation matrix of the fitted coco object}
 \usage{
-getCondNumber(svcov.object)
+getCondNumber(coco.object)
 }
 \arguments{
-\item{svov.object}{an svcov class (fitted) object}
+\item{coco.object}{a coco class (fitted) object}
 }
 \value{
 the condition number
 }
 \description{
-Compute the trend of the (fitted) svcov object
+Compute the trend of the (fitted) coco object
 }
 \author{
 Federico Blasi

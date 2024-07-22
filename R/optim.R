@@ -1,52 +1,53 @@
 
-#' Optimizer for object class svcov
-#' @description Optimizer based on Optimparallel L-BFGS-B optimizier for svcov class. 
-#' @usage svcovOptim(svcov.object, boundaries = list(), ncores = parallel::detectCores())
-#' @param svcov.object a svcov object. See ?svcov()
+#' Optimizer for object class coco
+#' @description Optimizer based on Optimparallel L-BFGS-B optimizier for coco class. 
+#' @usage cocoOptim(coco.object, boundaries = list(), ncores = parallel::detectCores(), optim.control, optim.type,...)
+#' @param coco.object a coco object. See ?coco()
 #' @param boundaries if provided, a list with lower, init, and upper values. 
 #' if not is computed based on generic fast_init_boundaries()
 #' @param ncores number of cores for the optimization routine.
 #' @param optim.control number of cores for the optimization routine.
 #' @param optim.type Optimization approach.
-#' @returns a svcov object with an updated output slot, with extra information 
+#' @param ... extra arguments passed to the optimparallel function
+#' @returns a coco object with an updated output slot, with extra information 
 #' with boundaries information
 #' @author Federico Blasi
 #' 
-svcovOptim <- function(svcov.object, boundaries = list(), 
+cocoOptim <- function(coco.object, boundaries = list(), 
                        ncores = parallel::detectCores(), 
                        optim.control = NULL, optim.type = 'mle', ...){
   
   if(length(boundaries) > 0){
-    .svcov.check.boundaries(boundaries)
+    .coco.check.boundaries(boundaries)
   }
   
-  .svcov.check.ncores(ncores)
-  .svcov.check.z(svcov.object@z) # again checking here due to object might be used to simulate and then attached the realization to x@z
+  .coco.check.ncores(ncores)
+  .coco.check.z(coco.object@z) # again checking here due to object might be used to simulate and then attached the realization to x@z
   
-  if (svcov.object@type == "dense") {
+  if (coco.object@type == "dense") {
     
     if(optim.type == 'mle'){
       
-      designMatrix <- svcov::getDesignMatrix(
-        model.list = svcov.object@model.list,
-        data = svcov.object@data
+      designMatrix <- coco::getDesignMatrix(
+        model.list = coco.object@model.list,
+        data = coco.object@data
       )
       
       # If boundaries not provided, then some general boundaries are set
       if (length(boundaries) == 0) {
-        boundaries <- svcov::getBoundaries(
-          x = svcov.object, 
+        boundaries <- coco::getBoundaries(
+          x = coco.object, 
           lower.value = -2,
           upper.value = 2
         )
       }
       
-      if(!is.null(svcov.object@info$cat.vars)){
+      if(!is.null(coco.object@info$cat.vars)){
         
-        to_not_std <- colnames(svcov.object@data)[svcov.object@info$cat.vars]
+        to_not_std <- colnames(coco.object@data)[coco.object@info$cat.vars]
         to_avoid_std <- colnames(designMatrix$model.matrix) %in% to_not_std
         
-        tmp_values <- svcov::getScale(designMatrix$model.matrix[,!to_avoid_std])
+        tmp_values <- coco::getScale(designMatrix$model.matrix[,!to_avoid_std])
         
         empty_matrix <- matrix(0, ncol = dim(designMatrix$model.matrix)[2], 
                                nrow = dim(designMatrix$model.matrix)[1])
@@ -64,7 +65,7 @@ svcovOptim <- function(svcov.object, boundaries = list(),
         tmp_values$sd.vector <- mean_sd_empty
         
       } else{
-        tmp_values <- svcov::getScale(designMatrix$model.matrix)
+        tmp_values <- coco::getScale(designMatrix$model.matrix)
         empty_matrix <- tmp_values$std.covs
       }
       
@@ -76,30 +77,30 @@ svcovOptim <- function(svcov.object, boundaries = list(),
       }
       
       parallel::setDefaultCluster(cl = cl)
-      parallel::clusterEvalQ(cl, library("svcov"))
+      parallel::clusterEvalQ(cl, library("coco"))
       
       args_optim <- list(
-        "fn" = svcov::GetNeg2loglikelihood,
+        "fn" = coco::GetNeg2loglikelihood,
         "method" = "L-BFGS-B",
         "lower" = boundaries$theta_lower,
         "par" = boundaries$theta_init,
         "upper" = boundaries$theta_upper,
-        "n" = dim(svcov.object@z)[1],
-        "smooth.limits" = svcov.object@info$smooth_limits,
-        "z" = svcov.object@z,
+        "n" = dim(coco.object@z)[1],
+        "smooth.limits" = coco.object@info$smooth_limits,
+        "z" = coco.object@z,
         "x_covariates" = empty_matrix,
         "par.pos" = designMatrix$par.pos,
-        "lambda" = svcov.object@info$lambda,
-        "locs" = svcov.object@locs
+        "lambda" = coco.object@info$lambda,
+        "locs" = coco.object@locs
       )
       
       rm(designMatrix)
       
       # if optim.control not provided, then some general Optim.control is provided
       if (is.null(optim.control)) {
-        optim.control <- getOption("svcov.Optim.Control")
+        optim.control <- getOption("coco.Optim.Control")
       } else{
-        optim.control <- .svcov.update.optim.control(optim.control)
+        optim.control <- .coco.update.optim.control(optim.control)
       }
       
       output_dense <- do.call(what = optimParallel::optimParallel, args = c(
@@ -117,28 +118,28 @@ svcovOptim <- function(svcov.object, boundaries = list(),
       
       # Add some warning related to the convergence of the optim routine
       
-      svcov.object@output <- output_dense
-      svcov.object@info$boundaries <- boundaries
-      svcov.object@info$mean.vector <- tmp_values$mean.vector
-      svcov.object@info$sd.vector <- tmp_values$sd.vector
-      svcov.object@info$optim.type <- 'mle'
+      coco.object@output <- output_dense
+      coco.object@info$boundaries <- boundaries
+      coco.object@info$mean.vector <- tmp_values$mean.vector
+      coco.object@info$sd.vector <- tmp_values$sd.vector
+      coco.object@info$optim.type <- 'mle'
       
-      return(svcov.object)
+      return(coco.object)
       
     }
     
     if(optim.type == 'pmle'){
       
-      designMatrix <- svcov::getDesignMatrix(
-        model.list = svcov.object@model.list,
-        data = svcov.object@data
+      designMatrix <- coco::getDesignMatrix(
+        model.list = coco.object@model.list,
+        data = coco.object@data
       )
       
       if(!is.logical(designMatrix$par.pos$mean)){stop('profile ML only available when considering covariates in the trend')}
       
       if (length(boundaries) == 0) {
-        boundaries <- svcov::getBoundaries(
-          x = svcov.object, 
+        boundaries <- coco::getBoundaries(
+          x = coco.object, 
           lower.value = -3,
           upper.value = 3
         )
@@ -147,12 +148,12 @@ svcovOptim <- function(svcov.object, boundaries = list(),
       # Categorical variables
       # problem here: i can specify categorical values in data but then
       # not use any in formula
-      if(!is.null(svcov.object@info$cat.vars)){
+      if(!is.null(coco.object@info$cat.vars)){
         
-        to_not_std <- colnames(svcov.object@data)[svcov.object@info$cat.vars]
+        to_not_std <- colnames(coco.object@data)[coco.object@info$cat.vars]
         to_avoid_std <- colnames(designMatrix$model.matrix) %in% to_not_std
         
-        tmp_values <- svcov::getScale(designMatrix$model.matrix[,!to_avoid_std])
+        tmp_values <- coco::getScale(designMatrix$model.matrix[,!to_avoid_std])
         
         empty_matrix <- matrix(0, ncol = dim(designMatrix$model.matrix)[2], 
                                nrow = dim(designMatrix$model.matrix)[1])
@@ -170,12 +171,12 @@ svcovOptim <- function(svcov.object, boundaries = list(),
         tmp_values$sd.vector <- mean_sd_empty
         
       } else{
-        tmp_values <- svcov::getScale(designMatrix$model.matrix)
+        tmp_values <- coco::getScale(designMatrix$model.matrix)
         empty_matrix <- tmp_values$std.covs
       }
       
       if(is.logical(designMatrix$par.pos$mean)){
-        x_betas <- getScale(svcov.object)$std.covs[, designMatrix$par.pos$mean] # does not match when categorical variables
+        x_betas <- getScale(coco.object)$std.covs[, designMatrix$par.pos$mean] # does not match when categorical variables
       }
       
       tmp_boundaries <- boundaries
@@ -193,7 +194,7 @@ svcovOptim <- function(svcov.object, boundaries = list(),
       }
       
       parallel::setDefaultCluster(cl = cl)
-      parallel::clusterEvalQ(cl, library("svcov"))
+      parallel::clusterEvalQ(cl, library("coco"))
       
       # factoring out betas
       tmp_par_pos <- designMatrix$par.pos
@@ -204,18 +205,18 @@ svcovOptim <- function(svcov.object, boundaries = list(),
       }
       
       args_optim <- list(
-        "fn" = svcov::GetNeg2loglikelihoodProfile,
+        "fn" = coco::GetNeg2loglikelihoodProfile,
         "method" = "L-BFGS-B",
         "lower" = boundaries$theta_lower,
         "par" = boundaries$theta_init,
         "upper" = boundaries$theta_upper,
-        "n" = length(svcov.object@z),
-        "smooth.limits" = svcov.object@info$smooth_limits,
-        "z" = svcov.object@z,
+        "n" = length(coco.object@z),
+        "smooth.limits" = coco.object@info$smooth_limits,
+        "z" = coco.object@z,
         "x_covariates" = empty_matrix,
         "par.pos" = tmp_par_pos,
-        "lambda" = svcov.object@info$lambda,
-        "locs" = svcov.object@locs,
+        "lambda" = coco.object@info$lambda,
+        "locs" = coco.object@locs,
         "x_betas" = x_betas
       )
       
@@ -223,9 +224,9 @@ svcovOptim <- function(svcov.object, boundaries = list(),
       
       # if optim.control not provided, then some general Optim.control is provided
       if (is.null(optim.control)) {
-        optim.control <- getOption("svcov.Optim.Control")
+        optim.control <- getOption("coco.Optim.Control")
       } else{
-        optim.control <- .svcov.update.optim.control(optim.control)
+        optim.control <- .coco.update.optim.control(optim.control)
       }
       
       output_dense <- do.call(what = optimParallel::optimParallel, args = c(
@@ -235,10 +236,10 @@ svcovOptim <- function(svcov.object, boundaries = list(),
       
       parallel::stopCluster(cl)
       
-      theta_list <- svcov::getModelLists(theta = output_dense$par, 
+      theta_list <- coco::getModelLists(theta = output_dense$par, 
                                          par.pos = args_optim$par.pos, type = 'diff')
       
-      Sigma_cpp <- svcov::cov_rns(theta = theta_list[-1], locs = args_optim$locs,
+      Sigma_cpp <- coco::cov_rns(theta = theta_list[-1], locs = args_optim$locs,
                                   x_covariates  =  args_optim$x_covariates,
                                   smooth_limits = args_optim$smooth.limits)
       
@@ -254,30 +255,30 @@ svcovOptim <- function(svcov.object, boundaries = list(),
       
       # Add some warning related to the convergence of the optim routine
       
-      svcov.object@output <- output_dense
-      svcov.object@info$boundaries <- tmp_boundaries
-      svcov.object@info$mean.vector <- tmp_values$mean.vector
-      svcov.object@info$sd.vector <- tmp_values$sd.vector
-      svcov.object@info$optim.type <- 'pmle'
+      coco.object@output <- output_dense
+      coco.object@info$boundaries <- tmp_boundaries
+      coco.object@info$mean.vector <- tmp_values$mean.vector
+      coco.object@info$sd.vector <- tmp_values$sd.vector
+      coco.object@info$optim.type <- 'pmle'
       
-      return(svcov.object)
+      return(coco.object)
       
     }
     
   }
   
-  if (svcov.object@type == "sparse") {
+  if (coco.object@type == "sparse") {
     
     if(optim.type == 'mle'){
       
-      designMatrix <- svcov::getDesignMatrix(
-        model.list = svcov.object@model.list,
-        data = svcov.object@data
+      designMatrix <- coco::getDesignMatrix(
+        model.list = coco.object@model.list,
+        data = coco.object@data
       )
       
       if (length(boundaries) == 0) {
-        boundaries <- svcov::getBoundaries(
-          x = svcov.object, 
+        boundaries <- coco::getBoundaries(
+          x = coco.object, 
           lower.value = -3,
           upper.value = 3
         )
@@ -286,12 +287,12 @@ svcovOptim <- function(svcov.object, boundaries = list(),
       # Categorical variables
       # problem here: i can specify categorical values in data but then
       # not use any in formula
-      if(!is.null(svcov.object@info$cat.vars)){
+      if(!is.null(coco.object@info$cat.vars)){
         
-        to_not_std <- colnames(svcov.object@data)[svcov.object@info$cat.vars]
+        to_not_std <- colnames(coco.object@data)[coco.object@info$cat.vars]
         to_avoid_std <- colnames(designMatrix$model.matrix) %in% to_not_std
         
-        tmp_values <- svcov::getScale(designMatrix$model.matrix[,!to_avoid_std])
+        tmp_values <- coco::getScale(designMatrix$model.matrix[,!to_avoid_std])
         
         empty_matrix <- matrix(0, ncol = dim(designMatrix$model.matrix)[2], 
                                nrow = dim(designMatrix$model.matrix)[1])
@@ -309,14 +310,14 @@ svcovOptim <- function(svcov.object, boundaries = list(),
         tmp_values$sd.vector <- mean_sd_empty
         
       } else{
-        tmp_values <- svcov::getScale(designMatrix$model.matrix)
+        tmp_values <- coco::getScale(designMatrix$model.matrix)
         empty_matrix <- tmp_values$std.covs
       }
       
       # taper
-      ref_taper <- svcov.object@info$taper(
-        spam::nearest.dist(svcov.object@locs, delta = svcov.object@info$delta, upper = NULL),
-        theta = c(svcov.object@info$delta, 1)
+      ref_taper <- coco.object@info$taper(
+        spam::nearest.dist(coco.object@locs, delta = coco.object@info$delta, upper = NULL),
+        theta = c(coco.object@info$delta, 1)
       )
       
       print(summary(ref_taper))
@@ -330,7 +331,7 @@ svcovOptim <- function(svcov.object, boundaries = list(),
       }
       
       parallel::setDefaultCluster(cl = cl)
-      parallel::clusterEvalQ(cl, library("svcov"))
+      parallel::clusterEvalQ(cl, library("coco"))
       parallel::clusterEvalQ(cl, library("spam"))
       parallel::clusterEvalQ(cl, library("spam64"))
       parallel::clusterEvalQ(cl, options(spam.cholupdatesingular = "error"))
@@ -339,20 +340,20 @@ svcovOptim <- function(svcov.object, boundaries = list(),
       # options(spam.cholsymmetrycheck = FALSE)
       
       args_optim <- list(
-        "fn" = svcov::GetNeg2loglikelihoodTaper,
+        "fn" = coco::GetNeg2loglikelihoodTaper,
         "method" = "L-BFGS-B",
         "lower" = boundaries$theta_lower,
         "par" = boundaries$theta_init,
         "upper" = boundaries$theta_upper,
         "par.pos" = designMatrix$par.pos,
         "ref_taper" = ref_taper,
-        "locs" = svcov.object@locs,
+        "locs" = coco.object@locs,
         "x_covariates" = empty_matrix,
-        "smooth.limits" = svcov.object@info$smooth_limits,
+        "smooth.limits" = coco.object@info$smooth_limits,
         "cholS" = spam::chol.spam(ref_taper),
-        "z" = svcov.object@z,
-        "n" = length(svcov.object@z),
-        "lambda" = svcov.object@info$lambda
+        "z" = coco.object@z,
+        "n" = length(coco.object@z),
+        "lambda" = coco.object@info$lambda
       )
       
       #rm(designMatrix)
@@ -360,9 +361,9 @@ svcovOptim <- function(svcov.object, boundaries = list(),
       
       # if optim.control not provided, then some general Optim.control is provided
       if (is.null(optim.control)) {
-        optim.control <- getOption("svcov.Optim.Control")
+        optim.control <- getOption("coco.Optim.Control")
       } else{
-        optim.control <- .svcov.update.optim.control(optim.control)
+        optim.control <- .coco.update.optim.control(optim.control)
       }
       
       output_taper <- do.call(what = optimParallel::optimParallel, args = c(
@@ -378,26 +379,26 @@ svcovOptim <- function(svcov.object, boundaries = list(),
               boundaries.")
       }
       
-      svcov.object@output <- output_taper
-      svcov.object@info$boundaries <- boundaries
-      svcov.object@info$mean.vector <- tmp_values$mean.vector
-      svcov.object@info$sd.vector <- tmp_values$sd.vector
-      svcov.object@info$optim.type <- 'mle'
+      coco.object@output <- output_taper
+      coco.object@info$boundaries <- boundaries
+      coco.object@info$mean.vector <- tmp_values$mean.vector
+      coco.object@info$sd.vector <- tmp_values$sd.vector
+      coco.object@info$optim.type <- 'mle'
       # Add some warning related to the convergence of the optim routine
       
-      return(svcov.object)
+      return(coco.object)
     }
     
     if(optim.type == 'pmle'){
       
-      designMatrix <- svcov::getDesignMatrix(
-        model.list = svcov.object@model.list,
-        data = svcov.object@data
+      designMatrix <- coco::getDesignMatrix(
+        model.list = coco.object@model.list,
+        data = coco.object@data
       )
       
       if (length(boundaries) == 0) {
-        boundaries <- svcov::getBoundaries(
-          x = svcov.object, 
+        boundaries <- coco::getBoundaries(
+          x = coco.object, 
           lower.value = -3,
           upper.value = 3
         )
@@ -406,12 +407,12 @@ svcovOptim <- function(svcov.object, boundaries = list(),
       # Categorical variables
       # problem here: i can specify categorical values in data but then
       # not use any in formula
-      if(!is.null(svcov.object@info$cat.vars)){
+      if(!is.null(coco.object@info$cat.vars)){
         
-        to_not_std <- colnames(svcov.object@data)[svcov.object@info$cat.vars]
+        to_not_std <- colnames(coco.object@data)[coco.object@info$cat.vars]
         to_avoid_std <- colnames(designMatrix$model.matrix) %in% to_not_std
         
-        tmp_values <- svcov::getScale(designMatrix$model.matrix[,!to_avoid_std])
+        tmp_values <- coco::getScale(designMatrix$model.matrix[,!to_avoid_std])
         
         empty_matrix <- matrix(0, ncol = dim(designMatrix$model.matrix)[2], 
                                nrow = dim(designMatrix$model.matrix)[1])
@@ -429,14 +430,14 @@ svcovOptim <- function(svcov.object, boundaries = list(),
         tmp_values$sd.vector <- mean_sd_empty
         
       } else{
-        tmp_values <- svcov::getScale(designMatrix$model.matrix)
+        tmp_values <- coco::getScale(designMatrix$model.matrix)
         empty_matrix <- tmp_values$std.covs
       }
       
       # taper
-      ref_taper <- svcov.object@info$taper(
-        spam::nearest.dist(svcov.object@locs, delta = svcov.object@info$delta, upper = NULL),
-        theta = c(svcov.object@info$delta, 1)
+      ref_taper <- coco.object@info$taper(
+        spam::nearest.dist(coco.object@locs, delta = coco.object@info$delta, upper = NULL),
+        theta = c(coco.object@info$delta, 1)
       )
       
       print(summary(ref_taper))
@@ -451,7 +452,7 @@ svcovOptim <- function(svcov.object, boundaries = list(),
       }
       
       parallel::setDefaultCluster(cl = cl)
-      parallel::clusterEvalQ(cl, library("svcov"))
+      parallel::clusterEvalQ(cl, library("coco"))
       parallel::clusterEvalQ(cl, library("spam"))
       parallel::clusterEvalQ(cl, library("spam64"))
       parallel::clusterEvalQ(cl, options(spam.cholupdatesingular = "error"))
@@ -474,20 +475,20 @@ svcovOptim <- function(svcov.object, boundaries = list(),
       boundaries$theta_lower <- boundaries$theta_lower[-first_sigma]
       
       args_optim <- list(
-        "fn" = svcov::GetNeg2loglikelihoodTaperProfile,
+        "fn" = coco::GetNeg2loglikelihoodTaperProfile,
         "method" = "L-BFGS-B",
         "lower" = boundaries$theta_lower,
         "par" = boundaries$theta_init,
         "upper" = boundaries$theta_upper,
         "par.pos" = tmp_par.pos,
         "ref_taper" = ref_taper,
-        "locs" = svcov.object@locs,
+        "locs" = coco.object@locs,
         "x_covariates" = empty_matrix,
-        "smooth.limits" = svcov.object@info$smooth_limits,
+        "smooth.limits" = coco.object@info$smooth_limits,
         "cholS" = spam::chol.spam(ref_taper),
-        "z" = svcov.object@z,
-        "n" = length(svcov.object@z),
-        "lambda" = svcov.object@info$lambda
+        "z" = coco.object@z,
+        "n" = length(coco.object@z),
+        "lambda" = coco.object@info$lambda
       )
       
       #rm(designMatrix)
@@ -495,9 +496,9 @@ svcovOptim <- function(svcov.object, boundaries = list(),
       
       # if optim.control not provided, then some general Optim.control is provided
       if (is.null(optim.control)) {
-        optim.control <- getOption("svcov.Optim.Control")
+        optim.control <- getOption("coco.Optim.Control")
       } else{
-        optim.control <- .svcov.update.optim.control(optim.control)
+        optim.control <- .coco.update.optim.control(optim.control)
       }
       
       output_taper <- do.call(what = optimParallel::optimParallel, args = c(
@@ -569,14 +570,14 @@ svcovOptim <- function(svcov.object, boundaries = list(),
               boundaries.")
       }
       
-      svcov.object@output <- output_taper
-      svcov.object@info$boundaries <- boundaries_temp
-      svcov.object@info$mean.vector <- tmp_values$mean.vector
-      svcov.object@info$sd.vector <- tmp_values$sd.vector
-      svcov.object@info$optim.type <- 'pmle'
+      coco.object@output <- output_taper
+      coco.object@info$boundaries <- boundaries_temp
+      coco.object@info$mean.vector <- tmp_values$mean.vector
+      coco.object@info$sd.vector <- tmp_values$sd.vector
+      coco.object@info$optim.type <- 'pmle'
       # Add some warning related to the convergence of the optim routine
       
-      return(svcov.object)
+      return(coco.object)
     }
     
   }

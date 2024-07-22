@@ -1,2 +1,2 @@
-# svcov
-R package svcov
+# coco
+R package coco

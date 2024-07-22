@@ -4,18 +4,17 @@
 \alias{getLogRank}
 \title{Based on a set of predictions retrieves the Logrank}
 \usage{
-getLogrank(svcov.object, type = 'global', index = NULL)
+getLogRank(z.pred, mean.pred, sd.pred)
 }
 \arguments{
-\item{svov.object}{an svcov class (fitted) object}
+\item{z.pred}{...}
 
-\item{type}{whether 'global' to retrieve the regular covariance matrix, or 'local' to retrieve global covariance 
-based on the local aspect of a specific location (not implemented yet)}
+\item{mean.pred}{...}
 
-\item{index}{index to perform local covariance matrix (not implemented yet)}
+\item{sd.pred}{...}
 }
 \value{
-a vector with the adjusted trend
+retrieves LogRank
 }
 \description{
 Retrieves the estimated spatial effects of the spatial structure

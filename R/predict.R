@@ -1,69 +1,70 @@
 
-#' Prediction for object class svcov
-#' @description Prediction for a fitted svcov object.
-#' @usage svcovPredict(x, newdataset = newdataset, newlocs = newlocs, type = 'mean')
-#' @param svcov.object a svcov object
+#' Prediction for object class coco
+#' @description Prediction for a fitted coco object.
+#' @usage cocoPredict(coco.object, newdataset, newlocs, type = 'mean')
+#' @param coco.object a coco object
 #' @param newdataset a data.frame including covariates present in model.list
 #' @param newlocs a matrix with locations related to newdataset
 #' @param type whether "mean" or "pred", which gives a point prediction as well as the prediction uncertainty
 #' @returns a list with mean predictions and CRPS values, latter if specified.
 #' @author Federico Blasi
 #' 
-svcovPredict <- function(svcov.object, newdataset,
-                         newlocs,
-                         type = "mean") {
+cocoPredict <- function(coco.object, 
+                        newdataset,
+                        newlocs,
+                        type = "mean") {
   
-  if (!('svcov' %in% class(svcov.object))){
-    stop("svcov class required.")
+  if (!('coco' %in% class(coco.object))){
+    stop("coco class required.")
   }
   
-  if (length(svcov.object@output) == 0) {
+  if (length(coco.object@output) == 0) {
     stop("object has not yet been fitted.")
   }
   
-  .svcov.check.newdataset(newdataset)
-  .svcov.check.newlocs(newlocs)
-  .svcov.check.type_pred(type)
-  .svcov.check.object(svcov.object)
+  .coco.check.newdataset(newdataset)
+  .coco.check.newlocs(newlocs)
+  .coco.check.type_pred(type)
+  .coco.check.object(coco.object)
   
   # add check on the names of newdataset names and model.list
   # add check type
   
-  if (svcov.object@type == "dense") {
+  if (coco.object@type == "dense") {
     
-    tmp_matrix <- svcov::getDesignMatrix(model.list = svcov.object@model.list, data = svcov.object@data)
+    tmp_matrix <- coco::getDesignMatrix(model.list = coco.object@model.list, data = coco.object@data)
     
-    adjusted_eff_values <- svcov::getModelLists(svcov.object@output$par, 
+    adjusted_eff_values <- coco::getModelLists(coco.object@output$par, 
                                                 par.pos = tmp_matrix$par.pos, 
                                                 type = "diff")
     
-    X_std <- svcov::getScale(tmp_matrix$model.matrix,
-                             mean.vector = svcov.object@info$mean.vector,
-                             sd.vector = svcov.object@info$sd.vector
+    X_std <- coco::getScale(tmp_matrix$model.matrix,
+                             mean.vector = coco.object@info$mean.vector,
+                             sd.vector = coco.object@info$sd.vector
     )
     
-    tmp_matrix_pred <- svcov::getDesignMatrix(
-      model.list = svcov.object@model.list,
+    tmp_matrix_pred <- coco::getDesignMatrix(
+      model.list = coco.object@model.list,
       data = newdataset
     )
     
-    X_pred_std <- svcov::getScale(tmp_matrix_pred$model.matrix,
-                                  mean.vector = svcov.object@info$mean.vector,
-                                  sd.vector = svcov.object@info$sd.vector
+    X_pred_std <- coco::getScale(tmp_matrix_pred$model.matrix,
+                                  mean.vector = coco.object@info$mean.vector,
+                                  sd.vector = coco.object@info$sd.vector
     )
     
-    observed_cov <- svcov::cov_rns(
-      theta = adjusted_eff_values[-1], locs = svcov.object@locs,
+    observed_cov <- coco::cov_rns(
+      theta = adjusted_eff_values[-1], locs = coco.object@locs,
       x_covariates = X_std$std.covs,
-      smooth_limits = svcov.object@info$smooth_limits
+      smooth_limits = coco.object@info$smooth_limits
     )
     
-    cov_pred <- svcov::cov_rns_pred(
-      theta = adjusted_eff_values[-1], locs = svcov.object@locs,
+    cov_pred <- coco::cov_rns_pred(
+      theta = adjusted_eff_values[-1], locs = coco.object@locs,
       locs_pred = as.matrix(newlocs),
       x_covariates = X_std$std.covs,
       x_covariates_pred = X_pred_std$std.covs,
-      smooth_limits = svcov.object@info$smooth_limits
+      smooth_limits = coco.object@info$smooth_limits
     )
     
     inv_cov <- solve(observed_cov, t(cov_pred))
@@ -72,10 +73,10 @@ svcovPredict <- function(svcov.object, newdataset,
     trend_pred <- c(X_pred_std$std.covs %*% adjusted_eff_values$mean)
     trendObs <- c(X_std$std.covs %*% adjusted_eff_values$mean)
     
-    svcov.resid <- svcov.object@z[,1] - trendObs # Future updates add slice to pick from the samples
+    coco.resid <- coco.object@z[,1] - trendObs # Future updates add slice to pick from the samples
     
     # mean part
-    mean_part <- c(crossprod(svcov.resid, inv_cov))
+    mean_part <- c(crossprod(coco.resid, inv_cov))
     
     if (type == "mean") {
       return(list(
@@ -107,77 +108,77 @@ svcovPredict <- function(svcov.object, newdataset,
     }
   }
   
-  if (svcov.object@type == "sparse") {
+  if (coco.object@type == "sparse") {
     
-    tmp_matrix <- svcov::getDesignMatrix(
-      model.list = svcov.object@model.list,
-      data = svcov.object@data
+    tmp_matrix <- coco::getDesignMatrix(
+      model.list = coco.object@model.list,
+      data = coco.object@data
     )
     
-    adjusted_eff_values <- svcov::getModelLists(
-      theta = svcov.object@output$par,
+    adjusted_eff_values <- coco::getModelLists(
+      theta = coco.object@output$par,
       par.pos = tmp_matrix$par.pos, type = "diff"
     )
     
-    tmp_matrix_pred <- svcov::getDesignMatrix(
-      model.list = svcov.object@model.list,
+    tmp_matrix_pred <- coco::getDesignMatrix(
+      model.list = coco.object@model.list,
       data = newdataset
     )
     
-    X_std <- svcov::getScale(tmp_matrix$model.matrix,
-                             mean.vector = svcov.object@info$mean.vector,
-                             sd.vector = svcov.object@info$sd.vector
+    X_std <- coco::getScale(tmp_matrix$model.matrix,
+                             mean.vector = coco.object@info$mean.vector,
+                             sd.vector = coco.object@info$sd.vector
     )
     
-    X_pred_std <- svcov::getScale(tmp_matrix_pred$model.matrix,
-                                  mean.vector = svcov.object@info$mean.vector,
-                                  sd.vector = svcov.object@info$sd.vector
+    X_pred_std <- coco::getScale(tmp_matrix_pred$model.matrix,
+                                  mean.vector = coco.object@info$mean.vector,
+                                  sd.vector = coco.object@info$sd.vector
     )
     
     ###
     
-    distmat <- spam::nearest.dist(svcov.object@locs, delta = svcov.object@info$delta, upper = NULL)
+    distmat <- spam::nearest.dist(coco.object@locs, delta = coco.object@info$delta, upper = NULL)
     
-    taper_two <- svcov.object@info$taper(distmat, theta = c(svcov.object@info$delta, 1))
+    taper_two <- coco.object@info$taper(distmat, theta = c(coco.object@info$delta, 1))
     
     # C(locs,locs)
-    taper_two@entries <- taper_two@entries * svcov::cov_rns_taper_optimized_range(
+    taper_two@entries <- taper_two@entries * coco::cov_rns_taper_optimized_range(
       theta = adjusted_eff_values,
-      locs = svcov.object@locs,
+      locs = coco.object@locs,
       x_covariates = X_std$std.covs,
       colindices = taper_two@colindices,
       rowpointers = taper_two@rowpointers,
-      smooth_limits = svcov.object@info$smooth_limits
+      smooth_limits = coco.object@info$smooth_limits
     )
     
-    pred_locs <- spam::nearest.dist(x = as.matrix(newlocs), y = svcov.object@locs, delta = svcov.object@info$delta)
+    pred_locs <- spam::nearest.dist(x = as.matrix(newlocs), y = coco.object@locs, delta = coco.object@info$delta)
     
-    pred_taper <- svcov.object@info$taper(pred_locs, theta = c(svcov.object@info$delta, 1))
+    pred_taper <- coco.object@info$taper(pred_locs, theta = c(coco.object@info$delta, 1))
     
     rm(pred_locs)
     
     # C(preds, locs)
-    pred_taper@entries <- pred_taper@entries * svcov::cov_rns_taper_optimized_predict_range(
+    pred_taper@entries <- pred_taper@entries * coco::cov_rns_taper_optimized_predict_range(
       theta = adjusted_eff_values,
-      locs = svcov.object@locs,
+      locs = coco.object@locs,
       locs_pred = as.matrix(newlocs),
       x_covariates = X_std$std.covs,
       x_covariates_pred = X_pred_std$std.covs,
       colindices = pred_taper@colindices,
       rowpointers = pred_taper@rowpointers,
-      smooth_limits = svcov.object@info$smooth_limits
+      smooth_limits = coco.object@info$smooth_limits
     )
     
-    inv_cov <- spam::solve(taper_two, spam::t(pred_taper)) # consumes a lot of memory... more efficient would be solve(taper_two, svcov.object@z) and then multiply... but for CRPS we need what it's implemented
+    inv_cov <- spam::solve(taper_two, spam::t(pred_taper)) # consumes a lot of memory... more efficient would be solve(taper_two, coco.object@z) and then multiply... but for CRPS we need what it's implemented
     
     # trend
     trend_pred <- c(X_pred_std$std.covs %*% adjusted_eff_values$mean) # crossprod ?
     trend_obs <- c(X_std$std.covs %*% adjusted_eff_values$mean) # crossprod?
-    svcov.resid <- svcov.object@z[,1,drop=FALSE] - trend_obs
+    coco.resid <- coco.object@z[,1,drop=FALSE] - trend_obs
     
     # mean part
     
-    mean_part <- c(crossprod(svcov.resid, inv_cov))
+    mean_part <- c(crossprod(coco.resid, inv_cov))
     
     if (type == "mean") {
       return(list(

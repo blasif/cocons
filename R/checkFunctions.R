@@ -4,16 +4,16 @@
 # ADD checks for NA's!!!!
 # ADD checks for different sizes of locs, data, and z !!!!!!
 
-.svcov.update.optim.control <- function(optim.control){
+.coco.update.optim.control <- function(optim.control){
   
-  to_update <- getOption("svcov.Optim.Control")
+  to_update <- getOption("coco.Optim.Control")
   
   if(is.null(optim.control$parallel$forward)){
-    optim.control$parallel <- to_update$parallel$forward
+    optim.control$parallel$forward <- to_update$parallel$forward
   }
   
   if(is.null(optim.control$parallel$loginfo)){
-    optim.control$parallel <- to_update$parallel$loginfo
+    optim.control$parallel$loginfo <- to_update$parallel$loginfo
   }
   
   if(is.null(optim.control$control$factr)){
@@ -31,12 +31,14 @@
   if(is.null(optim.control$control$lmm)){
     optim.control$control$lmm <- to_update$control$lmm
   }
+  
+  optim.control$control$hessian <- FALSE
 
   return(optim.control)
   
 }
 
-.svcov.DrawEllipsoid <- function(alpha_i, r, rho, loc, factr) {
+.coco.DrawEllipsoid <- function(alpha_i, r, rho, loc, factr) {
   
   createEllipse <- function(center, a, b, angle = 0, steps = 100, factr = 0.1) {
     theta <- seq(0, 2 * pi, length.out = steps)
@@ -123,16 +125,16 @@
   graphics::lines(ellipse_points, lty = 3, col = "black")
 }
 
-.svcov.check.type_pred <- function(type){}
+.coco.check.type_pred <- function(type){}
 
-.svcov.check.type <- function(type) {
+.coco.check.type <- function(type) {
   if (!(type %in% c("sparse", "dense"))) {
     stop("check type")
   }
   return(0)
 }
 
-.svcov.check.data <- function(data) {
+.coco.check.data <- function(data) {
   if (!is.data.frame(data)) {
     stop("data must be provided as data.frame")
   }
@@ -143,16 +145,16 @@
   return(0)
 }
 
-.svcov.check.locs <- function(locs) {
+.coco.check.locs <- function(locs) {
   if (!is.matrix(locs)) {
     stop("locs should be provided as matrix")
   }
   return(0)
 }
 
-.svcov.check.z <- function(z) {
+.coco.check.z <- function(z) {
   if (is.null(z)) {
-    warning("z not provided. Expecting to simulate with this svcov object.")
+    warning("z not provided. Expecting to simulate with this coco object.")
   } else {
     if ( !is.matrix(z)) {
       stop("z is not a matrix.")
@@ -161,13 +163,13 @@
   return(0)
 }
 
-.svcov.check.model.list <- function(model.list, data) {
+.coco.check.model.list <- function(model.list, data) {
   if (!is.list(model.list)) {
     stop("model.list not a list")
   }
   
-  if (any(names(model.list) != getOption("svcov.Dictionary"))) {
-    stop("aspect names do not match reference ones. Please check getOption(\"svcov.Dictionary\")")
+  if (any(names(model.list) != getOption("coco.Dictionary"))) {
+    stop("aspect names do not match reference ones. Please check getOption(\"coco.Dictionary\")")
   }
   
   lapply(model.list, FUN = function(x) {
@@ -180,7 +182,7 @@
 }
 
 # ADDED model.list here to check
-.svcov.check.info <- function(type, info, model.list){
+.coco.check.info <- function(type, info, model.list){
   
   if (is.null(info$smooth_limits)) {
     warning("smooth limits not specified. Maybe considering fixed smoothness?")
@@ -230,38 +232,35 @@
   
 }
 
-.svcov.check.output <- function(output){
+.coco.check.output <- function(output){
   # output
   if (!(identical(output, list()))) {
-    warning("providing an output object. Check optim.svcov() to match output list type.")
+    warning("providing an output object. Check optim.coco() to match output list type.")
   }
 }
 
-.svcov.check.FIM <- function(FIM) {
-  if (!(type %in% c("sparse", "dense"))) { # ! Type ???
-    stop("check type")
-  }
+.coco.check.Hess <- function(Hess) {
   return(0)
 }
 
-.svcov.check.ncores <- function(ncores){
+.coco.check.ncores <- function(ncores){
   #if(!is.integer(ncores)){stop('ncores needs to be an integer.')}
   if(ncores > parallel::detectCores()){stop('ncores must be less than available cores.')}
   if(ncores < 1){stop('ncores must be >=1')}
 }
 
-.svcov.check.boundaries <- function(boundaries){
+.coco.check.boundaries <- function(boundaries){
   
 }
 
-.svcov.check.newdataset <- function(newdataset){
+.coco.check.newdataset <- function(newdataset){
   
 }
 
-.svcov.check.newlocs <- function(newlocs){
+.coco.check.newlocs <- function(newlocs){
   
 }
 
-.svcov.check.object <- function(object){
+.coco.check.object <- function(object){
   
 }

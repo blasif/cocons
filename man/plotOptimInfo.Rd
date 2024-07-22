@@ -4,15 +4,15 @@
 \alias{plotOptimInfo}
 \title{Plot log info detailed}
 \usage{
-plotOptimInfo(svcov.object, ...)
+plotOptimInfo(coco.object, ...)
 }
 \arguments{
-\item{svcov.object}{an optimized svcov.object}
+\item{coco.object}{an optimized coco.object}
 
 \item{...}{arguments for par()}
 }
 \value{
-Outputs a sequence of plots detailing parameters during the 
+Outputs a sequence of plots detailing parameters during the
 optimization routine
 }
 \description{

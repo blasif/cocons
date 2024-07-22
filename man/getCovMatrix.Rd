@@ -2,23 +2,23 @@
 % Please edit documentation in R/getFunctions.R
 \name{getCovMatrix}
 \alias{getCovMatrix}
-\title{Covariance matrix from a fitted svcov object}
+\title{Covariance matrix from a fitted coco object}
 \usage{
-getCovmatrix(svcov.object, type = 'global', index = NULL)
+getCovMatrix(coco.object, type = 'global', index = NULL)
 }
 \arguments{
-\item{type}{whether 'global' to retrieve the regular covariance matrix, or 'local' to retrieve global covariance 
+\item{coco.object}{a coco class (fitted) object}
+
+\item{type}{whether 'global' to retrieve the regular covariance matrix, or 'local' to retrieve global covariance
 based on the local aspect of a specific location (not implemented yet)}
 
 \item{index}{index to perform local covariance matrix (not implemented yet)}
-
-\item{svov.object}{an svcov class (fitted) object}
 }
 \value{
 a vector with the adjusted trend
 }
 \description{
-Retrieves the associated covariance matrix from a fitted svcov object
+Retrieves the associated covariance matrix from a fitted coco object
 }
 \author{
 Federico Blasi

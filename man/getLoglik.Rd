@@ -4,16 +4,16 @@
 \alias{getLoglik}
 \title{Retrieve the loglikelihood value}
 \usage{
-getLoglik(svcov.object)
+getLoglik(coco.object)
 }
 \arguments{
-\item{svov.object}{an svcov class (fitted) object}
+\item{coco.object}{a coco class (fitted) object}
 }
 \value{
-loglikelihood value of the OptimParallel function
+wrap for value from a OptimParallel object
 }
 \description{
-Retrieve the loglikelihood value from a fitted svcov object.
+Retrieve the loglikelihood value from a fitted coco object.
 }
 \author{
 Federico Blasi

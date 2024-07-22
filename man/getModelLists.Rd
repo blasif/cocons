@@ -4,7 +4,7 @@
 \alias{getModelLists}
 \title{Builds the necessary input for building covariance matrices}
 \usage{
-getModelLists(optim$pars, par.pos)
+getModelLists(theta, par.pos, type = 'diff')
 }
 \arguments{
 \item{theta}{a vector of length p, where p is the number of parameters for
@@ -21,16 +21,6 @@ a list() of different spatial aspects and mean required for the cov.rns function
 }
 \description{
 Returns a list of parameter vectors for each of the aspects.
-}
-\examples{
-model.list <- list(   "mean" = 0,
-                      "std.dev" = as.formula(" ~ 1 + lati_s * long_s"),
-                      "scale" = as.formula(" ~ 1 + elev_s"),
-                      "aniso" = as.formula(" ~ 1 + elev_s"),
-                      "tilt" = as.formula(" ~ 1 + elev_s"),
-                      "smooth" = as.formula(" ~ 1"),
-                      "nugget" = -Inf)
-                      
 }
 \author{
 Federico Blasi

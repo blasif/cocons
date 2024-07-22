@@ -4,33 +4,32 @@
 \alias{GetNeg2loglikelihoodProfile}
 \title{GetNeg2loglikelihoodProfile}
 \usage{
-function(theta)
+GetNeg2loglikelihoodProfile(theta, par.pos, locs, x_covariates, smooth.limits, z, n, x_betas,lambda)
 }
 \arguments{
 \item{theta}{a vector with parameters values}
 
-\item{par.pos}{a vector with parameters values}
+\item{par.pos}{par.pos list}
 
-\item{locs}{a vector with parameters values}
+\item{locs}{spatial location matrix}
 
-\item{x_covariates}{a vector with parameters values}
+\item{x_covariates}{design matrix}
 
-\item{smooth.limits}{a vector with parameters values}
+\item{smooth.limits}{smooth.limits}
 
-\item{n}{a vector with parameters values}
+\item{z}{a vector of observed values}
 
-\item{z}{a vector with parameters values}
+\item{n}{dim(z)\link{1}}
 
-\item{lambda}{amount of regularization}
+\item{x_betas}{design matrix for the trend}
+
+\item{lambda}{regularization parameter}
 }
 \value{
-neg2loglikelihood
+value
 }
 \description{
 compute the negative 2 log likelihood based on theta
-}
-\examples{
-rnorm(1)
 }
 \author{
 Federico Blasi

@@ -7,13 +7,13 @@
 getDesignMatrix(model.list, data)
 }
 \arguments{
-\item{model.list}{a list of formulas, one for each aspect, specifying the
+\item{model.list}{a list of formulas, one for each source of nonstationarity, specifying the
 models.}
 
 \item{data}{a data.frame}
 }
 \value{
-a list() with two elements: a design matrix of dimension 
+a list() with two elements: a design matrix of dimension
 (n x p), and a par.pos object, indexing columns of the design matrix refered
 to each aspect models.
 }

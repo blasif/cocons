@@ -2,18 +2,18 @@
 % Please edit documentation in R/getFunctions.R
 \name{getTrend}
 \alias{getTrend}
-\title{Computes the trend of the svcov object}
+\title{Computes the trend of the coco object}
 \usage{
-getTrend(svcov.object)
+getTrend(coco.object)
 }
 \arguments{
-\item{svov.object}{an svcov class (fitted) object}
+\item{coco.object}{a coco class (fitted) object}
 }
 \value{
 a vector with the adjusted trend
 }
 \description{
-Compute the trend of the (fitted) svcov object
+Compute the trend of the (fitted) coco object
 }
 \author{
 Federico Blasi

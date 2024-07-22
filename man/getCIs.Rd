@@ -2,22 +2,22 @@
 % Please edit documentation in R/getFunctions.R
 \name{getCIs}
 \alias{getCIs}
-\title{Compute Confidence Intervals for an svcov object}
+\title{Compute Confidence Intervals for an coco object}
 \usage{
-getCIs(svcov.object, inv.hess, alpha = 0.05)
+getCIs(coco.object, inv.hess, alpha = 0.05)
 }
 \arguments{
+\item{coco.object}{a coco class (fitted) object}
+
+\item{inv.hess}{Inverse of the Hessian}
+
 \item{alpha}{confidence level}
-
-\item{svov.object}{an svcov class (fitted) object}
-
-\item{Hess}{the hessian}
 }
 \value{
-a matrix with lower and upper bound values
+a matrix with confidence intervals for each parameter in the model
 }
 \description{
-Compute confidence intervals for a (fitted) svcov object
+Compute confidence intervals for a (fitted) coco object
 }
 \author{
 Federico Blasi

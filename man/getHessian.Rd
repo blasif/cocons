@@ -4,16 +4,15 @@
 \alias{getHessian}
 \title{getHessian}
 \usage{
-getHessian(svcov.object, ncores = 2, 
+getHessian(coco.object, ncores = 2, 
 eps = .Machine$double.eps^(1/4))
 }
 \arguments{
-\item{svcov.object}{a fitted svcov object}
+\item{coco.object}{a fitted coco object}
 
 \item{ncores}{number of cores used for the computation}
 
-\item{eps}{...
-Fisher Information Matrix}
+\item{eps}{...}
 }
 \value{
 a symmetric matrix pxp of the approximated (observed) Hessian

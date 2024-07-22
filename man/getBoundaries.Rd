@@ -4,10 +4,10 @@
 \alias{getBoundaries}
 \title{Simple build of boundaries}
 \usage{
-getBoundaries(par.pos, lower.value, upper.value)
+getBoundaries(x, lower.value, upper.value)
 }
 \arguments{
-\item{x}{an svcov.object or a par.pos list (as output from getDesignMatrix)}
+\item{x}{a coco.object or a par.pos list (as output from getDesignMatrix)}
 
 \item{lower.value}{if provided, provides a vector filled with values lower.value.}
 
@@ -18,14 +18,6 @@ a list with boundaries and simple init values for the optim L-BFGS-B routine
 }
 \description{
 provides a generic set of upper and lower bounds for the L-BFGS-B routine
-}
-\examples{
-model.list <- list("std.dev" = as.formula(" ~ 1 + lati_s * long_s"),
-"scale" = as.formula(" ~ 1 + elev_s"),
-"aniso" = as.formula(" ~ 1 + elev_s"),
-"tilt" = as.formula(" ~ 1 + elev_s"),
-"smooth" = as.formula(" ~ 1"),
-"nugget" = -Inf)
 }
 \author{
 Federico Blasi

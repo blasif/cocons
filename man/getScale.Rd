@@ -7,7 +7,7 @@
 getScale(x, mean.vector = NULL, sd.vector = NULL)
 }
 \arguments{
-\item{x}{a svcov object, or a n x p matrix with covariate information to introduce, 
+\item{x}{a coco object, or a n x p matrix with covariate information to introduce,
 where the first column is a column of ones.}
 
 \item{mean.vector}{if provided, it centers covariates based on this information}
@@ -15,7 +15,7 @@ where the first column is a column of ones.}
 \item{sd.vector}{if provided, it scales covariates based on this information}
 }
 \value{
-a list with a scaled design matrix of dimension n x (p+1), and a set of mean and sd vectors 
+a list with a scaled design matrix of dimension n x (p+1), and a set of mean and sd vectors
 employed to scale the matrix
 }
 \description{

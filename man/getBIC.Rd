@@ -4,16 +4,16 @@
 \alias{getBIC}
 \title{Retrieve BIC}
 \usage{
-getBIC(svcov.object)
+getBIC(coco.object)
 }
 \arguments{
-\item{svcov.object}{a fitted svcov object.}
+\item{coco.object}{a fitted coco object.}
 }
 \value{
 a list with the associated BIC value
 }
 \description{
-Retrieve BIC from a fitted svcov object
+Retrieve BIC from a fitted coco object
 }
 \author{
 Federico Blasi

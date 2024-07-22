@@ -1,18 +1,18 @@
-Package: svcov
+Package: coco
 Type: Package
-Title: Spatially-Varying Covariance Functions For Gaussian Processes
+Title: Covariate-Based Covariance Functions For Nonstationary Gaussian Processes
 Version: 0.1
 Author: Federico Blasi
-Authors@R: c(person("Federico", "Blasi", email = "federico.blasi@uzh.ch",
+Authors@R: c(person("Federico", "Blasi", email = "federico.blasi@math.uzh.ch",
   role = c("aut", "cre")),
   person("Reinhard", "Furrer",
   role = c("ctb"))
   )
-Maintainer: Federico Blasi <federico.blasi@uzh.ch>
-Description: Gaussian Processes with flexible covariance functions 
+Maintainer: Federico Blasi <federico.blasi@math.uzh.ch>
+Description: Estimation and prediction of nonstationary Gaussian process with modular covariate-based covariance functions. Routines for handling large datasets are also provided.
 Encoding: UTF-8
 LazyData: true
-License: GPL (>= 2)
+License: `use_gpl3_license()`
 Depends:  R (>= 3.5.0)
 Imports:  Rcpp (>= 1.0.10),
           spam (>= 2.9.1),
@@ -21,5 +21,7 @@ Imports:  Rcpp (>= 1.0.10),
           methods,
           knitr
 LinkingTo: Rcpp, BH
+BugReports: https://github.com/blasif/coco/issues
+Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
 VignetteBuilder: knitr

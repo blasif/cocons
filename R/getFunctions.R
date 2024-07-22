@@ -1,31 +1,31 @@
 # New ones
 
-#' Covariance matrix from a fitted svcov object
-#' @description Retrieves the associated covariance matrix from a fitted svcov object
+#' Covariance matrix from a fitted coco object
+#' @description Retrieves the associated covariance matrix from a fitted coco object
 #'
-#' @usage getCovmatrix(svcov.object, type = 'global', index = NULL)
-#' @param svov.object an svcov class (fitted) object
+#' @usage getCovMatrix(coco.object, type = 'global', index = NULL)
+#' @param coco.object a coco class (fitted) object
 #' @param type whether 'global' to retrieve the regular covariance matrix, or 'local' to retrieve global covariance 
 #' based on the local aspect of a specific location (not implemented yet)
 #' @param index index to perform local covariance matrix (not implemented yet)
 #' @returns a vector with the adjusted trend
 #' @author Federico Blasi
-getCovMatrix <- function(svcov.object, type = 'global', index = NULL){
+getCovMatrix <- function(coco.object, type = 'global', index = NULL){
   
-  x_covs <- svcov::getScale(svcov.object)$std.covs
+  x_covs <- coco::getScale(coco.object)$std.covs
   
-  par.pos <- getDesignMatrix(svcov.object@model.list, data = svcov.object@data)$par.pos
+  par.pos <- getDesignMatrix(coco.object@model.list, data = coco.object@data)$par.pos
   
-  if(svcov.object@type == 'dense'){
+  if(coco.object@type == 'dense'){
     
     if(type == 'global'){
-      theta_list <- svcov::getModelLists(svcov.object@output$par,par.pos = par.pos, 
+      theta_list <- coco::getModelLists(coco.object@output$par,par.pos = par.pos, 
                                          type = 'diff')
       
-      return(svcov::cov_rns(theta = theta_list,
-                            locs = svcov.object@locs,
+      return(coco::cov_rns(theta = theta_list,
+                            locs = coco.object@locs,
                             x_covariates = x_covs,
-                            smooth_limits = svcov.object@info$smooth_limits))
+                            smooth_limits = coco.object@info$smooth_limits))
     }
     
     if(type == 'local'){
@@ -34,26 +34,26 @@ getCovMatrix <- function(svcov.object, type = 'global', index = NULL){
     
   }
   
-  if(svcov.object@type == 'sparse'){
+  if(coco.object@type == 'sparse'){
     
     if(type == 'global'){
       
       
-      theta_list <- svcov::getModelLists(svcov.object@output$par,par.pos = par.pos, 
+      theta_list <- coco::getModelLists(coco.object@output$par,par.pos = par.pos, 
                                          type = 'diff')
       
       # taper
-      ref_taper <- svcov.object@info$taper(
-        spam::nearest.dist(svcov.object@locs, delta = svcov.object@info$delta, upper = NULL),
-        theta = c(svcov.object@info$delta, 1)
+      ref_taper <- coco.object@info$taper(
+        spam::nearest.dist(coco.object@locs, delta = coco.object@info$delta, upper = NULL),
+        theta = c(coco.object@info$delta, 1)
       )
       
       ref_taper@entries <- ref_taper@entries * cov_rns_taper_optimized_range(theta = theta_list[-1], 
-                                                                                 locs = svcov.object@locs, 
+                                                                                 locs = coco.object@locs, 
                                                                                  x_covariates =  x_covs, 
                                                                                  colindices = ref_taper@colindices, 
                                                                                  rowpointers = ref_taper@rowpointers,
-                                                                                 smooth_limits =  svcov.object@info$smooth_limits)
+                                                                                 smooth_limits =  coco.object@info$smooth_limits)
       
       return(as.matrix(ref_taper))
       
@@ -70,12 +70,11 @@ getCovMatrix <- function(svcov.object, type = 'global', index = NULL){
 #' Based on a set of predictions retrieves the Logrank
 #' @description Retrieves the estimated spatial effects of the spatial structure
 #'
-#' @usage getLogrank(svcov.object, type = 'global', index = NULL)
-#' @param svov.object an svcov class (fitted) object
-#' @param type whether 'global' to retrieve the regular covariance matrix, or 'local' to retrieve global covariance 
-#' based on the local aspect of a specific location (not implemented yet)
-#' @param index index to perform local covariance matrix (not implemented yet)
-#' @returns a vector with the adjusted trend
+#' @usage getLogRank(z.pred, mean.pred, sd.pred)
+#' @param z.pred ...
+#' @param mean.pred ...
+#' @param sd.pred ...
+#' @returns retrieves LogRank
 #' @author Federico Blasi
 getLogRank <- function(z.pred, mean.pred, sd.pred){
   
@@ -86,12 +85,11 @@ getLogRank <- function(z.pred, mean.pred, sd.pred){
 #' Based on a set of predictions retrieves the Logrank
 #' @description Retrieves the estimated spatial effects of the spatial structure
 #'
-#' @usage getCRPS(svcov.object, type = 'global', index = NULL)
-#' @param svov.object an svcov class (fitted) object
-#' @param type whether 'global' to retrieve the regular covariance matrix, or 'local' to retrieve global covariance 
-#' based on the local aspect of a specific location (not implemented yet)
-#' @param index index to perform local covariance matrix (not implemented yet)
-#' @returns a vector with the adjusted trend
+#' @usage getCRPS(z.pred, mean.pred, sd.pred)
+#' @param z.pred ...
+#' @param mean.pred ...
+#' @param sd.pred ...
+#' @returns retrieves CRPS
 #' @author Federico Blasi
 getCRPS <- function(z.pred, mean.pred, sd.pred){
   
@@ -103,93 +101,113 @@ getCRPS <- function(z.pred, mean.pred, sd.pred){
 }
 
 #' Retrieves the estimated spatial effects of the spatial structure
-#' @description Retrieves the estimated spatial effects of the spatial structure
+#' @description Retrieves the estimated surfaces for different sources of nonstationarity
 #'
-#' @usage getSpateffects(svcov.object, type = 'global', index = NULL)
-#' @param svov.object an svcov class (fitted) object
-#' @param type whether 'global' to retrieve the regular covariance matrix, or 'local' to retrieve global covariance 
-#' based on the local aspect of a specific location (not implemented yet)
-#' @param index index to perfrom local covariance matrix (not implemented yet)
-#' @returns a vector with the adjusted trend
+#' @usage getSpatEffects(coco.object)
+#' @param coco.object an coco class (fitted) object
+#' @returns a list with the different estimated surfaces
 #' @author Federico Blasi
-getSpatEffects <- function(svcov.object){
+getSpatEffects <- function(coco.object){
   
-  tmp_info <- svcov::getDesignMatrix(model.list = svcov.object@model.list, 
-                                     data = svcov.object@data)
+  tmp_info <- coco::getDesignMatrix(model.list = coco.object@model.list, 
+                                     data = coco.object@data)
   
-  theta_list <- svcov::getModelLists(
-    theta = svcov.object@output$par, par.pos = tmp_info$par.pos,
+  theta_list <- coco::getModelLists(
+    theta = coco.object@output$par, par.pos = tmp_info$par.pos,
     type = "diff"
   )
   
-  X_std <- svcov::getScale(tmp_info$model.matrix,
-                           mean.vector = svcov.object@info$mean.vector,
-                           sd.vector = svcov.object@info$sd.vector
+  X_std <- coco::getScale(tmp_info$model.matrix,
+                           mean.vector = coco.object@info$mean.vector,
+                           sd.vector = coco.object@info$sd.vector
   )
   
-  tp_se <- exp(0.5 * X_std$std.covs %*% theta_list$std.dev)
-  tp_ga <- exp(X_std$std.covs %*% theta_list$aniso)
-  tp_tl <- pi / (1 + exp(-X_std$std.covs %*% theta_list$tilt))
-  tp_smooth <- (svcov.object@info$smooth_limits[2] - svcov.object@info$smooth_limits[1]) / (1 + exp(-X_std$std.covs %*% theta_list$smooth)) + svcov.object@info$smooth_limits[1]
-  tp_ng <- exp(X_std$std.covs %*% theta_list$nugget)
-  tp_mr_x <- sin(tp_tl) * exp(X_std$std.covs %*% theta_list$scale)
-  tp_mr_y <- sin(tp_tl) * exp(X_std$std.covs %*% theta_list$scale) * exp(X_std$std.covs %*% theta_list$aniso)
+  if(coco.object@type == 'dense'){
+    
+    tp_se <- exp(0.5 * X_std$std.covs %*% theta_list$std.dev)
+    tp_ga <- exp(X_std$std.covs %*% theta_list$aniso)
+    tp_tl <- pi / (1 + exp(-X_std$std.covs %*% theta_list$tilt))
+    tp_smooth <- (coco.object@info$smooth_limits[2] - coco.object@info$smooth_limits[1]) / (1 + exp(-X_std$std.covs %*% theta_list$smooth)) + coco.object@info$smooth_limits[1]
+    tp_ng <- exp(X_std$std.covs %*% theta_list$nugget)
+    tp_mr_x <- sin(tp_tl) * exp(X_std$std.covs %*% theta_list$scale)
+    tp_mr_y <- sin(tp_tl) * exp(X_std$std.covs %*% theta_list$scale) * exp(X_std$std.covs %*% theta_list$aniso)
+    
+    return(list('sd' = tp_se,
+                'scale_x' = tp_mr_x,
+                'scale_y' = tp_mr_y,
+                'aniso' = tp_ga,
+                'tilt' = cos(tp_tl),
+                'smooth' = tp_smooth,
+                'nugget' = tp_ng))
+    
+  }
   
-  return(list('sd' = tp_se,
-              'scale_x' = tp_mr_x,
-              'scale_y' = tp_mr_y,
-              'aniso' = tp_ga,
-              'tilt' = cos(tp_tl),
-              'smooth' = tp_smooth,
-              'nugget' = tp_ng))
+  if(coco.object@type == 'sparse'){
+    
+    tp_se <- exp(0.5 * X_std$std.covs %*% theta_list$std.dev)
+    #tp_ga <- exp(X_std$std.covs %*% theta_list$aniso)
+    #tp_tl <- pi / (1 + exp(-X_std$std.covs %*% theta_list$tilt))
+    tp_smooth <- (coco.object@info$smooth_limits[2] - coco.object@info$smooth_limits[1]) / (1 + exp(-X_std$std.covs %*% theta_list$smooth)) + coco.object@info$smooth_limits[1]
+    tp_ng <- exp(X_std$std.covs %*% theta_list$nugget)
+    tp_mr <- exp(X_std$std.covs %*% theta_list$scale)
+    #tp_mr_y <- sin(tp_tl) * exp(X_std$std.covs %*% theta_list$scale) * exp(X_std$std.covs %*% theta_list$aniso)
+    
+    return(list('sd' = tp_se,
+                'scale_x' = tp_mr,
+                'smooth' = tp_smooth,
+                'nugget' = tp_ng))
+    
+  }
+  
+
   
 }
 
-# getLogliktest <- function(svcov.full, svcov.reduced, alpha){
-#  svcov.reduced@output$value - svcov.full@output$value
+# getLogliktest <- function(coco.full, coco.reduced, alpha){
+#  coco.reduced@output$value - coco.full@output$value
 #}
 
-#' Computes the condition number of the associated correlation matrix of the fitted svcov object
-#' @description Compute the trend of the (fitted) svcov object
+#' Computes the condition number of the associated correlation matrix of the fitted coco object
+#' @description Compute the trend of the (fitted) coco object
 #'
-#' @usage getCondNumber(svcov.object)
-#' @param svov.object an svcov class (fitted) object
+#' @usage getCondNumber(coco.object)
+#' @param coco.object a coco class (fitted) object
 #' @returns the condition number
 #' @author Federico Blasi
-getCondNumber <- function(svcov.object){
-  corr_mat <- cov2cor(getCovMatrix(svcov.object))
+getCondNumber <- function(coco.object){
+  corr_mat <- cov2cor(getCovMatrix(coco.object))
   eigen(corr_mat)$values[1] / eigen(corr_mat)$values[dim(corr_mat)[1]]
 }
 
-#' Computes the trend of the svcov object
-#' @description Compute the trend of the (fitted) svcov object
+#' Computes the trend of the coco object
+#' @description Compute the trend of the (fitted) coco object
 #'
-#' @usage getTrend(svcov.object)
-#' @param svov.object an svcov class (fitted) object
+#' @usage getTrend(coco.object)
+#' @param coco.object a coco class (fitted) object
 #' @returns a vector with the adjusted trend
 #' @author Federico Blasi
-getTrend <- function(svcov.object){
-  tmp_scaled <- getScale(svcov.object)$std.covs
-  return(tmp_scaled %*% getEstims(svcov.object)$mean)
+getTrend <- function(coco.object){
+  tmp_scaled <- getScale(coco.object)$std.covs
+  return(tmp_scaled %*% getEstims(coco.object)$mean)
 }
 
-#' Compute Confidence Intervals for an svcov object
-#' @description Compute confidence intervals for a (fitted) svcov object
+#' Compute Confidence Intervals for an coco object
+#' @description Compute confidence intervals for a (fitted) coco object
 #'
-#' @usage getCIs(svcov.object, inv.hess, alpha = 0.05)
-#' @param svov.object an svcov class (fitted) object
-#' @param Hess the hessian 
+#' @usage getCIs(coco.object, inv.hess, alpha = 0.05)
+#' @param coco.object a coco class (fitted) object
+#' @param inv.hess Inverse of the Hessian 
 #' @param alpha confidence level
-#' @returns a matrix with lower and upper bound values
+#' @returns a matrix with confidence intervals for each parameter in the model
 #' @author Federico Blasi
-getCIs <- function(svcov.object, inv.hess, alpha = 0.05){
+getCIs <- function(coco.object, inv.hess, alpha = 0.05){
   
-  tmp_par.pos <- svcov::getDesignMatrix(svcov.object@model.list,svcov.object@data)$par.pos
+  tmp_par.pos <- coco::getDesignMatrix(coco.object@model.list,coco.object@data)$par.pos
   
-  Hess_modified <- svcov::getModHess(svcov.object = svcov.object, 
+  Hess_modified <- coco::getModHess(coco.object = coco.object, 
                                      inv.hess = inv.hess)
   
-  estims <- unlist(getEstims(svcov.object)[which(unlist(lapply(tmp_par.pos,is.logical)))])[unlist(tmp_par.pos[which(unlist(lapply(tmp_par.pos, is.logical)))])]
+  estims <- unlist(getEstims(coco.object)[which(unlist(lapply(tmp_par.pos,is.logical)))])[unlist(tmp_par.pos[which(unlist(lapply(tmp_par.pos, is.logical)))])]
   
   to_return <- matrix(c(estims, estims), ncol = 2, byrow = FALSE) + as.matrix(sqrt(diag(Hess_modified)), ncol = 1) %*% matrix(c(-1, 1) * stats::qnorm(1 - alpha/2) ,ncol = 2)
   
@@ -201,19 +219,18 @@ getCIs <- function(svcov.object, inv.hess, alpha = 0.05){
 }
 
 #' Retrieves the modified inverse of the hessian
-#' @description Compute confidence intervals for a (fitted) svcov object
+#' @description Compute confidence intervals for a (fitted) coco object
 #'
-#' @usage getModHess(svcov.object, inv.hess, alpha = 0.05)
-#' @param svov.object an svcov class (fitted) object
+#' @usage getModHess(coco.object, inv.hess)
+#' @param coco.object a coco class (fitted) object
 #' @param inv.hess Inverse of the Hessian 
-#' @param alpha confidence level
-#' @returns a matrix with lower and upper bound values
+#' @returns the modified inverse of the hessian matrix
 #' @author Federico Blasi
-getModHess <- function(svcov.object, inv.hess){
+getModHess <- function(coco.object, inv.hess){
   
   Hess_modified <- inv.hess
   
-  tmp_par.pos <- svcov::getDesignMatrix(svcov.object@model.list,svcov.object@data)$par.pos
+  tmp_par.pos <- coco::getDesignMatrix(coco.object@model.list,coco.object@data)$par.pos
   
   if(is.logical(tmp_par.pos$mean)){
     number_mean <- sum(tmp_par.pos$mean)
@@ -251,76 +268,76 @@ getModHess <- function(svcov.object, inv.hess){
 }
 
 #' Retrieve the loglikelihood value
-#' @description Retrieve the loglikelihood value from a fitted svcov object.
+#' @description Retrieve the loglikelihood value from a fitted coco object.
 #'
-#' @usage getLoglik(svcov.object)
-#' @param svov.object an svcov class (fitted) object
-#' @returns loglikelihood value of the OptimParallel function
+#' @usage getLoglik(coco.object)
+#' @param coco.object a coco class (fitted) object
+#' @returns wrap for value from a OptimParallel object 
 #' @author Federico Blasi
-getLoglik <- function(svcov.object){
-  return(svcov.object@output$value)
+getLoglik <- function(coco.object){
+  return(coco.object@output$value)
 }
 
 #' Retrieve BIC
-#' @description Retrieve BIC from a fitted svcov object
+#' @description Retrieve BIC from a fitted coco object
 #' 
-#' @usage getBIC(svcov.object)
-#' @param svcov.object a fitted svcov object.
+#' @usage getBIC(coco.object)
+#' @param coco.object a fitted coco object.
 #' @returns a list with the associated BIC value
 #' @author Federico Blasi
 #' 
-getBIC <- function(svcov.object){
+getBIC <- function(coco.object){
   
-  if(length(svcov.object@output) == 0){
+  if(length(coco.object@output) == 0){
     stop('object has not been fitted yet.')
   }
   
-  temp_par.pos <- svcov::getDesignMatrix(svcov.object@model.list,svcov.object@data)$par.pos
+  temp_par.pos <- coco::getDesignMatrix(coco.object@model.list,coco.object@data)$par.pos
   tmp_index <- lapply(temp_par.pos, FUN = is.logical)
   n_par <- sum(unlist(lapply(temp_par.pos, sum))[which(tmp_index == TRUE)])
-  return( svcov.object@output$value +  n_par * log(dim(svcov.object@data)[1]))
+  return( coco.object@output$value +  n_par * log(dim(coco.object@data)[1]))
 }
 
 #' Retrieve AIC
-#' @description Retrieve the Akaike information criterion from a fitted svcov object
+#' @description Retrieve the Akaike information criterion from a fitted coco object
 #' 
-#' @usage getAIC(svcov.object)
-#' @param svcov.object a fitted svcov object.
+#' @usage getAIC(coco.object)
+#' @param coco.object a fitted coco object.
 #' @returns a list with the associated AIC value
 #' @author Federico Blasi
 #' 
-getAIC <- function(svcov.object){
+getAIC <- function(coco.object){
   
-  if(length(svcov.object@output) == 0){
+  if(length(coco.object@output) == 0){
     stop('object has not been fitted yet.')
   }
   
-  temp_par.pos <- svcov::getDesignMatrix(svcov.object@model.list,svcov.object@data)$par.pos
+  temp_par.pos <- coco::getDesignMatrix(coco.object@model.list,coco.object@data)$par.pos
   tmp_index <- lapply(temp_par.pos, FUN = is.logical)
   n_par <- sum(unlist(lapply(temp_par.pos, sum))[which(tmp_index == TRUE)])
-  return( svcov.object@output$value +  2 * log(dim(svcov.object@data)[1]))
+  return( coco.object@output$value +  2 * log(dim(coco.object@data)[1]))
 }
 
-#' Retrieve estimates from a fitted svcov object
-#' @description Retrieve estimates from a fitted svcov object
+#' Retrieve estimates from a fitted coco object
+#' @description Retrieve estimates from a fitted coco object
 #' 
-#' @usage getEstims(svcov.object)
-#' @param svcov.object a fitted svcov object.
+#' @usage getEstims(coco.object)
+#' @param coco.object a fitted coco object.
 #' @returns a list with the estimates parameters for the different aspects
 #' @author Federico Blasi
 #' 
-getEstims <- function(svcov.object){
+getEstims <- function(coco.object){
   
-  return(svcov::getModelLists(svcov.object@output$par, 
-                              par.pos = getDesignMatrix(svcov.object@model.list,
-                                                        data = svcov.object@data)$par.pos,
+  return(coco::getModelLists(coco.object@output$par, 
+                              par.pos = getDesignMatrix(coco.object@model.list,
+                                                        data = coco.object@data)$par.pos,
                               type = 'diff'))
 }
 
 #' Fast and simple standardization for the design matrix
 #' @description Centers and scale the design matrix
 #' @usage getScale(x, mean.vector = NULL, sd.vector = NULL)
-#' @param x a svcov object, or a n x p matrix with covariate information to introduce, 
+#' @param x a coco object, or a n x p matrix with covariate information to introduce, 
 #' where the first column is a column of ones.
 #' @param mean.vector if provided, it centers covariates based on this information
 #' @param sd.vector if provided, it scales covariates based on this information
@@ -330,7 +347,7 @@ getEstims <- function(svcov.object){
 #' 
 getScale <- function(x, mean.vector = NULL, sd.vector = NULL){
   
-  if('svcov' %in% class(x)){
+  if('coco' %in% class(x)){
     
     x_std <- getDesignMatrix(x@model.list, x@data)$model.matrix
     
@@ -392,7 +409,8 @@ getScale <- function(x, mean.vector = NULL, sd.vector = NULL){
 #' @description Creates a unique design matrix based on model specification for
 #' each of the different potentially spatially varying aspects. 
 #'
-#' @param model.list a list of formulas, one for each aspect, specifying the
+#' @usage getDesignMatrix(model.list, data)
+#' @param model.list a list of formulas, one for each source of nonstationarity, specifying the
 #'                   models.
 #' @param data a data.frame
 #' @return a list() with two elements: a design matrix of dimension 
@@ -520,7 +538,7 @@ getDesignMatrix <- function(model.list, data){
 #' Builds the necessary input for building covariance matrices
 #' @description Returns a list of parameter vectors for each of the aspects.
 #'
-#' @usage getModelLists(optim$pars, par.pos)
+#' @usage getModelLists(theta, par.pos, type = 'diff')
 #' @param theta a vector of length p, where p is the number of parameters for
 #' each of the models
 #' @param par.pos a list detailing in which position of each aspect the elements
@@ -528,15 +546,6 @@ getDesignMatrix <- function(model.list, data){
 #' @param type whether parameters are related to a classical parameterization ('classic') or
 #' a difference parameterization 'diff' . Default set to 'diff'.
 #' @returns a list() of different spatial aspects and mean required for the cov.rns functions
-#' @examples 
-#' model.list <- list(   "mean" = 0,
-#'                       "std.dev" = as.formula(" ~ 1 + lati_s * long_s"),
-#'                       "scale" = as.formula(" ~ 1 + elev_s"),
-#'                       "aniso" = as.formula(" ~ 1 + elev_s"),
-#'                       "tilt" = as.formula(" ~ 1 + elev_s"),
-#'                       "smooth" = as.formula(" ~ 1"),
-#'                       "nugget" = -Inf)
-#'                       
 #' @author Federico Blasi
 getModelLists <- function(theta, par.pos, type = 'diff'){
   
@@ -590,27 +599,20 @@ getModelLists <- function(theta, par.pos, type = 'diff'){
 #' Simple build of boundaries
 #' @description provides a generic set of upper and lower bounds for the L-BFGS-B routine
 #' 
-#' @usage getBoundaries(par.pos, lower.value, upper.value)
-#' @param x an svcov.object or a par.pos list (as output from getDesignMatrix)
+#' @usage getBoundaries(x, lower.value, upper.value)
+#' @param x a coco.object or a par.pos list (as output from getDesignMatrix)
 #' @param lower.value if provided, provides a vector filled with values lower.value. 
 #' @param upper.value if provided, provides a vector filled with values upper.value.
 #' @returns a list with boundaries and simple init values for the optim L-BFGS-B routine
-#' @examples 
-#' model.list <- list("std.dev" = as.formula(" ~ 1 + lati_s * long_s"),
-#' "scale" = as.formula(" ~ 1 + elev_s"),
-#' "aniso" = as.formula(" ~ 1 + elev_s"),
-#' "tilt" = as.formula(" ~ 1 + elev_s"),
-#' "smooth" = as.formula(" ~ 1"),
-#' "nugget" = -Inf)
 #' @author Federico Blasi
 #' 
 getBoundaries <- function(x, lower.value, upper.value){
   
   if(upper.value < lower.value){stop('upper.value lower than lower.value')}
   
-  if(class(x) == 'svcov'){
+  if(class(x) == 'coco'){
     
-    tmp_par.pos <- svcov::getDesignMatrix(model.list = x@model.list,
+    tmp_par.pos <- coco::getDesignMatrix(model.list = x@model.list,
                                           data = x@data)$par.pos
     
     tmp_index <- lapply(tmp_par.pos, FUN = is.logical)
@@ -624,27 +626,20 @@ getBoundaries <- function(x, lower.value, upper.value){
                 'theta_upper' = theta_upper,
                 'theta_lower' = theta_lower))
     
-  } else {stop('provide an svcov object.')}
+  } else {stop('provide an coco object.')}
   
 }
 
-#' Simple build of boundaries
+#' Simple build of boundaries (v2)
 #' @description provides a generic set of upper and lower bounds for the L-BFGS-B routine
 #'
-#' @usage getBoundariesV2(par.pos, lower.value, upper.value)
-#' @param svcov.object a par.pos object output from getDesignMatrix
+#' @usage getBoundariesV2(coco.object, lower.value, upper.value)
+#' @param coco.object a coco object
 #' @param param.limits a vector of c(lower,init,upper) values for the associated param.
 #' @returns a list with boundaries for the optim L-BFGS-B routine
-#' @examples 
-#' model.list <- list("std.dev" = as.formula(" ~ 1 + lati_s * long_s"),
-#' "scale" = as.formula(" ~ 1 + elev_s"),
-#' "aniso" = as.formula(" ~ 1 + elev_s"),
-#' "tilt" = as.formula(" ~ 1 + elev_s"),
-#' "smooth" = as.formula(" ~ 1"),
-#' "nugget" = -Inf)
 #' @author Federico Blasi
 #' 
-getBoundariesV2 <- function(svcov.object, 
+getBoundariesV2 <- function(coco.object, 
                             mean.limits,
                             std.dev.limits,
                             scale.limits,
@@ -653,8 +648,8 @@ getBoundariesV2 <- function(svcov.object,
                             smooth.limits,
                             nugget.limits){
   
-  if(!is.null(svcov.object)){
-    if(class(svcov.object) == 'svcov'){
+  if(!is.null(coco.object)){
+    if(class(coco.object) == 'coco'){
       
       limits <- rbind(mean.limits,
                       std.dev.limits,
@@ -664,8 +659,8 @@ getBoundariesV2 <- function(svcov.object,
                       smooth.limits,
                       nugget.limits)
       
-      tmp_par.pos <- getDesignMatrix(model.list = svcov.object@model.list,
-                                     data = svcov.object@data)$par.pos
+      tmp_par.pos <- getDesignMatrix(model.list = coco.object@model.list,
+                                     data = coco.object@data)$par.pos
       
       tmp_index <- lapply(tmp_par.pos, FUN = is.logical)
       
@@ -687,10 +682,19 @@ getBoundariesV2 <- function(svcov.object,
       
     }
     
-  } else{stop('svcov.object required')}
+  } else{stop('coco.object required')}
 }
 
-getBoundariesV3 <- function(svcov.object,
+#' Simple build of boundaries (v3)
+#' @description provides a generic set of upper and lower bounds for the L-BFGS-B routine
+#'
+#' @usage getBoundariesV3(coco.object, ...)
+#' @param coco.object a coco object
+#' @param ... 
+#' @returns a list with boundaries for the optim L-BFGS-B routine
+#' @author Federico Blasi
+#' 
+getBoundariesV3 <- function(coco.object,
                             mean.limits,
                             global.lower,
                             std.dev.max.effects,
@@ -700,14 +704,14 @@ getBoundariesV3 <- function(svcov.object,
                             smooth.max.effects,
                             nugget.max.effects){
   
-  if(!is.null(svcov.object)){
-    if(class(svcov.object) == 'svcov'){
+  if(!is.null(coco.object)){
+    if(class(coco.object) == 'coco'){
       
       # lower bounds for global effects
       
-      emp_var <- var(svcov.object@z)
+      emp_var <- stats::var(coco.object@z)
       
-      max_dist <- max(as.matrix(dist(svcov.object@locs))) * 0.7
+      max_dist <- max(as.matrix(dist(coco.object@locs))) * 0.7
       
       limits <- rbind(mean.limits,
                       std.dev.max.effects,
@@ -717,8 +721,8 @@ getBoundariesV3 <- function(svcov.object,
                       smooth.max.effects,
                       nugget.max.effects)
       
-      tmp_par.pos <- getDesignMatrix(model.list = svcov.object@model.list,
-                                     data = svcov.object@data)$par.pos
+      tmp_par.pos <- getDesignMatrix(model.list = coco.object@model.list,
+                                     data = coco.object@data)$par.pos
       
       tmp_index <- lapply(tmp_par.pos, FUN = is.logical)
       
@@ -799,28 +803,26 @@ getBoundariesV3 <- function(svcov.object,
       
     }
     
-  } else{stop('svcov.object required')}
+  } else{stop('coco.object required')}
 }
-
 
 #' getHessian
 #' @description returns the approximate (observed) Hesian (inverse of Fisher Information Matrix)
-#' @usage getHessian(svcov.object, ncores = 2, 
+#' @usage getHessian(coco.object, ncores = 2, 
 #' eps = .Machine$double.eps^(1/4))
-#' @param svcov.object a fitted svcov object
+#' @param coco.object a fitted coco object
 #' @param ncores number of cores used for the computation
 #' @param eps ...
-#' Fisher Information Matrix
 #' @returns a symmetric matrix pxp of the approximated (observed) Hessian
 #' @author Federico Blasi
-getHessian <- function(svcov.object, ncores = parallel::detectCores() - 1, 
+getHessian <- function(coco.object, ncores = parallel::detectCores() - 1, 
                        eps = .Machine$double.eps^(1/4)){
   
-  if(svcov.object@type == 'dense'){
+  if(coco.object@type == 'dense'){
     
-    f00 <- svcov.object@output$value
+    f00 <- coco.object@output$value
     
-    p <- base::length(svcov.object@output$par)
+    p <- base::length(coco.object@output$par)
     H <- base::matrix(NA, p, p)
     
     index_positions <- base::matrix(ncol = 2)
@@ -833,34 +835,34 @@ getHessian <- function(svcov.object, ncores = parallel::detectCores() - 1,
     
     index_positions <- index_positions[-1, ]
     
-    Design_Matrix <- svcov::getDesignMatrix(model.list = svcov.object@model.list, 
-                                            data = svcov.object@data)
+    Design_Matrix <- coco::getDesignMatrix(model.list = coco.object@model.list, 
+                                            data = coco.object@data)
     par.pos <- Design_Matrix$par.pos
     x_covariates <- Design_Matrix$model.matrix
     
-    svcov_x_std <- svcov::getScale(x_covariates, 
-                                   mean.vector = svcov.object@info$mean.vector,
-                                   sd.vector = svcov.object@info$sd.vector)
+    coco_x_std <- coco::getScale(x_covariates, 
+                                   mean.vector = coco.object@info$mean.vector,
+                                   sd.vector = coco.object@info$sd.vector)
     
-    z <- svcov.object@z
+    z <- coco.object@z
     
-    n <- dim(svcov.object@z)[1]
+    n <- dim(coco.object@z)[1]
     
-    x_covariates <- svcov_x_std$std.covs
+    x_covariates <- coco_x_std$std.covs
     
-    locs <- svcov.object@locs
+    locs <- coco.object@locs
     
-    lambda <- svcov.object@info$lambda
+    lambda <- coco.object@info$lambda
     
-    svcov.info <- svcov.object@info$smooth_limits
+    coco.info <- coco.object@info$smooth_limits
     
-    pars <- svcov.object@output$par
+    pars <- coco.object@output$par
     
     cl <- parallel::makeCluster(ncores)
     parallel::setDefaultCluster(cl = cl)
-    parallel::clusterEvalQ(cl, library('svcov'))
+    parallel::clusterEvalQ(cl, library('coco'))
     
-    parallel::clusterExport(cl = cl, list("z", "x_covariates", "svcov.info",
+    parallel::clusterExport(cl = cl, list("z", "x_covariates", "coco.info",
                                           "locs", "n", "par.pos", "eps",
                                           "pars", "f00","lambda"),
                             envir = environment())
@@ -879,26 +881,26 @@ getHessian <- function(svcov.object, ncores = parallel::detectCores() - 1,
                                              t11[x[1]] <- t11[x[1]] + eps
                                              t11[x[2]] <- t11[x[2]] + eps
                                              
-                                             f01 <- svcov::GetNeg2loglikelihood(t01, par.pos = par.pos,
+                                             f01 <- coco::GetNeg2loglikelihood(t01, par.pos = par.pos,
                                                                                     locs = locs,
                                                                                     x_covariates = x_covariates, 
-                                                                                    smooth.limits = svcov.info, 
+                                                                                    smooth.limits = coco.info, 
                                                                                     n = n, 
                                                                                     z = z,
                                                                                     lambda = lambda)
                                              
-                                             f10 <- svcov::GetNeg2loglikelihood(t10, par.pos = par.pos,
+                                             f10 <- coco::GetNeg2loglikelihood(t10, par.pos = par.pos,
                                                                                     locs = locs,
                                                                                     x_covariates = x_covariates, 
-                                                                                    smooth.limits = svcov.info, 
+                                                                                    smooth.limits = coco.info, 
                                                                                     n = n, 
                                                                                     z = z,
                                                                                     lambda = lambda)
                                              
-                                             f11 <- svcov::GetNeg2loglikelihood(t11, par.pos = par.pos,
+                                             f11 <- coco::GetNeg2loglikelihood(t11, par.pos = par.pos,
                                                                                     locs = locs,
                                                                                     x_covariates = x_covariates, 
-                                                                                    smooth.limits = svcov.info, 
+                                                                                    smooth.limits = coco.info, 
                                                                                     n = n, 
                                                                                     z = z, 
                                                                                     lambda = lambda)
@@ -924,11 +926,11 @@ getHessian <- function(svcov.object, ncores = parallel::detectCores() - 1,
     return(H)
   }
   
-  if(svcov.object@type == 'sparse'){
+  if(coco.object@type == 'sparse'){
     
-    f00 <- svcov.object@output$value
+    f00 <- coco.object@output$value
     
-    p <- base::length(svcov.object@output$par)
+    p <- base::length(coco.object@output$par)
     H <- base::matrix(NA, p, p)
     
     index_positions <- base::matrix(ncol = 2)
@@ -941,39 +943,39 @@ getHessian <- function(svcov.object, ncores = parallel::detectCores() - 1,
     
     index_positions <- index_positions[-1, ]
     
-    Design_Matrix <- svcov::getDesignMatrix(model.list = svcov.object@model.list, 
-                                            data = svcov.object@data)
+    Design_Matrix <- coco::getDesignMatrix(model.list = coco.object@model.list, 
+                                            data = coco.object@data)
     par.pos <- Design_Matrix$par.pos
     x_covariates <- Design_Matrix$model.matrix
     
-    svcov_x_std <- svcov::getScale(x_covariates, 
-                                   mean.vector = svcov.object@info$mean.vector,
-                                   sd.vector = svcov.object@info$sd.vector)
+    coco_x_std <- coco::getScale(x_covariates, 
+                                   mean.vector = coco.object@info$mean.vector,
+                                   sd.vector = coco.object@info$sd.vector)
     
-    z <- svcov.object@z
-    n <- dim(svcov.object@z)[1]
-    x_covariates <- svcov_x_std$std.covs
+    z <- coco.object@z
+    n <- dim(coco.object@z)[1]
+    x_covariates <- coco_x_std$std.covs
     
-    locs <- svcov.object@locs
+    locs <- coco.object@locs
     
-    lambda <- svcov.object@info$lambda
+    lambda <- coco.object@info$lambda
     
-    svcov.info <- svcov.object@info$smooth_limits
+    coco.info <- coco.object@info$smooth_limits
     
-    pars <- svcov.object@output$par
+    pars <- coco.object@output$par
     
-    ref_taper <- svcov.object@info$taper(
-      spam::nearest.dist(svcov.object@locs, delta = svcov.object@info$delta, upper = NULL),
-      theta = c(svcov.object@info$delta, 1)
+    ref_taper <- coco.object@info$taper(
+      spam::nearest.dist(coco.object@locs, delta = coco.object@info$delta, upper = NULL),
+      theta = c(coco.object@info$delta, 1)
     )
     
     cholS <- spam::chol.spam(ref_taper)
 
     cl <- parallel::makeCluster(ncores)
     parallel::setDefaultCluster(cl = cl)
-    parallel::clusterEvalQ(cl, library('svcov'))
+    parallel::clusterEvalQ(cl, library('coco'))
     
-    parallel::clusterExport(cl = cl, list("z", "x_covariates", "svcov.info",
+    parallel::clusterExport(cl = cl, list("z", "x_covariates", "coco.info",
                                           "locs", "n", "par.pos", "eps",
                                           "pars", "f00","lambda","ref_taper","cholS"),
                             envir = environment())
@@ -992,34 +994,34 @@ getHessian <- function(svcov.object, ncores = parallel::detectCores() - 1,
                                              t11[x[1]] <- t11[x[1]] + eps
                                              t11[x[2]] <- t11[x[2]] + eps
                                              
-                                             f01 <- svcov::GetNeg2loglikelihoodTaper(theta = t01,
+                                             f01 <- coco::GetNeg2loglikelihoodTaper(theta = t01,
                                                                                           par.pos = par.pos,
                                                                                           ref_taper = ref_taper,
                                                                                           locs = locs,
                                                                                           x_covariates = x_covariates,
-                                                                                          smooth.limits = svcov.info,
+                                                                                          smooth.limits = coco.info,
                                                                                           cholS = cholS,
                                                                                           z = z,
                                                                                           n = n,
                                                                                           lambda = lambda)
                                              
-                                             f10 <- svcov::GetNeg2loglikelihoodTaper(theta = t10,
+                                             f10 <- coco::GetNeg2loglikelihoodTaper(theta = t10,
                                                                                           par.pos = par.pos,
                                                                                           ref_taper = ref_taper,
                                                                                           locs = locs,
                                                                                           x_covariates = x_covariates,
-                                                                                          smooth.limits = svcov.info,
+                                                                                          smooth.limits = coco.info,
                                                                                           cholS = cholS,
                                                                                           z = z,
                                                                                           n = n,
                                                                                           lambda = lambda)
                                              
-                                             f11 <- svcov::GetNeg2loglikelihoodTaper(theta = t11,
+                                             f11 <- coco::GetNeg2loglikelihoodTaper(theta = t11,
                                                                                           par.pos = par.pos,
                                                                                           ref_taper = ref_taper,
                                                                                           locs = locs,
                                                                                           x_covariates = x_covariates,
-                                                                                          smooth.limits = svcov.info,
+                                                                                          smooth.limits = coco.info,
                                                                                           cholS = cholS,
                                                                                           z = z,
                                                                                           n = n,

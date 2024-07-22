@@ -2,18 +2,18 @@
 % Please edit documentation in R/getFunctions.R
 \name{getEstims}
 \alias{getEstims}
-\title{Retrieve estimates from a fitted svcov object}
+\title{Retrieve estimates from a fitted coco object}
 \usage{
-getEstims(svcov.object)
+getEstims(coco.object)
 }
 \arguments{
-\item{svcov.object}{a fitted svcov object.}
+\item{coco.object}{a fitted coco object.}
 }
 \value{
 a list with the estimates parameters for the different aspects
 }
 \description{
-Retrieve estimates from a fitted svcov object
+Retrieve estimates from a fitted coco object
 }
 \author{
 Federico Blasi

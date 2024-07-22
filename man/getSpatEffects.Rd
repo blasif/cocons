@@ -4,21 +4,16 @@
 \alias{getSpatEffects}
 \title{Retrieves the estimated spatial effects of the spatial structure}
 \usage{
-getSpateffects(svcov.object, type = 'global', index = NULL)
+getSpatEffects(coco.object)
 }
 \arguments{
-\item{svov.object}{an svcov class (fitted) object}
-
-\item{type}{whether 'global' to retrieve the regular covariance matrix, or 'local' to retrieve global covariance 
-based on the local aspect of a specific location (not implemented yet)}
-
-\item{index}{index to perfrom local covariance matrix (not implemented yet)}
+\item{coco.object}{an coco class (fitted) object}
 }
 \value{
-a vector with the adjusted trend
+a list with the different estimated surfaces
 }
 \description{
-Retrieves the estimated spatial effects of the spatial structure
+Retrieves the estimated surfaces for different sources of nonstationarity
 }
 \author{
 Federico Blasi

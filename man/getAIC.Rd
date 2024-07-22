@@ -4,16 +4,16 @@
 \alias{getAIC}
 \title{Retrieve AIC}
 \usage{
-getAIC(svcov.object)
+getAIC(coco.object)
 }
 \arguments{
-\item{svcov.object}{a fitted svcov object.}
+\item{coco.object}{a fitted coco object.}
 }
 \value{
 a list with the associated AIC value
 }
 \description{
-Retrieve the Akaike information criterion from a fitted svcov object
+Retrieve the Akaike information criterion from a fitted coco object
 }
 \author{
 Federico Blasi

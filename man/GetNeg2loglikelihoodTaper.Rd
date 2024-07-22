@@ -4,35 +4,34 @@
 \alias{GetNeg2loglikelihoodTaper}
 \title{GetNeg2loglikelihoodTaper}
 \usage{
-function(theta)
+GetNeg2loglikelihoodTaper(theta, par.pos, ref_taper, locs, x_covariates, smooth.limits, cholS, z, n, lambda)
 }
 \arguments{
 \item{theta}{a vector with parameters values}
 
-\item{par.pos}{a vector with parameters values}
+\item{par.pos}{par.pos list}
 
-\item{ref_taper}{a vector with parameters values}
+\item{ref_taper}{spam object based on a taper based covariance function}
 
-\item{locs}{a vector with parameters values}
+\item{locs}{spatial location matrix}
 
-\item{x_covariates}{a vector with parameters values}
+\item{x_covariates}{design matrix}
 
-\item{smooth.limits}{a vector with parameters values}
+\item{smooth.limits}{smooth.limits}
 
-\item{cholS}{a vector with parameters values}
+\item{cholS}{Cholesky object from spam}
 
-\item{z}{a vector with parameters values}
+\item{z}{a vector of observed values}
 
-\item{n}{a vector with parameters values}
+\item{n}{dim(z)\link{1}}
+
+\item{lambda}{regularization parameter}
 }
 \value{
-neg2loglikelihood
+value
 }
 \description{
 compute the negative 2 log likelihood based on theta
-}
-\examples{
-rnorm(1)
 }
 \author{
 Federico Blasi

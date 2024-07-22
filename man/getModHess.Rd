@@ -4,20 +4,18 @@
 \alias{getModHess}
 \title{Retrieves the modified inverse of the hessian}
 \usage{
-getModHess(svcov.object, inv.hess, alpha = 0.05)
+getModHess(coco.object, inv.hess)
 }
 \arguments{
+\item{coco.object}{a coco class (fitted) object}
+
 \item{inv.hess}{Inverse of the Hessian}
-
-\item{svov.object}{an svcov class (fitted) object}
-
-\item{alpha}{confidence level}
 }
 \value{
-a matrix with lower and upper bound values
+the modified inverse of the hessian matrix
 }
 \description{
-Compute confidence intervals for a (fitted) svcov object
+Compute confidence intervals for a (fitted) coco object
 }
 \author{
 Federico Blasi

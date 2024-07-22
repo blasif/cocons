@@ -2,12 +2,12 @@
 % Please edit documentation in R/getFunctions.R
 \name{getBoundariesV2}
 \alias{getBoundariesV2}
-\title{Simple build of boundaries}
+\title{Simple build of boundaries (v2)}
 \usage{
-getBoundariesV2(par.pos, lower.value, upper.value)
+getBoundariesV2(coco.object, lower.value, upper.value)
 }
 \arguments{
-\item{svcov.object}{a par.pos object output from getDesignMatrix}
+\item{coco.object}{a coco object}
 
 \item{param.limits}{a vector of c(lower,init,upper) values for the associated param.}
 }
@@ -16,14 +16,6 @@ a list with boundaries for the optim L-BFGS-B routine
 }
 \description{
 provides a generic set of upper and lower bounds for the L-BFGS-B routine
-}
-\examples{
-model.list <- list("std.dev" = as.formula(" ~ 1 + lati_s * long_s"),
-"scale" = as.formula(" ~ 1 + elev_s"),
-"aniso" = as.formula(" ~ 1 + elev_s"),
-"tilt" = as.formula(" ~ 1 + elev_s"),
-"smooth" = as.formula(" ~ 1"),
-"nugget" = -Inf)
 }
 \author{
 Federico Blasi
