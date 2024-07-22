@@ -19,11 +19,11 @@ cocoOptim <- function(coco.object, boundaries = list(),
                        optim.control = NULL, optim.type = 'mle', ...){
   
   if(length(boundaries) > 0){
-    .coco.check.boundaries(boundaries)
+    .cocons.check.boundaries(boundaries)
   }
   
-  .coco.check.ncores(ncores)
-  .coco.check.z(coco.object@z) # again checking here due to object might be used to simulate and then attached the realization to x@z
+  .cocons.check.ncores(ncores)
+  .cocons.check.z(coco.object@z) # again checking here due to object might be used to simulate and then attached the realization to x@z
   
   if (coco.object@type == "dense") {
     
@@ -101,7 +101,7 @@ cocoOptim <- function(coco.object, boundaries = list(),
       if (is.null(optim.control)) {
         optim.control <- getOption("coco.Optim.Control")
       } else{
-        optim.control <- .coco.update.optim.control(optim.control)
+        optim.control <- .cocons.update.optim.control(optim.control)
       }
       
       output_dense <- do.call(what = optimParallel::optimParallel, args = c(
@@ -227,7 +227,7 @@ cocoOptim <- function(coco.object, boundaries = list(),
       if (is.null(optim.control)) {
         optim.control <- getOption("coco.Optim.Control")
       } else{
-        optim.control <- .coco.update.optim.control(optim.control)
+        optim.control <- .cocons.update.optim.control(optim.control)
       }
       
       output_dense <- do.call(what = optimParallel::optimParallel, args = c(
@@ -364,7 +364,7 @@ cocoOptim <- function(coco.object, boundaries = list(),
       if (is.null(optim.control)) {
         optim.control <- getOption("coco.Optim.Control")
       } else{
-        optim.control <- .coco.update.optim.control(optim.control)
+        optim.control <- .cocons.update.optim.control(optim.control)
       }
       
       output_taper <- do.call(what = optimParallel::optimParallel, args = c(
@@ -499,7 +499,7 @@ cocoOptim <- function(coco.object, boundaries = list(),
       if (is.null(optim.control)) {
         optim.control <- getOption("coco.Optim.Control")
       } else{
-        optim.control <- .coco.update.optim.control(optim.control)
+        optim.control <- .cocons.update.optim.control(optim.control)
       }
       
       output_taper <- do.call(what = optimParallel::optimParallel, args = c(

@@ -20,23 +20,23 @@ coco <- function(type,
                   info = list(),
                   output = list()) {
   
-  .coco.check.type(type)
-  .coco.check.data(data)
-  .coco.check.locs(locs)
+  .cocons.check.type(type)
+  .cocons.check.data(data)
+  .cocons.check.locs(locs)
   
   if(is.vector(z)){
     z <- matrix(z, ncol = 1)
   }
   
-  .coco.check.z(z)
+  .cocons.check.z(z)
   
-  .coco.check.model.list(model.list,
+  .cocons.check.model.list(model.list,
                           data)
-  .coco.check.info(type = type, 
+  .cocons.check.info(type = type, 
                     info = info,
                     model.list = model.list)
   
-  .coco.check.output(output)
+  .cocons.check.output(output)
   
   if(is.null(info$lambda)){
     info$lambda <- 0

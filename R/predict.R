@@ -22,10 +22,10 @@ cocoPredict <- function(coco.object,
     stop("object has not yet been fitted.")
   }
   
-  .coco.check.newdataset(newdataset)
-  .coco.check.newlocs(newlocs)
-  .coco.check.type_pred(type)
-  .coco.check.object(coco.object)
+  .cocons.check.newdataset(newdataset)
+  .cocons.check.newlocs(newlocs)
+  .cocons.check.type_pred(type)
+  .cocons.check.object(coco.object)
   
   # add check on the names of newdataset names and model.list
   # add check type

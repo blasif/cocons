@@ -151,7 +151,7 @@ setMethod("plot",
                         
                         to_compute_sd <- sss@colindices[which.min(sss@entries)]
                         
-                        .coco.DrawEllipsoid(
+                        .cocons.DrawEllipsoid(
                           alpha_i = tp_tl[to_compute_sd], r = tp_ga[to_compute_sd], rho = tp_mr[to_compute_sd],
                           loc = x@locs[to_compute_sd, ], factr = factr
                         )
