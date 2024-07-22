@@ -1,18 +1,18 @@
-Package: coco
+Package: cocons
 Type: Package
-Title: Covariate-Based Covariance Functions For Nonstationary Gaussian Processes
+Title: Covariate-Based Covariance Functions for Nonstationary Gaussian Processes
 Version: 0.1
-Author: Federico Blasi
+Author: Federico Blasi [aut, cre] (<https://orcid.org/0000-0001-9337-7154>), Reinhard Furrer [ctb] (<https://orcid.org/0000-0002-6319-2332>)
 Authors@R: c(person("Federico", "Blasi", email = "federico.blasi@math.uzh.ch",
-  role = c("aut", "cre")),
+  role = c("aut", "cre"), comment = c(ORCID = "0000-0001-9337-7154")),
   person("Reinhard", "Furrer",
-  role = c("ctb"))
+  role = c("ctb"), comment = c(ORCID = "0000-0002-6319-2332"))
   )
 Maintainer: Federico Blasi <federico.blasi@math.uzh.ch>
 Description: Estimation and prediction of nonstationary Gaussian process with modular covariate-based covariance functions. Routines for handling large datasets are also provided.
 Encoding: UTF-8
 LazyData: true
-License: `use_gpl3_license()`
+License:  GPL (>= 3)
 Depends:  R (>= 3.5.0)
 Imports:  Rcpp (>= 1.0.10),
           spam (>= 2.9.1),
@@ -21,7 +21,7 @@ Imports:  Rcpp (>= 1.0.10),
           methods,
           knitr
 LinkingTo: Rcpp, BH
-BugReports: https://github.com/blasif/coco/issues
+BugReports: https://github.com/blasif/cocons/issues
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
 VignetteBuilder: knitr

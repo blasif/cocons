@@ -10,8 +10,8 @@ plotOptimInfo <- function(coco.object, ...){
   
   if(length(coco.object@output) == 0){stop('did not find an output to work with.')}
   
-  opar <- par(no.readonly = TRUE)
-  on.exit(par(opar))
+  opar <- graphics::par(no.readonly = TRUE)
+  on.exit(graphics::par(opar))
   
   index_pars <- base::grepl('par', base::colnames(coco.object@output$loginfo))
   index_grad <- base::grepl('gr', base::colnames(coco.object@output$loginfo))
@@ -22,13 +22,12 @@ plotOptimInfo <- function(coco.object, ...){
   
   graphics::par(mfrow=c(1,2), ...)
   
-  tmp_dm <- coco::getDesignMatrix(coco.object@model.list, data = coco.object@data)
+  tmp_dm <- cocons::getDesignMatrix(coco.object@model.list, data = coco.object@data)
   
   tmp_names <- unlist(tmp_dm$par.pos[unlist(lapply(tmp_dm$par.pos, FUN = is.logical))])
   
   names_to_display <- rep(colnames(getDesignMatrix(coco.object@model.list,
-                                                   data = coco.object@data)$model.matrix),6)[
-                                                     tmp_names]
+                                                   data = coco.object@data)$model.matrix),6)[tmp_names]
   
   tmp_names <- names(tmp_names[which(tmp_names == TRUE)])
   

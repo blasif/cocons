@@ -1,7 +1,18 @@
-#include "coco_types.h"
+#include "cocons_types.h"
 
 using namespace Rcpp;
 
+//' Sparse covariance function
+//'
+//' @param theta vector of parameters
+//' @param locs a matrix with locations
+//' @param locs_pred a matrix with prediction locations
+//' @param x_covariates design data.frame
+//' @param x_covariates_pred design data.frame at prediction locations
+//' @param colindices from spam object
+//' @param rowpointers from spam object
+//' @param smooth_limits smooth limits
+//' @return sparse covariance matrix at locs 
 // [[Rcpp::export]]
 NumericVector cov_rns_taper_optimized_predict_range(List& theta, 
                                                     NumericMatrix& locs,
@@ -122,6 +133,15 @@ NumericVector cov_rns_taper_optimized_predict_range(List& theta,
   return dist_vector;
 }
 
+//' Sparse covariance function
+//'
+//' @param theta vector of parameters
+//' @param locs a matrix with locations
+//' @param x_covariates design data.frame
+//' @param colindices from spam object
+//' @param rowpointers from spam object
+//' @param smooth_limits smooth limits
+//' @return sparse covariance matrix between locs and pred_locs
 // [[Rcpp::export]]
 NumericVector cov_rns_taper_optimized_range(List& theta, 
                                             NumericMatrix& locs, 

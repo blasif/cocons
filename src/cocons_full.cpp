@@ -1,7 +1,14 @@
-#include "coco_types.h"
+#include "cocons_types.h"
 
 using namespace Rcpp;
 
+//' Dense covariance function (difference parameterization)
+//'
+//' @param theta vector of parameters
+//' @param locs a matrix with locations
+//' @param x_covariates design data.frame
+//' @param smooth_limits smooth limits
+//' @return dense covariance matrix
 // [[Rcpp::export]]
 NumericMatrix cov_rns(List& theta, NumericMatrix& locs, NumericMatrix& x_covariates, 
                       NumericVector& smooth_limits){
@@ -113,6 +120,15 @@ NumericMatrix cov_rns(List& theta, NumericMatrix& locs, NumericMatrix& x_covaria
   return dist_matrix;
 }
 
+//' Dense covariance function
+//'
+//' @param theta vector of parameters
+//' @param locs a matrix with locations
+//' @param locs_pred a matrix with prediction locations
+//' @param x_covariates design data.frame
+//' @param x_covariates_pred design data.frame at prediction locations
+//' @param smooth_limits smooth limits
+//' @return dense covariance matrix
 // [[Rcpp::export]]
 NumericMatrix cov_rns_pred(List& theta, NumericMatrix& locs, 
                            NumericMatrix& locs_pred,
@@ -245,6 +261,12 @@ NumericMatrix cov_rns_pred(List& theta, NumericMatrix& locs,
   return dist_matrix;
 }
 
+//' Dense covariance function (classic parameterization)
+//'
+//' @param theta vector of parameters
+//' @param locs a matrix with locations
+//' @param x_covariates design data.frame
+//' @return dense covariance matrix with classic parameterization
 // [[Rcpp::export]]
 NumericMatrix cov_rns_classic(List& theta, NumericMatrix& locs, NumericMatrix& x_covariates){
   
@@ -321,116 +343,6 @@ NumericMatrix cov_rns_classic(List& theta, NumericMatrix& locs, NumericMatrix& x
         dif_s = locs(ii,_) - locs(jj,_);
         
         smtns = (smooth_vector[ii] + smooth_vector[jj])/2;
-        
-        smooth_s_Q_ij = std::sqrt(8 *  smtns / (global_range * det_ij )) * 
-          std::sqrt(std::fma(kahan(sigma22_ij, 
-                                   dif_s(0) * dif_s(0), 
-                                   - sigma11_ij, 
-                                   dif_s(1) * dif_s(1)), 1, 
-                                   -2 * sigma12_ij * dif_s(0) * dif_s(1)));
-        
-        // smaller than eps?
-        if(smooth_s_Q_ij <= epsilon){
-          dist_matrix(ii,jj) = dist_matrix(jj,ii) = Pexpfma_new(std_dev_vector, x_covariates(ii,_)) + nugget_vector[ii];
-          continue;
-          
-        } else{
-          
-          if(smooth_s_Q_ij < 706.0){
-            
-            dist_matrix(ii,jj) = dist_matrix(jj,ii) = std::pow(2.0 , -(smtns - 1)) / std::tgamma(smtns) * 
-              std::pow(smooth_s_Q_ij, smtns) * boost::math::cyl_bessel_k(smtns, smooth_s_Q_ij) * 
-              sigma_vector[ii] * sigma_vector[jj] * 
-              std::sqrt(dets_vector[ii] * std::sin(tilt_vector[ii]) * 
-              dets_vector[jj] * std::sin(tilt_vector[jj])) / std::sqrt(det_ij);
-            
-          } else {
-            dist_matrix(ii,jj) = dist_matrix(jj,ii) = 0.0;
-          }
-        }
-      }
-    }
-  }
-  
-  return dist_matrix;
-}
-
-// [[Rcpp::export]]
-NumericMatrix cov_rns_classic_prod_smooth(List& theta, NumericMatrix& locs, NumericMatrix& x_covariates){
-  
-  const double epsilon = std::numeric_limits<double>::epsilon();
-  const int m_dim = locs.nrow();
-  const NumericVector std_dev_vector = theta["std.dev"];
-  NumericVector scale = theta["scale"];
-  NumericVector scale_je = clone(scale); 
-  
-  const NumericVector aniso = theta["aniso"];
-  const NumericVector tilt = theta["tilt"];
-  const NumericVector smooth = theta["smooth"];
-  const NumericVector nugget = theta["nugget"];
-  
-  NumericMatrix dist_matrix(m_dim);
-  
-  NumericVector dif_s (2);
-  
-  double sigma11_ij, sigma22_ij, sigma12_ij, det_ij, smooth_s_Q_ij, smtns;
-  // const double fix_gamma = std::tgamma(smtns);
-  // const double some_cte = std::pow(2.0 , -(smtns - 1));
-  
-  double global_range = 1 / std::exp(- 2 * scale[0]);
-  
-  scale_je[0] = 0.0;
-  
-  const NumericVector sqrt_vector = 2 * scale_je + aniso;
-  
-  // initialize to prevent redundancy later on:
-  
-  std::vector<double> tilt_vector(m_dim);
-  std::vector<double> range_det_vector(m_dim);
-  std::vector<double> aniso_det_vector(m_dim);
-  std::vector<double> dets_vector(m_dim);
-  std::vector<double> sigma_vector(m_dim);
-  std::vector<double> smooth_vector(m_dim);
-  std::vector<double> nugget_vector(m_dim);
-  
-  for(int ww = 0; ww < m_dim; ww++){
-    
-    tilt_vector[ww] = newinvlogitfma(tilt, x_covariates(ww,_));
-    range_det_vector[ww] = Pexpfma_new(2 * scale_je, x_covariates(ww,_));
-    aniso_det_vector[ww] = Pexpfma_new(aniso, x_covariates(ww,_));
-    dets_vector[ww] = Pexpfma_new(sqrt_vector, x_covariates(ww,_));
-    sigma_vector[ww] = Pexpfma_new(0.5 * std_dev_vector, x_covariates(ww,_));
-    smooth_vector[ww] = std::sqrt(Pexpfma_new(0.5 * smooth, x_covariates(ww,_)));
-    nugget_vector[ww] = Pexpfma_new(nugget, x_covariates(ww,_));
-    
-  }
-  
-  for(int ii = 0; ii < m_dim; ii++){
-    for(int jj = ii; jj < m_dim; jj++){
-      
-      if(ii == jj){
-        
-        dist_matrix(ii,jj) = Pexpfma_new(std_dev_vector, x_covariates(ii,_)) + nugget_vector[ii];
-        
-        continue;
-        
-      } else {
-        
-        sigma11_ij = (range_det_vector[ii] + range_det_vector[jj]) * 0.5; 
-        sigma22_ij = kahan(range_det_vector[ii], aniso_det_vector[ii] * aniso_det_vector[ii], 
-                           - range_det_vector[jj], aniso_det_vector[jj] * aniso_det_vector[jj]) * 0.5; 
-        
-        sigma12_ij = kahan(range_det_vector[ii] * aniso_det_vector[ii],
-                           std::cos(tilt_vector[ii]),
-                           - 1 * range_det_vector[jj] * aniso_det_vector[jj], 
-                                                                        std::cos(tilt_vector[jj])
-        ) * 0.5;
-        
-        det_ij = kahan(sigma11_ij, sigma22_ij, sigma12_ij, sigma12_ij);
-        
-        dif_s = locs(ii,_) - locs(jj,_);
-        
-        smtns = (smooth_vector[ii] * smooth_vector[jj]);
         
         smooth_s_Q_ij = std::sqrt(8 *  smtns / (global_range * det_ij )) * 
           std::sqrt(std::fma(kahan(sigma22_ij, 

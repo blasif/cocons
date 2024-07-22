@@ -32,34 +32,34 @@ cocoPredict <- function(coco.object,
   
   if (coco.object@type == "dense") {
     
-    tmp_matrix <- coco::getDesignMatrix(model.list = coco.object@model.list, data = coco.object@data)
+    tmp_matrix <- cocons::getDesignMatrix(model.list = coco.object@model.list, data = coco.object@data)
     
-    adjusted_eff_values <- coco::getModelLists(coco.object@output$par, 
+    adjusted_eff_values <- cocons::getModelLists(coco.object@output$par, 
                                                 par.pos = tmp_matrix$par.pos, 
                                                 type = "diff")
     
-    X_std <- coco::getScale(tmp_matrix$model.matrix,
+    X_std <- cocons::getScale(tmp_matrix$model.matrix,
                              mean.vector = coco.object@info$mean.vector,
                              sd.vector = coco.object@info$sd.vector
     )
     
-    tmp_matrix_pred <- coco::getDesignMatrix(
+    tmp_matrix_pred <- cocons::getDesignMatrix(
       model.list = coco.object@model.list,
       data = newdataset
     )
     
-    X_pred_std <- coco::getScale(tmp_matrix_pred$model.matrix,
+    X_pred_std <- cocons::getScale(tmp_matrix_pred$model.matrix,
                                   mean.vector = coco.object@info$mean.vector,
                                   sd.vector = coco.object@info$sd.vector
     )
     
-    observed_cov <- coco::cov_rns(
+    observed_cov <- cocons::cov_rns(
       theta = adjusted_eff_values[-1], locs = coco.object@locs,
       x_covariates = X_std$std.covs,
       smooth_limits = coco.object@info$smooth_limits
     )
     
-    cov_pred <- coco::cov_rns_pred(
+    cov_pred <- cocons::cov_rns_pred(
       theta = adjusted_eff_values[-1], locs = coco.object@locs,
       locs_pred = as.matrix(newlocs),
       x_covariates = X_std$std.covs,
@@ -110,27 +110,27 @@ cocoPredict <- function(coco.object,
   
   if (coco.object@type == "sparse") {
     
-    tmp_matrix <- coco::getDesignMatrix(
+    tmp_matrix <- cocons::getDesignMatrix(
       model.list = coco.object@model.list,
       data = coco.object@data
     )
     
-    adjusted_eff_values <- coco::getModelLists(
+    adjusted_eff_values <- cocons::getModelLists(
       theta = coco.object@output$par,
       par.pos = tmp_matrix$par.pos, type = "diff"
     )
     
-    tmp_matrix_pred <- coco::getDesignMatrix(
+    tmp_matrix_pred <- cocons::getDesignMatrix(
       model.list = coco.object@model.list,
       data = newdataset
     )
     
-    X_std <- coco::getScale(tmp_matrix$model.matrix,
+    X_std <- cocons::getScale(tmp_matrix$model.matrix,
                              mean.vector = coco.object@info$mean.vector,
                              sd.vector = coco.object@info$sd.vector
     )
     
-    X_pred_std <- coco::getScale(tmp_matrix_pred$model.matrix,
+    X_pred_std <- cocons::getScale(tmp_matrix_pred$model.matrix,
                                   mean.vector = coco.object@info$mean.vector,
                                   sd.vector = coco.object@info$sd.vector
     )
@@ -142,7 +142,7 @@ cocoPredict <- function(coco.object,
     taper_two <- coco.object@info$taper(distmat, theta = c(coco.object@info$delta, 1))
     
     # C(locs,locs)
-    taper_two@entries <- taper_two@entries * coco::cov_rns_taper_optimized_range(
+    taper_two@entries <- taper_two@entries * cocons::cov_rns_taper_optimized_range(
       theta = adjusted_eff_values,
       locs = coco.object@locs,
       x_covariates = X_std$std.covs,
@@ -158,7 +158,7 @@ cocoPredict <- function(coco.object,
     rm(pred_locs)
     
     # C(preds, locs)
-    pred_taper@entries <- pred_taper@entries * coco::cov_rns_taper_optimized_predict_range(
+    pred_taper@entries <- pred_taper@entries * cocons::cov_rns_taper_optimized_predict_range(
       theta = adjusted_eff_values,
       locs = coco.object@locs,
       locs_pred = as.matrix(newlocs),

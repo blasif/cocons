@@ -12,17 +12,17 @@
 #' @author Federico Blasi
 getCovMatrix <- function(coco.object, type = 'global', index = NULL){
   
-  x_covs <- coco::getScale(coco.object)$std.covs
+  x_covs <- cocons::getScale(coco.object)$std.covs
   
   par.pos <- getDesignMatrix(coco.object@model.list, data = coco.object@data)$par.pos
   
   if(coco.object@type == 'dense'){
     
     if(type == 'global'){
-      theta_list <- coco::getModelLists(coco.object@output$par,par.pos = par.pos, 
+      theta_list <- cocons::getModelLists(coco.object@output$par,par.pos = par.pos, 
                                          type = 'diff')
       
-      return(coco::cov_rns(theta = theta_list,
+      return(cocons::cov_rns(theta = theta_list,
                             locs = coco.object@locs,
                             x_covariates = x_covs,
                             smooth_limits = coco.object@info$smooth_limits))
@@ -39,7 +39,7 @@ getCovMatrix <- function(coco.object, type = 'global', index = NULL){
     if(type == 'global'){
       
       
-      theta_list <- coco::getModelLists(coco.object@output$par,par.pos = par.pos, 
+      theta_list <- cocons::getModelLists(coco.object@output$par,par.pos = par.pos, 
                                          type = 'diff')
       
       # taper
@@ -109,15 +109,15 @@ getCRPS <- function(z.pred, mean.pred, sd.pred){
 #' @author Federico Blasi
 getSpatEffects <- function(coco.object){
   
-  tmp_info <- coco::getDesignMatrix(model.list = coco.object@model.list, 
+  tmp_info <- cocons::getDesignMatrix(model.list = coco.object@model.list, 
                                      data = coco.object@data)
   
-  theta_list <- coco::getModelLists(
+  theta_list <- cocons::getModelLists(
     theta = coco.object@output$par, par.pos = tmp_info$par.pos,
     type = "diff"
   )
   
-  X_std <- coco::getScale(tmp_info$model.matrix,
+  X_std <- cocons::getScale(tmp_info$model.matrix,
                            mean.vector = coco.object@info$mean.vector,
                            sd.vector = coco.object@info$sd.vector
   )
@@ -175,7 +175,7 @@ getSpatEffects <- function(coco.object){
 #' @returns the condition number
 #' @author Federico Blasi
 getCondNumber <- function(coco.object){
-  corr_mat <- cov2cor(getCovMatrix(coco.object))
+  corr_mat <- stats::cov2cor(getCovMatrix(coco.object))
   eigen(corr_mat)$values[1] / eigen(corr_mat)$values[dim(corr_mat)[1]]
 }
 
@@ -202,9 +202,9 @@ getTrend <- function(coco.object){
 #' @author Federico Blasi
 getCIs <- function(coco.object, inv.hess, alpha = 0.05){
   
-  tmp_par.pos <- coco::getDesignMatrix(coco.object@model.list,coco.object@data)$par.pos
+  tmp_par.pos <- cocons::getDesignMatrix(coco.object@model.list,coco.object@data)$par.pos
   
-  Hess_modified <- coco::getModHess(coco.object = coco.object, 
+  Hess_modified <- cocons::getModHess(coco.object = coco.object, 
                                      inv.hess = inv.hess)
   
   estims <- unlist(getEstims(coco.object)[which(unlist(lapply(tmp_par.pos,is.logical)))])[unlist(tmp_par.pos[which(unlist(lapply(tmp_par.pos, is.logical)))])]
@@ -230,7 +230,7 @@ getModHess <- function(coco.object, inv.hess){
   
   Hess_modified <- inv.hess
   
-  tmp_par.pos <- coco::getDesignMatrix(coco.object@model.list,coco.object@data)$par.pos
+  tmp_par.pos <- cocons::getDesignMatrix(coco.object@model.list,coco.object@data)$par.pos
   
   if(is.logical(tmp_par.pos$mean)){
     number_mean <- sum(tmp_par.pos$mean)
@@ -292,7 +292,7 @@ getBIC <- function(coco.object){
     stop('object has not been fitted yet.')
   }
   
-  temp_par.pos <- coco::getDesignMatrix(coco.object@model.list,coco.object@data)$par.pos
+  temp_par.pos <- cocons::getDesignMatrix(coco.object@model.list,coco.object@data)$par.pos
   tmp_index <- lapply(temp_par.pos, FUN = is.logical)
   n_par <- sum(unlist(lapply(temp_par.pos, sum))[which(tmp_index == TRUE)])
   return( coco.object@output$value +  n_par * log(dim(coco.object@data)[1]))
@@ -312,7 +312,7 @@ getAIC <- function(coco.object){
     stop('object has not been fitted yet.')
   }
   
-  temp_par.pos <- coco::getDesignMatrix(coco.object@model.list,coco.object@data)$par.pos
+  temp_par.pos <- cocons::getDesignMatrix(coco.object@model.list,coco.object@data)$par.pos
   tmp_index <- lapply(temp_par.pos, FUN = is.logical)
   n_par <- sum(unlist(lapply(temp_par.pos, sum))[which(tmp_index == TRUE)])
   return( coco.object@output$value +  2 * log(dim(coco.object@data)[1]))
@@ -328,7 +328,7 @@ getAIC <- function(coco.object){
 #' 
 getEstims <- function(coco.object){
   
-  return(coco::getModelLists(coco.object@output$par, 
+  return(cocons::getModelLists(coco.object@output$par, 
                               par.pos = getDesignMatrix(coco.object@model.list,
                                                         data = coco.object@data)$par.pos,
                               type = 'diff'))
@@ -347,7 +347,7 @@ getEstims <- function(coco.object){
 #' 
 getScale <- function(x, mean.vector = NULL, sd.vector = NULL){
   
-  if('coco' %in% class(x)){
+  if(methods::is(x, 'coco')){
     
     x_std <- getDesignMatrix(x@model.list, x@data)$model.matrix
     
@@ -610,9 +610,9 @@ getBoundaries <- function(x, lower.value, upper.value){
   
   if(upper.value < lower.value){stop('upper.value lower than lower.value')}
   
-  if(class(x) == 'coco'){
+  if(methods::is(x,'coco')){
     
-    tmp_par.pos <- coco::getDesignMatrix(model.list = x@model.list,
+    tmp_par.pos <- cocons::getDesignMatrix(model.list = x@model.list,
                                           data = x@data)$par.pos
     
     tmp_index <- lapply(tmp_par.pos, FUN = is.logical)
@@ -633,9 +633,16 @@ getBoundaries <- function(x, lower.value, upper.value){
 #' Simple build of boundaries (v2)
 #' @description provides a generic set of upper and lower bounds for the L-BFGS-B routine
 #'
-#' @usage getBoundariesV2(coco.object, lower.value, upper.value)
+#' @usage getBoundariesV2(coco.object, mean.limits, std.dev.limits, 
+#' scale.limits, aniso.limits, tilt.limits, smooth.limits, nugget.limits)
 #' @param coco.object a coco object
-#' @param param.limits a vector of c(lower,init,upper) values for the associated param.
+#' @param mean.limits a vector of c(lower,init,upper) values for the associated param.
+#' @param std.dev.limits a vector of c(lower,init,upper) values for the associated param.
+#' @param scale.limits a vector of c(lower,init,upper) values for the associated param.
+#' @param aniso.limits a vector of c(lower,init,upper) values for the associated param.
+#' @param tilt.limits a vector of c(lower,init,upper) values for the associated param.
+#' @param smooth.limits a vector of c(lower,init,upper) values for the associated param.
+#' @param nugget.limits a vector of c(lower,init,upper) values for the associated param.
 #' @returns a list with boundaries for the optim L-BFGS-B routine
 #' @author Federico Blasi
 #' 
@@ -649,7 +656,7 @@ getBoundariesV2 <- function(coco.object,
                             nugget.limits){
   
   if(!is.null(coco.object)){
-    if(class(coco.object) == 'coco'){
+    if(methods::is(coco.object,'coco')){
       
       limits <- rbind(mean.limits,
                       std.dev.limits,
@@ -688,9 +695,19 @@ getBoundariesV2 <- function(coco.object,
 #' Simple build of boundaries (v3)
 #' @description provides a generic set of upper and lower bounds for the L-BFGS-B routine
 #'
-#' @usage getBoundariesV3(coco.object, ...)
+#' @usage getBoundariesV3(coco.object, mean.limits, global.lower, 
+#' std.dev.max.effects, 
+#' scale.max.effects, aniso.max.effects, tilt.max.effects, 
+#' smooth.max.effects, nugget.max.effects)
 #' @param coco.object a coco object
-#' @param ... 
+#' @param mean.limits a vector of c(lower,init,upper) values for the associated param.
+#' @param global.lower a vector of c(lower,init,upper) values for the associated param.
+#' @param std.dev.max.effects a vector of c(lower,init,upper) values for the associated param.
+#' @param scale.max.effects a vector of c(lower,init,upper) values for the associated param.
+#' @param aniso.max.effects a vector of c(lower,init,upper) values for the associated param.
+#' @param tilt.max.effects a vector of c(lower,init,upper) values for the associated param.
+#' @param smooth.max.effects a vector of c(lower,init,upper) values for the associated param.
+#' @param nugget.max.effects a vector of c(lower,init,upper) values for the associated param.
 #' @returns a list with boundaries for the optim L-BFGS-B routine
 #' @author Federico Blasi
 #' 
@@ -705,13 +722,13 @@ getBoundariesV3 <- function(coco.object,
                             nugget.max.effects){
   
   if(!is.null(coco.object)){
-    if(class(coco.object) == 'coco'){
+    if(methods::is(coco.object,'coco')){
       
       # lower bounds for global effects
       
       emp_var <- stats::var(coco.object@z)
       
-      max_dist <- max(as.matrix(dist(coco.object@locs))) * 0.7
+      max_dist <- max(as.matrix(stats::dist(coco.object@locs))) * 0.7
       
       limits <- rbind(mean.limits,
                       std.dev.max.effects,
@@ -808,7 +825,7 @@ getBoundariesV3 <- function(coco.object,
 
 #' getHessian
 #' @description returns the approximate (observed) Hesian (inverse of Fisher Information Matrix)
-#' @usage getHessian(coco.object, ncores = 2, 
+#' @usage getHessian(coco.object, ncores = parallel::detectCores() - 1, 
 #' eps = .Machine$double.eps^(1/4))
 #' @param coco.object a fitted coco object
 #' @param ncores number of cores used for the computation
@@ -835,12 +852,12 @@ getHessian <- function(coco.object, ncores = parallel::detectCores() - 1,
     
     index_positions <- index_positions[-1, ]
     
-    Design_Matrix <- coco::getDesignMatrix(model.list = coco.object@model.list, 
+    Design_Matrix <- cocons::getDesignMatrix(model.list = coco.object@model.list, 
                                             data = coco.object@data)
     par.pos <- Design_Matrix$par.pos
     x_covariates <- Design_Matrix$model.matrix
     
-    coco_x_std <- coco::getScale(x_covariates, 
+    coco_x_std <- cocons::getScale(x_covariates, 
                                    mean.vector = coco.object@info$mean.vector,
                                    sd.vector = coco.object@info$sd.vector)
     
@@ -881,7 +898,7 @@ getHessian <- function(coco.object, ncores = parallel::detectCores() - 1,
                                              t11[x[1]] <- t11[x[1]] + eps
                                              t11[x[2]] <- t11[x[2]] + eps
                                              
-                                             f01 <- coco::GetNeg2loglikelihood(t01, par.pos = par.pos,
+                                             f01 <- cocons::GetNeg2loglikelihood(t01, par.pos = par.pos,
                                                                                     locs = locs,
                                                                                     x_covariates = x_covariates, 
                                                                                     smooth.limits = coco.info, 
@@ -889,7 +906,7 @@ getHessian <- function(coco.object, ncores = parallel::detectCores() - 1,
                                                                                     z = z,
                                                                                     lambda = lambda)
                                              
-                                             f10 <- coco::GetNeg2loglikelihood(t10, par.pos = par.pos,
+                                             f10 <- cocons::GetNeg2loglikelihood(t10, par.pos = par.pos,
                                                                                     locs = locs,
                                                                                     x_covariates = x_covariates, 
                                                                                     smooth.limits = coco.info, 
@@ -897,7 +914,7 @@ getHessian <- function(coco.object, ncores = parallel::detectCores() - 1,
                                                                                     z = z,
                                                                                     lambda = lambda)
                                              
-                                             f11 <- coco::GetNeg2loglikelihood(t11, par.pos = par.pos,
+                                             f11 <- cocons::GetNeg2loglikelihood(t11, par.pos = par.pos,
                                                                                     locs = locs,
                                                                                     x_covariates = x_covariates, 
                                                                                     smooth.limits = coco.info, 
@@ -943,12 +960,12 @@ getHessian <- function(coco.object, ncores = parallel::detectCores() - 1,
     
     index_positions <- index_positions[-1, ]
     
-    Design_Matrix <- coco::getDesignMatrix(model.list = coco.object@model.list, 
+    Design_Matrix <- cocons::getDesignMatrix(model.list = coco.object@model.list, 
                                             data = coco.object@data)
     par.pos <- Design_Matrix$par.pos
     x_covariates <- Design_Matrix$model.matrix
     
-    coco_x_std <- coco::getScale(x_covariates, 
+    coco_x_std <- cocons::getScale(x_covariates, 
                                    mean.vector = coco.object@info$mean.vector,
                                    sd.vector = coco.object@info$sd.vector)
     
@@ -994,7 +1011,7 @@ getHessian <- function(coco.object, ncores = parallel::detectCores() - 1,
                                              t11[x[1]] <- t11[x[1]] + eps
                                              t11[x[2]] <- t11[x[2]] + eps
                                              
-                                             f01 <- coco::GetNeg2loglikelihoodTaper(theta = t01,
+                                             f01 <- cocons::GetNeg2loglikelihoodTaper(theta = t01,
                                                                                           par.pos = par.pos,
                                                                                           ref_taper = ref_taper,
                                                                                           locs = locs,
@@ -1005,7 +1022,7 @@ getHessian <- function(coco.object, ncores = parallel::detectCores() - 1,
                                                                                           n = n,
                                                                                           lambda = lambda)
                                              
-                                             f10 <- coco::GetNeg2loglikelihoodTaper(theta = t10,
+                                             f10 <- cocons::GetNeg2loglikelihoodTaper(theta = t10,
                                                                                           par.pos = par.pos,
                                                                                           ref_taper = ref_taper,
                                                                                           locs = locs,
@@ -1016,7 +1033,7 @@ getHessian <- function(coco.object, ncores = parallel::detectCores() - 1,
                                                                                           n = n,
                                                                                           lambda = lambda)
                                              
-                                             f11 <- coco::GetNeg2loglikelihoodTaper(theta = t11,
+                                             f11 <- cocons::GetNeg2loglikelihoodTaper(theta = t11,
                                                                                           par.pos = par.pos,
                                                                                           ref_taper = ref_taper,
                                                                                           locs = locs,

@@ -4,7 +4,8 @@
 \alias{GetNeg2loglikelihood}
 \title{GetNeg2loglikelihood}
 \usage{
-GetNeg2loglikelihood(theta, par.pos, locs, x_covariates, smooth.limits, z, n, lambda)
+GetNeg2loglikelihood(theta, par.pos, locs, x_covariates, 
+smooth.limits, z, n, lambda)
 }
 \arguments{
 \item{theta}{a vector with parameters values}
@@ -19,7 +20,7 @@ GetNeg2loglikelihood(theta, par.pos, locs, x_covariates, smooth.limits, z, n, la
 
 \item{z}{a vector of observed values}
 
-\item{n}{dim(z)\link{1}}
+\item{n}{dim(z)[1]}
 
 \item{lambda}{regularization parameter}
 }

@@ -4,12 +4,25 @@
 \alias{getBoundariesV2}
 \title{Simple build of boundaries (v2)}
 \usage{
-getBoundariesV2(coco.object, lower.value, upper.value)
+getBoundariesV2(coco.object, mean.limits, std.dev.limits, 
+scale.limits, aniso.limits, tilt.limits, smooth.limits, nugget.limits)
 }
 \arguments{
 \item{coco.object}{a coco object}
 
-\item{param.limits}{a vector of c(lower,init,upper) values for the associated param.}
+\item{mean.limits}{a vector of c(lower,init,upper) values for the associated param.}
+
+\item{std.dev.limits}{a vector of c(lower,init,upper) values for the associated param.}
+
+\item{scale.limits}{a vector of c(lower,init,upper) values for the associated param.}
+
+\item{aniso.limits}{a vector of c(lower,init,upper) values for the associated param.}
+
+\item{tilt.limits}{a vector of c(lower,init,upper) values for the associated param.}
+
+\item{smooth.limits}{a vector of c(lower,init,upper) values for the associated param.}
+
+\item{nugget.limits}{a vector of c(lower,init,upper) values for the associated param.}
 }
 \value{
 a list with boundaries for the optim L-BFGS-B routine

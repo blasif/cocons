@@ -29,28 +29,44 @@ setClass("coco", slots = list(
 # Methods ----------------------------------------------------------------------
 ###############################################################################-
 
+#' Plot Method for Coco Class
+#'
+#' This method plots objects of class \code{coco}.
+#'
+#' @param x An object of class \code{coco}.
+#' @param y Not used.
+#' @param ... Additional arguments passed to the plot function.
+#' @param type The type of plot.
+#' @param index For plotting local correlation plots.
+#' @param factr Factor rate for size of ellipses.
+#' @param plot.control Additional plot control parameters.
+#' @return A plot is created.
+#' @exportMethod plot
+#' @docType methods
+#' @rdname plot-methods
+#' @aliases plot,coco-method
 setMethod("plot",
-          signature = (x = "coco"),
+          signature(x = "coco", y = "missing"),
           definition =
-            function(x, ..., type = NULL, index = NULL, factr = 0.1, plot.control = NULL) {
+            function(x, y, ..., type = NULL, index = NULL, factr = 0.1, plot.control = NULL) {
               
               if (length(x@output) == 0) {
                 stop("object has not yet been fitted.")
               }
               
-              opar <- par(no.readonly = TRUE)
-              on.exit(par(opar))
+              opar <- graphics::par(no.readonly = TRUE)
+              on.exit(graphics::par(opar))
               
               if (any(x@type == "dense")) {
-                tmp_info <- coco::getDesignMatrix(model.list = x@model.list, 
+                tmp_info <- cocons::getDesignMatrix(model.list = x@model.list, 
                                                    data = x@data)
                 
-                theta_list <- coco::getModelLists(
+                theta_list <- cocons::getModelLists(
                   theta = x@output$par, par.pos = tmp_info$par.pos,
                   type = "diff"
                 )
                 
-                X_std <- coco::getScale(tmp_info$model.matrix,
+                X_std <- cocons::getScale(tmp_info$model.matrix,
                                          mean.vector = x@info$mean.vector,
                                          sd.vector = x@info$sd.vector
                 )
@@ -151,11 +167,11 @@ setMethod("plot",
                 # !!!!!!! is it ok && ??
                 if (x@type == "dense" && type == "correlations") {
 
-                  tmp_cov <- stats::cov2cor(coco::cov_rns(theta_list, x@locs, X_std$std.covs,
+                  tmp_cov <- stats::cov2cor(cocons::cov_rns(theta_list, x@locs, X_std$std.covs,
                                                            smooth_limits = x@info$smooth_limits
                   ))
                   
-                  theta_list <- coco::getModelLists(
+                  theta_list <- cocons::getModelLists(
                     theta = x@output$par, par.pos = tmp_info$par.pos,
                     type = "classic"
                   )
@@ -204,7 +220,7 @@ setMethod("plot",
                                           par.pos = teteee$par.pos, type = "diff"
                     )
                     
-                    tmp_cov_two <- stats::cov2cor(coco::cov_rns(
+                    tmp_cov_two <- stats::cov2cor(cocons::cov_rns(
                       theta = here, locs = x@locs,
                       x_covariates = teteee$model.matrix,
                       smooth_limits = x@info$smooth_limits
@@ -217,12 +233,12 @@ setMethod("plot",
               
               if (x@type == "sparse") {
                 
-                tmp_info <- coco::getDesignMatrix(model.list = x@model.list, data = x@data)
+                tmp_info <- cocons::getDesignMatrix(model.list = x@model.list, data = x@data)
                 
-                theta_list <- coco::getModelLists(theta = x@output$par, 
+                theta_list <- cocons::getModelLists(theta = x@output$par, 
                                                    par.pos = tmp_info$par.pos, type = "diff")
                 
-                X_std <- coco::getScale(tmp_info$model.matrix,
+                X_std <- cocons::getScale(tmp_info$model.matrix,
                                          mean.vector = x@info$mean.vector,
                                          sd.vector = x@info$sd.vector
                 )
@@ -261,19 +277,19 @@ setMethod("plot",
               
               if (!is.null(type)) {
                 if (x@type == "sparse" & type == "correlations") {
-                  tmp_info <- coco::getDesignMatrix(
+                  tmp_info <- cocons::getDesignMatrix(
                     model.list = x@model.list,
                     data = x@data
                   )
                   
-                  theta_list <- coco::getModelLists(
+                  theta_list <- cocons::getModelLists(
                     theta = x@output$par,
                     par.pos = tmp_info$par.pos, type = "diff"
                   )
                   
-                  X_std <- coco::getScale(tmp_info$model.matrix)
+                  X_std <- cocons::getScale(tmp_info$model.matrix)
                   
-                  tmp_cov <- stats::cov2cor(coco::cov_rns_smooth_taper_vector(
+                  tmp_cov <- stats::cov2cor(cocons::cov_rns_smooth_taper_vector(
                     theta_list, x@locs,
                     X_std$std.covs
                   )) ## !!!!!!!!!!!!!!!!!!!!!!!!!! FIXXXXXXXX
@@ -286,19 +302,34 @@ setMethod("plot",
             }
 )
 
-setMethod("print", signature = (x = "coco"), 
+#' Print Method for Coco Class
+#'
+#' This method prints objects of class 'coco'.
+#' @name print
+#' @aliases print,coco-method
+#' @param x An object of class 'coco'.
+#' @param inv.hess inverse of the approximated hessian matrix (getHessian)
+#' @param ... Additional arguments to be passed to plot.
+#' @return print the coco object
+#' @docType methods
+#' @exportMethod print
+#' @docType methods
+#' @rdname print-methods
+#' @author Federico Blasi
+#' 
+setMethod("print", signature(x = "coco"), 
           definition = 
             function(x, inv.hess = NULL, ...){
               
               if(length(x@output) == 0){stop('object has not been fited yet.')}
               
-              tmp_matrix <- coco::getDesignMatrix(model.list = x@model.list, 
+              tmp_matrix <- cocons::getDesignMatrix(model.list = x@model.list, 
                                                    data = x@data)
               
               adjusted_effects <- matrix(nrow = 7, ncol = dim(tmp_matrix$model.matrix)[2])
               colnames(adjusted_effects) <- colnames(tmp_matrix$model.matrix)
               
-              adjusted_eff_values <- coco::getModelLists(x@output$par, 
+              adjusted_eff_values <- cocons::getModelLists(x@output$par, 
                                                           tmp_matrix$par.pos,
                                                           type = 'diff') 
 
@@ -306,7 +337,17 @@ setMethod("print", signature = (x = "coco"),
                 
                 Hess_mod <- getModHess(x, inv.hess = inv.hess)
                 
-                # MISSING NUMBERS VALUES!
+                if(is.logical(tmp_matrix$par.pos$mean)){
+                  number_mean <- sum(tmp_matrix$par.pos$mean)
+                } else{number_mean <- 0}
+                
+                if(is.logical(tmp_matrix$par.pos$std.dev)){
+                  number_std.dev <- sum(tmp_matrix$par.pos$std.dev)
+                } else{number_std.dev <- 0}
+                
+                if(is.logical(tmp_matrix$par.pos$scale)){
+                  number_scale <- sum(tmp_matrix$par.pos$scale)
+                } else{number_scale <- 0}
                 
                 adjusted_se <- matrix(0,nrow = 7, ncol = dim(tmp_matrix$model.matrix)[2])
                 colnames(adjusted_se) <- colnames(tmp_matrix$model.matrix)
@@ -356,7 +397,7 @@ setMethod("print", signature = (x = "coco"),
 
                 #cat(sprintf("%-15s %-15s %-15s %-15s\n", "Variable:", " "," "," "))
                 
-                if(!is.null(Inv.Hess)){
+                if(!is.null(inv.hess)){
                   
                   # Create a table-like output using cat() and sprintf()
                   cat(sprintf("%-15s %15s %15s %15s\n", "Output:", " ", " ", " "))
@@ -429,7 +470,7 @@ setMethod("print", signature = (x = "coco"),
                 
                 #cat(sprintf("%-15s %-15s %-15s %-15s\n", "Variable:", " "," "," "))
                 
-                if(!is.null(Inv.Hess)){
+                if(!is.null(inv.hess)){
                   
                   # Create a table-like output using cat() and sprintf()
                   cat(sprintf("%-15s %15s %15s %15s\n", "Output:", " ", " ", " "))
@@ -487,8 +528,20 @@ setMethod("print", signature = (x = "coco"),
             }
 )
 
+#' Show Method for Coco Class
+#'
+#' This method show objects of class 'coco'.
+#' @name show
+#' @aliases show,coco-method
+#' @param object An object of class 'coco'.
+#' @return A plot is created.
+#' @docType methods
+#' @rdname show-methods
+#' @exportMethod show
+#' @author Federico Blasi
+#' 
 setMethod("show",
-          signature = (x = "coco"),
+          signature(object = "coco"),
           function(object){
             
             if(object@type == 'dense'){

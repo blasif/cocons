@@ -1,0 +1,8 @@
+%\VignetteIndexEntry{cocons-vignette}
+%\VignetteEncoding{UTF-8}
+\documentclass{article}
+\usepackage{pdfpages}
+\begin{document}
+\SweaveOpts{concordance=TRUE}
+\includepdf[pages=-, fitpaper=true]{../inst/doc/cocons.pdf}
+\end{document}

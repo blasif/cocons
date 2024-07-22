@@ -1,7 +1,8 @@
 
 #' Optimizer for object class coco
 #' @description Optimizer based on Optimparallel L-BFGS-B optimizier for coco class. 
-#' @usage cocoOptim(coco.object, boundaries = list(), ncores = parallel::detectCores(), optim.control, optim.type,...)
+#' @usage cocoOptim(coco.object, boundaries = list(), 
+#' ncores = parallel::detectCores(), optim.control, optim.type,...)
 #' @param coco.object a coco object. See ?coco()
 #' @param boundaries if provided, a list with lower, init, and upper values. 
 #' if not is computed based on generic fast_init_boundaries()
@@ -28,14 +29,14 @@ cocoOptim <- function(coco.object, boundaries = list(),
     
     if(optim.type == 'mle'){
       
-      designMatrix <- coco::getDesignMatrix(
+      designMatrix <- cocons::getDesignMatrix(
         model.list = coco.object@model.list,
         data = coco.object@data
       )
       
       # If boundaries not provided, then some general boundaries are set
       if (length(boundaries) == 0) {
-        boundaries <- coco::getBoundaries(
+        boundaries <- cocons::getBoundaries(
           x = coco.object, 
           lower.value = -2,
           upper.value = 2
@@ -47,7 +48,7 @@ cocoOptim <- function(coco.object, boundaries = list(),
         to_not_std <- colnames(coco.object@data)[coco.object@info$cat.vars]
         to_avoid_std <- colnames(designMatrix$model.matrix) %in% to_not_std
         
-        tmp_values <- coco::getScale(designMatrix$model.matrix[,!to_avoid_std])
+        tmp_values <- cocons::getScale(designMatrix$model.matrix[,!to_avoid_std])
         
         empty_matrix <- matrix(0, ncol = dim(designMatrix$model.matrix)[2], 
                                nrow = dim(designMatrix$model.matrix)[1])
@@ -65,7 +66,7 @@ cocoOptim <- function(coco.object, boundaries = list(),
         tmp_values$sd.vector <- mean_sd_empty
         
       } else{
-        tmp_values <- coco::getScale(designMatrix$model.matrix)
+        tmp_values <- cocons::getScale(designMatrix$model.matrix)
         empty_matrix <- tmp_values$std.covs
       }
       
@@ -80,7 +81,7 @@ cocoOptim <- function(coco.object, boundaries = list(),
       parallel::clusterEvalQ(cl, library("coco"))
       
       args_optim <- list(
-        "fn" = coco::GetNeg2loglikelihood,
+        "fn" = cocons::GetNeg2loglikelihood,
         "method" = "L-BFGS-B",
         "lower" = boundaries$theta_lower,
         "par" = boundaries$theta_init,
@@ -130,7 +131,7 @@ cocoOptim <- function(coco.object, boundaries = list(),
     
     if(optim.type == 'pmle'){
       
-      designMatrix <- coco::getDesignMatrix(
+      designMatrix <- cocons::getDesignMatrix(
         model.list = coco.object@model.list,
         data = coco.object@data
       )
@@ -138,7 +139,7 @@ cocoOptim <- function(coco.object, boundaries = list(),
       if(!is.logical(designMatrix$par.pos$mean)){stop('profile ML only available when considering covariates in the trend')}
       
       if (length(boundaries) == 0) {
-        boundaries <- coco::getBoundaries(
+        boundaries <- cocons::getBoundaries(
           x = coco.object, 
           lower.value = -3,
           upper.value = 3
@@ -153,7 +154,7 @@ cocoOptim <- function(coco.object, boundaries = list(),
         to_not_std <- colnames(coco.object@data)[coco.object@info$cat.vars]
         to_avoid_std <- colnames(designMatrix$model.matrix) %in% to_not_std
         
-        tmp_values <- coco::getScale(designMatrix$model.matrix[,!to_avoid_std])
+        tmp_values <- cocons::getScale(designMatrix$model.matrix[,!to_avoid_std])
         
         empty_matrix <- matrix(0, ncol = dim(designMatrix$model.matrix)[2], 
                                nrow = dim(designMatrix$model.matrix)[1])
@@ -171,7 +172,7 @@ cocoOptim <- function(coco.object, boundaries = list(),
         tmp_values$sd.vector <- mean_sd_empty
         
       } else{
-        tmp_values <- coco::getScale(designMatrix$model.matrix)
+        tmp_values <- cocons::getScale(designMatrix$model.matrix)
         empty_matrix <- tmp_values$std.covs
       }
       
@@ -205,7 +206,7 @@ cocoOptim <- function(coco.object, boundaries = list(),
       }
       
       args_optim <- list(
-        "fn" = coco::GetNeg2loglikelihoodProfile,
+        "fn" = cocons::GetNeg2loglikelihoodProfile,
         "method" = "L-BFGS-B",
         "lower" = boundaries$theta_lower,
         "par" = boundaries$theta_init,
@@ -236,10 +237,10 @@ cocoOptim <- function(coco.object, boundaries = list(),
       
       parallel::stopCluster(cl)
       
-      theta_list <- coco::getModelLists(theta = output_dense$par, 
+      theta_list <- cocons::getModelLists(theta = output_dense$par, 
                                          par.pos = args_optim$par.pos, type = 'diff')
       
-      Sigma_cpp <- coco::cov_rns(theta = theta_list[-1], locs = args_optim$locs,
+      Sigma_cpp <- cocons::cov_rns(theta = theta_list[-1], locs = args_optim$locs,
                                   x_covariates  =  args_optim$x_covariates,
                                   smooth_limits = args_optim$smooth.limits)
       
@@ -271,13 +272,13 @@ cocoOptim <- function(coco.object, boundaries = list(),
     
     if(optim.type == 'mle'){
       
-      designMatrix <- coco::getDesignMatrix(
+      designMatrix <- cocons::getDesignMatrix(
         model.list = coco.object@model.list,
         data = coco.object@data
       )
       
       if (length(boundaries) == 0) {
-        boundaries <- coco::getBoundaries(
+        boundaries <- cocons::getBoundaries(
           x = coco.object, 
           lower.value = -3,
           upper.value = 3
@@ -292,7 +293,7 @@ cocoOptim <- function(coco.object, boundaries = list(),
         to_not_std <- colnames(coco.object@data)[coco.object@info$cat.vars]
         to_avoid_std <- colnames(designMatrix$model.matrix) %in% to_not_std
         
-        tmp_values <- coco::getScale(designMatrix$model.matrix[,!to_avoid_std])
+        tmp_values <- cocons::getScale(designMatrix$model.matrix[,!to_avoid_std])
         
         empty_matrix <- matrix(0, ncol = dim(designMatrix$model.matrix)[2], 
                                nrow = dim(designMatrix$model.matrix)[1])
@@ -310,7 +311,7 @@ cocoOptim <- function(coco.object, boundaries = list(),
         tmp_values$sd.vector <- mean_sd_empty
         
       } else{
-        tmp_values <- coco::getScale(designMatrix$model.matrix)
+        tmp_values <- cocons::getScale(designMatrix$model.matrix)
         empty_matrix <- tmp_values$std.covs
       }
       
@@ -340,7 +341,7 @@ cocoOptim <- function(coco.object, boundaries = list(),
       # options(spam.cholsymmetrycheck = FALSE)
       
       args_optim <- list(
-        "fn" = coco::GetNeg2loglikelihoodTaper,
+        "fn" = cocons::GetNeg2loglikelihoodTaper,
         "method" = "L-BFGS-B",
         "lower" = boundaries$theta_lower,
         "par" = boundaries$theta_init,
@@ -391,13 +392,13 @@ cocoOptim <- function(coco.object, boundaries = list(),
     
     if(optim.type == 'pmle'){
       
-      designMatrix <- coco::getDesignMatrix(
+      designMatrix <- cocons::getDesignMatrix(
         model.list = coco.object@model.list,
         data = coco.object@data
       )
       
       if (length(boundaries) == 0) {
-        boundaries <- coco::getBoundaries(
+        boundaries <- cocons::getBoundaries(
           x = coco.object, 
           lower.value = -3,
           upper.value = 3
@@ -412,7 +413,7 @@ cocoOptim <- function(coco.object, boundaries = list(),
         to_not_std <- colnames(coco.object@data)[coco.object@info$cat.vars]
         to_avoid_std <- colnames(designMatrix$model.matrix) %in% to_not_std
         
-        tmp_values <- coco::getScale(designMatrix$model.matrix[,!to_avoid_std])
+        tmp_values <- cocons::getScale(designMatrix$model.matrix[,!to_avoid_std])
         
         empty_matrix <- matrix(0, ncol = dim(designMatrix$model.matrix)[2], 
                                nrow = dim(designMatrix$model.matrix)[1])
@@ -430,7 +431,7 @@ cocoOptim <- function(coco.object, boundaries = list(),
         tmp_values$sd.vector <- mean_sd_empty
         
       } else{
-        tmp_values <- coco::getScale(designMatrix$model.matrix)
+        tmp_values <- cocons::getScale(designMatrix$model.matrix)
         empty_matrix <- tmp_values$std.covs
       }
       
@@ -475,7 +476,7 @@ cocoOptim <- function(coco.object, boundaries = list(),
       boundaries$theta_lower <- boundaries$theta_lower[-first_sigma]
       
       args_optim <- list(
-        "fn" = coco::GetNeg2loglikelihoodTaperProfile,
+        "fn" = cocons::GetNeg2loglikelihoodTaperProfile,
         "method" = "L-BFGS-B",
         "lower" = boundaries$theta_lower,
         "par" = boundaries$theta_init,

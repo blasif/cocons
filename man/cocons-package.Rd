@@ -1,6 +1,6 @@
-\name{coco-package}
-\alias{coco-package}
-\alias{coco}
+\name{cocons-package}
+\alias{cocons-package}
+\alias{cocons}
 \docType{package}
 \title{Covariate-based Covariance Functions for Nonstationary Gaussian Processes}
 \description{

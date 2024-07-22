@@ -1,6 +1,0 @@
-\documentclass{article}
-\usepackage{pdfpages}
-\begin{document}
-\SweaveOpts{concordance=TRUE}
-\includepdf[pages=-, fitpaper=true]{../inst/doc/coco.pdf}
-\end{document}

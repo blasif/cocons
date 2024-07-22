@@ -4,7 +4,7 @@
 \alias{getHessian}
 \title{getHessian}
 \usage{
-getHessian(coco.object, ncores = 2, 
+getHessian(coco.object, ncores = parallel::detectCores() - 1, 
 eps = .Machine$double.eps^(1/4))
 }
 \arguments{

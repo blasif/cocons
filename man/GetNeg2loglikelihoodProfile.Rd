@@ -4,7 +4,8 @@
 \alias{GetNeg2loglikelihoodProfile}
 \title{GetNeg2loglikelihoodProfile}
 \usage{
-GetNeg2loglikelihoodProfile(theta, par.pos, locs, x_covariates, smooth.limits, z, n, x_betas,lambda)
+GetNeg2loglikelihoodProfile(theta, par.pos, locs, x_covariates, 
+smooth.limits, z, n, x_betas,lambda)
 }
 \arguments{
 \item{theta}{a vector with parameters values}
@@ -19,7 +20,7 @@ GetNeg2loglikelihoodProfile(theta, par.pos, locs, x_covariates, smooth.limits, z
 
 \item{z}{a vector of observed values}
 
-\item{n}{dim(z)\link{1}}
+\item{n}{dim(z)[1]}
 
 \item{x_betas}{design matrix for the trend}
 

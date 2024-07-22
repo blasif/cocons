@@ -4,12 +4,29 @@
 \alias{getBoundariesV3}
 \title{Simple build of boundaries (v3)}
 \usage{
-getBoundariesV3(coco.object, ...)
+getBoundariesV3(coco.object, mean.limits, global.lower, 
+std.dev.max.effects, 
+scale.max.effects, aniso.max.effects, tilt.max.effects, 
+smooth.max.effects, nugget.max.effects)
 }
 \arguments{
 \item{coco.object}{a coco object}
 
-\item{...}{}
+\item{mean.limits}{a vector of c(lower,init,upper) values for the associated param.}
+
+\item{global.lower}{a vector of c(lower,init,upper) values for the associated param.}
+
+\item{std.dev.max.effects}{a vector of c(lower,init,upper) values for the associated param.}
+
+\item{scale.max.effects}{a vector of c(lower,init,upper) values for the associated param.}
+
+\item{aniso.max.effects}{a vector of c(lower,init,upper) values for the associated param.}
+
+\item{tilt.max.effects}{a vector of c(lower,init,upper) values for the associated param.}
+
+\item{smooth.max.effects}{a vector of c(lower,init,upper) values for the associated param.}
+
+\item{nugget.max.effects}{a vector of c(lower,init,upper) values for the associated param.}
 }
 \value{
 a list with boundaries for the optim L-BFGS-B routine

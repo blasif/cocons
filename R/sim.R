@@ -3,7 +3,8 @@
 #' @description simulates a Gaussian process with nonstationary covariance function
 #' from an coco object.
 #' 
-#' @usage cocoSim(coco.object, pars, n, seed, standardize, type = 'classic', sim.type = NULL, cond.info = NULL)
+#' @usage cocoSim(coco.object, pars, n, seed, standardize, 
+#' type = 'classic', sim.type = NULL, cond.info = NULL)
 #' @param coco.object a vector of length p, where p is the number of parameters for
 #' @param pars a vector of length p, where p is the number of parameters for
 #' each of the models
@@ -50,23 +51,23 @@ cocoSim <- function(coco.object,
         std_pred <- getScale(test_here$model.matrix, mean.vector = coco.object@info$mean.vector,
                              sd.vector = coco.object@info$sd.vector)$std.covs
         
-        to_pass <- coco::getModelLists(coco.object@output$par, 
+        to_pass <- cocons::getModelLists(coco.object@output$par, 
                                         par.pos = test_here$par.pos, 
                                         type = 'diff')
         
-        covmat <- coco::cov_rns(theta = to_pass[-1], 
+        covmat <- cocons::cov_rns(theta = to_pass[-1], 
                                  locs = coco.object@locs,
                                  x_covariates = std_coco,
                                  smooth_limits = coco.object@info$smooth_limits)
         
-        covmat_pred <- coco::cov_rns_pred(theta = to_pass[-1], 
+        covmat_pred <- cocons::cov_rns_pred(theta = to_pass[-1], 
                                            locs = coco.object@locs,
                                            locs_pred = as.matrix(cond.info$newlocs),
                                            x_covariates = std_coco,
                                            x_covariates_pred = std_pred,
                                            smooth_limits = coco.object@info$smooth_limits)
         
-        covmat_unobs <- coco::cov_rns(theta = to_pass[-1], 
+        covmat_unobs <- cocons::cov_rns(theta = to_pass[-1], 
                                        locs = as.matrix(cond.info$newdataset),
                                        x_covariates = std_pred,
                                        smooth_limits = coco.object@info$smooth_limits)
@@ -79,7 +80,7 @@ cocoSim <- function(coco.object,
         
         iiderrors <- replicate(n, expr = stats::rnorm(dim(cond.info$newlocs)[1], mean = 0, sd = 1))
         
-        step_one <- coco::cocoPredict(coco.object, 
+        step_one <- cocons::cocoPredict(coco.object, 
                                         newdataset = cond.info$newdataset, 
                                         newlocs = as.matrix(cond.info$newlocs), 
                                         type = 'mean')
@@ -91,12 +92,12 @@ cocoSim <- function(coco.object,
         if(F){
           # end test new
           
-          step_one <- coco::cocoPredict(coco.object, 
+          step_one <- cocons::cocoPredict(coco.object, 
                                           newdataset = cond.info$newdataset, 
                                           newlocs = as.matrix(cond.info$newlocs), 
                                           type = 'mean')
           
-          step_two <- coco::cocoSim(coco.object, pars = pars, n = n, seed = seed,
+          step_two <- cocons::cocoSim(coco.object, pars = pars, n = n, seed = seed,
                                       standardize = standardize, type = type)
           
           tmp_coco_object <- coco(type = 'dense',
@@ -106,7 +107,7 @@ cocoSim <- function(coco.object,
                                     model.list = coco.object@model.list,
                                     info = coco.object@info)
           
-          step_three <- coco::cocoSim(tmp_coco_object, pars = pars, n = n, seed = seed, 
+          step_three <- cocons::cocoSim(tmp_coco_object, pars = pars, n = n, seed = seed, 
                                         standardize = standardize, type = type)
           
           matrix_return <- matrix(NA, nrow = dim(step_three)[1], ncol = dim(step_three)[2])
@@ -117,7 +118,7 @@ cocoSim <- function(coco.object,
             
             coco.object_four@z <- c(step_two[ii, ])
             
-            step_four <- coco::cocoPredict(coco.object_four, 
+            step_four <- cocons::cocoPredict(coco.object_four, 
                                              newdataset = cond.info$newdataset, 
                                              newlocs = as.matrix(cond.info$newlocs),
                                              type = 'mean')
@@ -136,14 +137,14 @@ cocoSim <- function(coco.object,
                                      data = coco.object@data)
       
       if(standardize){
-        std_coco <- coco::getScale(coco_items$model.matrix)
+        std_coco <- cocons::getScale(coco_items$model.matrix)
       } else{
-        std_coco <- coco::getScale(coco_items$model.matrix,
+        std_coco <- cocons::getScale(coco_items$model.matrix,
                                      mean.vector = rep(0, dim(coco_items$model.matrix)[2]),
                                      sd.vector = rep(1, dim(coco_items$model.matrix)[2]))
       }
       
-      theta_to_fit <- coco::getModelLists(pars,
+      theta_to_fit <- cocons::getModelLists(pars,
                                            par.pos = coco_items$par.pos, 
                                            type = type)
       
@@ -155,14 +156,14 @@ cocoSim <- function(coco.object,
           
         }
         
-        covmat <- coco::cov_rns_classic(theta = theta_to_fit[-1], 
+        covmat <- cocons::cov_rns_classic(theta = theta_to_fit[-1], 
                                          locs = coco.object@locs,
                                          x_covariates = std_coco$std.covs) 
         
       }
       
       if(type == 'diff'){
-        covmat <- coco::cov_rns(theta = theta_to_fit[-1], 
+        covmat <- cocons::cov_rns(theta = theta_to_fit[-1], 
                                  locs = coco.object@locs,
                                  x_covariates = std_coco$std.covs,
                                  smooth_limits = coco.object@info$smooth_limits) 
@@ -188,14 +189,14 @@ cocoSim <- function(coco.object,
     coco_items <- getDesignMatrix(model.list = coco.object@model.list, data = coco.object@data)
     
     if(standardize){
-      std_coco <- coco::getScale(coco_items$model.matrix)
+      std_coco <- cocons::getScale(coco_items$model.matrix)
     } else{
-      std_coco <- coco::getScale(coco_items$model.matrix,
+      std_coco <- cocons::getScale(coco_items$model.matrix,
                                    mean.vector = rep(0, dim(coco_items$model.matrix)[2]),
                                    sd.vector = rep(1, dim(coco_items$model.matrix)[2]))
     }
     
-    theta_to_fit <- coco::getModelLists(pars,
+    theta_to_fit <- cocons::getModelLists(pars,
                                          par.pos = coco_items$par.pos, 
                                          type = type)
     

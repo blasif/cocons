@@ -4,7 +4,8 @@
 \alias{GetNeg2loglikelihoodTaper}
 \title{GetNeg2loglikelihoodTaper}
 \usage{
-GetNeg2loglikelihoodTaper(theta, par.pos, ref_taper, locs, x_covariates, smooth.limits, cholS, z, n, lambda)
+GetNeg2loglikelihoodTaper(theta, par.pos, ref_taper, locs, 
+x_covariates, smooth.limits, cholS, z, n, lambda)
 }
 \arguments{
 \item{theta}{a vector with parameters values}
@@ -23,7 +24,7 @@ GetNeg2loglikelihoodTaper(theta, par.pos, ref_taper, locs, x_covariates, smooth.
 
 \item{z}{a vector of observed values}
 
-\item{n}{dim(z)\link{1}}
+\item{n}{dim(z)[1]}
 
 \item{lambda}{regularization parameter}
 }

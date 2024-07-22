@@ -2,7 +2,8 @@
 #' GetNeg2loglikelihoodTaper
 #' @description compute the negative 2 log likelihood based on theta
 #' 
-#' @usage GetNeg2loglikelihoodTaper(theta, par.pos, ref_taper, locs, x_covariates, smooth.limits, cholS, z, n, lambda)
+#' @usage GetNeg2loglikelihoodTaper(theta, par.pos, ref_taper, locs, 
+#' x_covariates, smooth.limits, cholS, z, n, lambda)
 #' @param theta a vector with parameters values
 #' @param par.pos par.pos list
 #' @param ref_taper spam object based on a taper based covariance function
@@ -11,7 +12,7 @@
 #' @param smooth.limits smooth.limits
 #' @param cholS Cholesky object from spam
 #' @param z a vector of observed values
-#' @param n dim(z)[1]
+#' @param n dim(z)\[1\]
 #' @param lambda regularization parameter
 #' @returns value 
 #' @author Federico Blasi
@@ -45,7 +46,8 @@ GetNeg2loglikelihoodTaper <- function(theta, par.pos, ref_taper, locs,
 #' GetNeg2loglikelihoodTaperProfile
 #' @description compute the negative 2 log likelihood based on theta
 #' 
-#' @usage GetNeg2loglikelihoodTaperProfile(theta, par.pos, ref_taper, locs, x_covariates, smooth.limits, cholS, z, n, lambda)
+#' @usage GetNeg2loglikelihoodTaperProfile(theta, par.pos, ref_taper, 
+#' locs, x_covariates, smooth.limits, cholS, z, n, lambda)
 #' @param theta a vector with parameters values
 #' @param par.pos par.pos list
 #' @param ref_taper spam object based on a taper based covariance function
@@ -54,7 +56,7 @@ GetNeg2loglikelihoodTaper <- function(theta, par.pos, ref_taper, locs,
 #' @param smooth.limits smooth.limits
 #' @param cholS Cholesky object from spam
 #' @param z a vector of observed values
-#' @param n dim(z)[1]
+#' @param n dim(z)\[1\]
 #' @param lambda regularization parameter
 #' @returns value 
 #' @author Federico Blasi
@@ -90,14 +92,15 @@ GetNeg2loglikelihoodTaperProfile <- function(theta, par.pos, ref_taper, locs,
 #' GetNeg2loglikelihoodProfile
 #' @description compute the negative 2 log likelihood based on theta
 #'
-#' @usage GetNeg2loglikelihoodProfile(theta, par.pos, locs, x_covariates, smooth.limits, z, n, x_betas,lambda)
+#' @usage GetNeg2loglikelihoodProfile(theta, par.pos, locs, x_covariates, 
+#' smooth.limits, z, n, x_betas,lambda)
 #' @param theta a vector with parameters values
 #' @param par.pos par.pos list
 #' @param locs spatial location matrix
 #' @param x_covariates design matrix
 #' @param smooth.limits smooth.limits
 #' @param z a vector of observed values
-#' @param n dim(z)[1]
+#' @param n dim(z)\[1\]
 #' @param x_betas design matrix for the trend
 #' @param lambda regularization parameter
 #' @returns value 
@@ -105,9 +108,9 @@ GetNeg2loglikelihoodTaperProfile <- function(theta, par.pos, ref_taper, locs,
 GetNeg2loglikelihoodProfile <- function(theta, par.pos, locs, x_covariates, 
                                         smooth.limits, z, n, x_betas, lambda) {
   
-  theta_list <- coco::getModelLists(theta = theta, par.pos = par.pos, type = 'diff')
+  theta_list <- cocons::getModelLists(theta = theta, par.pos = par.pos, type = 'diff')
   
-  Sigma_cpp <- coco::cov_rns(theta = theta_list[-1], locs = locs, 
+  Sigma_cpp <- cocons::cov_rns(theta = theta_list[-1], locs = locs, 
                               x_covariates =  x_covariates,
                               smooth_limits = smooth.limits)
   
@@ -121,7 +124,7 @@ GetNeg2loglikelihoodProfile <- function(theta, par.pos, locs, x_covariates,
   cholS <- base::chol(Sigma_cpp)
   logdet <- sum(log(diag(cholS)))
   
-  temp_thetas <- coco::getModelLists(theta = theta, par.pos = par.pos, type = 'classic')
+  temp_thetas <- cocons::getModelLists(theta = theta, par.pos = par.pos, type = 'classic')
   
   return(n * log(2 * pi) + 2 * logdet + quad_sum + 
            2 * n * lambda * exp(theta_list$scale[1]) * 
@@ -133,14 +136,15 @@ GetNeg2loglikelihoodProfile <- function(theta, par.pos, locs, x_covariates,
 #' GetNeg2loglikelihood
 #' @description compute the negative 2 log likelihood based on theta
 #'
-#' @usage GetNeg2loglikelihood(theta, par.pos, locs, x_covariates, smooth.limits, z, n, lambda)
+#' @usage GetNeg2loglikelihood(theta, par.pos, locs, x_covariates, 
+#' smooth.limits, z, n, lambda)
 #' @param theta a vector with parameters values
 #' @param par.pos par.pos list
 #' @param locs spatial location matrix
 #' @param x_covariates design matrix
 #' @param smooth.limits smooth.limits
 #' @param z a vector of observed values
-#' @param n dim(z)[1]
+#' @param n dim(z)\[1\]
 #' @param lambda regularization parameter
 #' @returns value
 #' @author Federico Blasi
@@ -155,9 +159,9 @@ GetNeg2loglikelihood <- function(theta,
   
   sum_logliks <- 0
   
-  theta_list <- coco::getModelLists(theta = theta, par.pos = par.pos, type = 'diff')
+  theta_list <- cocons::getModelLists(theta = theta, par.pos = par.pos, type = 'diff')
   
-  Sigma_cpp <- coco::cov_rns(theta = theta_list[-1], locs = locs, x_covariates =  x_covariates,
+  Sigma_cpp <- cocons::cov_rns(theta = theta_list[-1], locs = locs, x_covariates =  x_covariates,
                               smooth_limits = smooth.limits)
   
   possibleError <- tryCatch(cholS <- base::chol(Sigma_cpp), error = function(e) e)

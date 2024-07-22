@@ -4,7 +4,8 @@
 \alias{cocoOptim}
 \title{Optimizer for object class coco}
 \usage{
-cocoOptim(coco.object, boundaries = list(), ncores = parallel::detectCores(), optim.control, optim.type,...)
+cocoOptim(coco.object, boundaries = list(), 
+ncores = parallel::detectCores(), optim.control, optim.type,...)
 }
 \arguments{
 \item{coco.object}{a coco object. See ?coco()}

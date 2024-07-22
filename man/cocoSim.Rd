@@ -4,7 +4,8 @@
 \alias{cocoSim}
 \title{Marginal simulation of Gaussian processes with nonstationary covariance function}
 \usage{
-cocoSim(coco.object, pars, n, seed, standardize, type = 'classic', sim.type = NULL, cond.info = NULL)
+cocoSim(coco.object, pars, n, seed, standardize, 
+type = 'classic', sim.type = NULL, cond.info = NULL)
 }
 \arguments{
 \item{coco.object}{a vector of length p, where p is the number of parameters for}
