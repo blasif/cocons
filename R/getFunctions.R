@@ -347,7 +347,7 @@ getEstims <- function(coco.object){
 #' 
 getScale <- function(x, mean.vector = NULL, sd.vector = NULL){
   
-  if(methods::is(x, 'coco')){
+  if(methods::is(x, "cocons")){
     
     x_std <- getDesignMatrix(x@model.list, x@data)$model.matrix
     
@@ -610,7 +610,7 @@ getBoundaries <- function(x, lower.value, upper.value){
   
   if(upper.value < lower.value){stop('upper.value lower than lower.value')}
   
-  if(methods::is(x,'coco')){
+  if(methods::is(x,"cocons")){
     
     tmp_par.pos <- cocons::getDesignMatrix(model.list = x@model.list,
                                           data = x@data)$par.pos
@@ -656,7 +656,7 @@ getBoundariesV2 <- function(coco.object,
                             nugget.limits){
   
   if(!is.null(coco.object)){
-    if(methods::is(coco.object,'coco')){
+    if(methods::is(coco.object,"cocons")){
       
       limits <- rbind(mean.limits,
                       std.dev.limits,
@@ -722,7 +722,7 @@ getBoundariesV3 <- function(coco.object,
                             nugget.max.effects){
   
   if(!is.null(coco.object)){
-    if(methods::is(coco.object,'coco')){
+    if(methods::is(coco.object,"cocons")){
       
       # lower bounds for global effects
       
@@ -877,7 +877,7 @@ getHessian <- function(coco.object, ncores = parallel::detectCores() - 1,
     
     cl <- parallel::makeCluster(ncores)
     parallel::setDefaultCluster(cl = cl)
-    parallel::clusterEvalQ(cl, library('coco'))
+    parallel::clusterEvalQ(cl, library("cocons"))
     
     parallel::clusterExport(cl = cl, list("z", "x_covariates", "coco.info",
                                           "locs", "n", "par.pos", "eps",
@@ -990,7 +990,7 @@ getHessian <- function(coco.object, ncores = parallel::detectCores() - 1,
 
     cl <- parallel::makeCluster(ncores)
     parallel::setDefaultCluster(cl = cl)
-    parallel::clusterEvalQ(cl, library('coco'))
+    parallel::clusterEvalQ(cl, library("cocons"))
     
     parallel::clusterExport(cl = cl, list("z", "x_covariates", "coco.info",
                                           "locs", "n", "par.pos", "eps",

@@ -78,7 +78,7 @@ cocoOptim <- function(coco.object, boundaries = list(),
       }
       
       parallel::setDefaultCluster(cl = cl)
-      parallel::clusterEvalQ(cl, library("coco"))
+      parallel::clusterEvalQ(cl, library("cocons"))
       
       args_optim <- list(
         "fn" = cocons::GetNeg2loglikelihood,
@@ -195,7 +195,7 @@ cocoOptim <- function(coco.object, boundaries = list(),
       }
       
       parallel::setDefaultCluster(cl = cl)
-      parallel::clusterEvalQ(cl, library("coco"))
+      parallel::clusterEvalQ(cl, library("cocons"))
       
       # factoring out betas
       tmp_par_pos <- designMatrix$par.pos
@@ -332,7 +332,7 @@ cocoOptim <- function(coco.object, boundaries = list(),
       }
       
       parallel::setDefaultCluster(cl = cl)
-      parallel::clusterEvalQ(cl, library("coco"))
+      parallel::clusterEvalQ(cl, library("cocons"))
       parallel::clusterEvalQ(cl, library("spam"))
       parallel::clusterEvalQ(cl, library("spam64"))
       parallel::clusterEvalQ(cl, options(spam.cholupdatesingular = "error"))
@@ -453,7 +453,7 @@ cocoOptim <- function(coco.object, boundaries = list(),
       }
       
       parallel::setDefaultCluster(cl = cl)
-      parallel::clusterEvalQ(cl, library("coco"))
+      parallel::clusterEvalQ(cl, library("cocons"))
       parallel::clusterEvalQ(cl, library("spam"))
       parallel::clusterEvalQ(cl, library("spam64"))
       parallel::clusterEvalQ(cl, options(spam.cholupdatesingular = "error"))
