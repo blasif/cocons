@@ -1,2 +1,2 @@
-# coco
-R package coco
+# cocons
+R package cocons
