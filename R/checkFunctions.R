@@ -6,7 +6,7 @@
 
 .coco.update.optim.control <- function(optim.control){
   
-  to_update <- getOption("coco.Optim.Control")
+  to_update <- getOption("cocons.Optim.Control")
   
   if(is.null(optim.control$parallel$forward)){
     optim.control$parallel$forward <- to_update$parallel$forward
@@ -168,8 +168,8 @@
     stop("model.list not a list")
   }
   
-  if (any(names(model.list) != getOption("coco.Dictionary"))) {
-    stop("aspect names do not match reference ones. Please check getOption(\"coco.Dictionary\")")
+  if (any(names(model.list) != getOption("cocons.Dictionary"))) {
+    stop("aspect names do not match reference ones. Please check getOption(\"cocons.Dictionary\")")
   }
   
   lapply(model.list, FUN = function(x) {
