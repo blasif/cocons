@@ -67,16 +67,16 @@ getCovMatrix <- function(coco.object, type = "global", index = NULL){
   }
 }
 
-#' Based on a set of predictions retrieves the Logrank
+#' Based on a set of predictions retrieves the LogScore
 #' @description Retrieves the estimated spatial effects of the spatial structure
 #'
-#' @usage getLogRank(z.pred, mean.pred, sd.pred)
+#' @usage getLogScore(z.pred, mean.pred, sd.pred)
 #' @param z.pred ...
 #' @param mean.pred ...
 #' @param sd.pred ...
-#' @returns retrieves LogRank
+#' @returns retrieves LogScore
 #' @author Federico Blasi
-getLogRank <- function(z.pred, mean.pred, sd.pred){
+getLogScore <- function(z.pred, mean.pred, sd.pred){
   
   return( (log(2 * pi) + ((z.pred - mean.pred) / sd.pred)^2)/2 + log(sd.pred))
   

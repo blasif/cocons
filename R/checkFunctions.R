@@ -32,7 +32,7 @@
     optim.control$control$lmm <- to_update$control$lmm
   }
   
-  optim.control$control$hessian <- FALSE
+  optim.control$hessian <- FALSE
 
   return(optim.control)
   

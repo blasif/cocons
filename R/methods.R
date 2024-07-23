@@ -106,9 +106,9 @@ setMethod("plot",
                   #     col = tim.colors(64)[cut(tp_se, breaks = quantile(x = tp_se, probs = seq(0, 1, length.out = 64)), 
                   #                              labels = FALSE, include.lowest = T)], xlab = colnames(x@locs)[1],ylab=colnames(x@locs)[2])
                   
-                  fields::quilt.plot(x@locs, tp_mr, main = "eff.range", ...)
+                  fields::quilt.plot(x@locs, tp_mr, main = "approx eff.scale", ...)
                   
-                  #plot(x@locs[,1], x@locs[,2], pch=20, main = "eff.range",
+                  #plot(x@locs[,1], x@locs[,2], pch=20, main = "approx eff.scale",
                   #     col = tim.colors(64)[cut(tp_mr, breaks = quantile(x = tp_mr, probs = seq(0, 1, length.out = 64)), 
                   #                              labels = FALSE, include.lowest = T)], xlab = colnames(x@locs)[1],ylab=colnames(x@locs)[2])
                   
@@ -270,7 +270,7 @@ setMethod("plot",
                 graphics::par(mfrow = c(2, 2))
                 
                 fields::quilt.plot(x@locs, tp_smooth, ..., main = "smooth")
-                fields::quilt.plot(x@locs, tp_eff_range, ..., main = "approx eff.range")
+                fields::quilt.plot(x@locs, tp_eff_range, ..., main = "approx eff.scale")
                 fields::quilt.plot(x@locs, tp_se, ..., main = "se")
                 fields::quilt.plot(x@locs, tp_nugget_se, ..., main = "nugget se")
               }
