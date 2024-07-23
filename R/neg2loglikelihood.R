@@ -20,7 +20,7 @@ GetNeg2loglikelihoodTaper <- function(theta, par.pos, ref_taper, locs,
                                       x_covariates, smooth.limits,
                                       cholS, z, n, lambda) {
   
-  theta_list <- getModelLists(theta = theta, par.pos = par.pos, type = 'diff')
+  theta_list <- getModelLists(theta = theta, par.pos = par.pos, type = "diff")
   
   ref_taper@entries <- ref_taper@entries * cov_rns_taper_optimized_range(theta = theta_list[-1], 
                                                                          locs = locs, 
@@ -64,7 +64,7 @@ GetNeg2loglikelihoodTaperProfile <- function(theta, par.pos, ref_taper, locs,
                                              x_covariates, smooth.limits,
                                              cholS, z, n, lambda) {
   
-  theta_list <- getModelLists(theta = theta, par.pos = par.pos, type = 'diff')
+  theta_list <- getModelLists(theta = theta, par.pos = par.pos, type = "diff")
   
   theta_list$std.dev[1] <- 0
   
@@ -108,7 +108,7 @@ GetNeg2loglikelihoodTaperProfile <- function(theta, par.pos, ref_taper, locs,
 GetNeg2loglikelihoodProfile <- function(theta, par.pos, locs, x_covariates, 
                                         smooth.limits, z, n, x_betas, lambda) {
   
-  theta_list <- cocons::getModelLists(theta = theta, par.pos = par.pos, type = 'diff')
+  theta_list <- cocons::getModelLists(theta = theta, par.pos = par.pos, type = "diff")
   
   Sigma_cpp <- cocons::cov_rns(theta = theta_list[-1], locs = locs, 
                               x_covariates =  x_covariates,
@@ -124,7 +124,7 @@ GetNeg2loglikelihoodProfile <- function(theta, par.pos, locs, x_covariates,
   cholS <- base::chol(Sigma_cpp)
   logdet <- sum(log(diag(cholS)))
   
-  temp_thetas <- cocons::getModelLists(theta = theta, par.pos = par.pos, type = 'classic')
+  temp_thetas <- cocons::getModelLists(theta = theta, par.pos = par.pos, type = "classic")
   
   return(n * log(2 * pi) + 2 * logdet + quad_sum + 
            2 * n * lambda * exp(theta_list$scale[1]) * 
@@ -159,7 +159,7 @@ GetNeg2loglikelihood <- function(theta,
   
   sum_logliks <- 0
   
-  theta_list <- cocons::getModelLists(theta = theta, par.pos = par.pos, type = 'diff')
+  theta_list <- cocons::getModelLists(theta = theta, par.pos = par.pos, type = "diff")
   
   Sigma_cpp <- cocons::cov_rns(theta = theta_list[-1], locs = locs, x_covariates =  x_covariates,
                               smooth_limits = smooth.limits)

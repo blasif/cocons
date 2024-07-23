@@ -21,7 +21,7 @@ setClass("coco", slots = list(
   locs = "matrix",
   z = "matrix",
   model.list = "list",
-  info = 'list',
+  info = "list",
   output = "list"
 ), package = "cocons", prototype = list(output = list()))
 
@@ -102,19 +102,19 @@ setMethod("plot",
                   
                   fields::quilt.plot(x@locs, tp_se, main = "se", ...)
                   
-                  #plot(x@locs[,1], x@locs[,2], pch=20, main = 'se',
+                  #plot(x@locs[,1], x@locs[,2], pch=20, main = "se",
                   #     col = tim.colors(64)[cut(tp_se, breaks = quantile(x = tp_se, probs = seq(0, 1, length.out = 64)), 
                   #                              labels = FALSE, include.lowest = T)], xlab = colnames(x@locs)[1],ylab=colnames(x@locs)[2])
                   
                   fields::quilt.plot(x@locs, tp_mr, main = "eff.range", ...)
                   
-                  #plot(x@locs[,1], x@locs[,2], pch=20, main = 'eff.range',
+                  #plot(x@locs[,1], x@locs[,2], pch=20, main = "eff.range",
                   #     col = tim.colors(64)[cut(tp_mr, breaks = quantile(x = tp_mr, probs = seq(0, 1, length.out = 64)), 
                   #                              labels = FALSE, include.lowest = T)], xlab = colnames(x@locs)[1],ylab=colnames(x@locs)[2])
                   
                   fields::quilt.plot(x@locs, tp_ga, main = "ga", ...)
                   
-                  #plot(x@locs[,1], x@locs[,2], pch=20, main = 'ga',
+                  #plot(x@locs[,1], x@locs[,2], pch=20, main = "ga",
                   #     col = tim.colors(64)[cut(tp_ga, breaks = quantile(x = tp_ga, probs = seq(0, 1, length.out = 64)), 
                   #                              labels = FALSE, include.lowest = T)], xlab = colnames(x@locs)[1],ylab=colnames(x@locs)[2])
                   
@@ -127,7 +127,7 @@ setMethod("plot",
                 # ellipse grid
                 
                 if (!is.null(type)) {
-                  if(type == 'ellipse'){
+                  if(type == "ellipse"){
                     
                     graphics::par(mfrow = c(1, 1))
                     
@@ -252,18 +252,18 @@ setMethod("plot",
                 
                 tp_nugget_se <- sqrt(exp(X_std$std.covs %*% theta_list$nugget))
                 
-                tmp_list <- list('x' = x@locs[, 1],
-                                 'y' = x@locs[, 2],
-                                 'main' = 'trend',
-                                 'z' = X_std$std.covs %*% theta_list$mean)
+                tmp_list <- list("x" = x@locs[, 1],
+                                 "y" = x@locs[, 2],
+                                 "main" = "trend",
+                                 "z" = X_std$std.covs %*% theta_list$mean)
                 
                 graphics::par(mfrow = c(1, 2))
                 do.call(fields::quilt.plot, args = tmp_list)
                 
-                tmp_list <- list('x' = x@locs[, 1],
-                                 'y' = x@locs[, 2],
-                                 'main' = 'residuals',
-                                 'z' = x@z - X_std$std.covs %*% theta_list$mean)
+                tmp_list <- list("x" = x@locs[, 1],
+                                 "y" = x@locs[, 2],
+                                 "main" = "residuals",
+                                 "z" = x@z - X_std$std.covs %*% theta_list$mean)
                 
                 do.call(fields::quilt.plot, args = tmp_list)
                 
@@ -321,7 +321,7 @@ setMethod("print", signature(x = "coco"),
           definition = 
             function(x, inv.hess = NULL, ...){
               
-              if(length(x@output) == 0){stop('object has not been fited yet.')}
+              if(length(x@output) == 0){stop("object has not been fited yet.")}
               
               tmp_matrix <- cocons::getDesignMatrix(model.list = x@model.list, 
                                                    data = x@data)
@@ -331,7 +331,7 @@ setMethod("print", signature(x = "coco"),
               
               adjusted_eff_values <- cocons::getModelLists(x@output$par, 
                                                           tmp_matrix$par.pos,
-                                                          type = 'diff') 
+                                                          type = "diff") 
 
               if(!is.null(inv.hess)){
                 
@@ -384,7 +384,7 @@ setMethod("print", signature(x = "coco"),
                 
               }
               
-              if(x@type == 'dense'){
+              if(x@type == "dense"){
                 
                 adjusted_effects[1, ] <- adjusted_eff_values$mean
                 adjusted_effects[2, ] <- adjusted_eff_values$std.dev
@@ -423,7 +423,7 @@ setMethod("print", signature(x = "coco"),
                                        no = "-"),
                                 ifelse(!is.na(tmp_matrix$par.pos$nugget[ii]), ifelse(tmp_matrix$par.pos$nugget[ii], paste0(round(adjusted_effects[7,ii], 3)," (",
                                                                                                                            round(adjusted_se[7,ii], 3),")"), "-"),
-                                                                                     no = '-')
+                                                                                     no = "-")
                     )
                     )
                   }
@@ -446,7 +446,7 @@ setMethod("print", signature(x = "coco"),
                                 ifelse(tmp_matrix$par.pos$aniso[ii], round(adjusted_effects[4,ii],3), "-"),
                                 ifelse(tmp_matrix$par.pos$tilt[ii], round(adjusted_effects[5,ii],3), "-"),
                                 ifelse(tmp_matrix$par.pos$smooth[ii], round(adjusted_effects[6, ii],3), "-"),
-                                ifelse(!is.na(tmp_matrix$par.pos$nugget[ii]), ifelse(tmp_matrix$par.pos$nugget[ii], round(adjusted_effects[7,ii],3),'-'),'-')
+                                ifelse(!is.na(tmp_matrix$par.pos$nugget[ii]), ifelse(tmp_matrix$par.pos$nugget[ii], round(adjusted_effects[7,ii],3),"-"),"-")
                     )
                     )
                   }
@@ -459,7 +459,7 @@ setMethod("print", signature(x = "coco"),
               
               if(x@type == "sparse"){
                 
-                # warning('taper estimations are biased.')
+                # warning("taper estimations are biased.")
                 
                 adjusted_effects[1, ] <- adjusted_eff_values$mean
                 adjusted_effects[2, ] <- adjusted_eff_values$std.dev
@@ -493,7 +493,7 @@ setMethod("print", signature(x = "coco"),
                                        no = "-"),
                                 ifelse(!is.na(tmp_matrix$par.pos$nugget[ii]), ifelse(tmp_matrix$par.pos$nugget[ii], paste0(round(adjusted_effects[7,ii], 3)," (",
                                                                                                                            round(adjusted_se[7,ii], 3),")"), "-"),
-                                       no = '-')
+                                       no = "-")
                     )
                     )
                   }
@@ -514,7 +514,7 @@ setMethod("print", signature(x = "coco"),
                                 ifelse(tmp_matrix$par.pos$std.dev[ii], round(adjusted_effects[2,ii], 3), "-"),
                                 ifelse(tmp_matrix$par.pos$scale[ii], round(adjusted_effects[3,ii],3), "-"),
                                 ifelse(tmp_matrix$par.pos$smooth[ii], round(adjusted_effects[6, ii],3), "-"),
-                                ifelse(!is.na(tmp_matrix$par.pos$nugget[ii]), ifelse(tmp_matrix$par.pos$nugget[ii], round(adjusted_effects[7,ii],3),'-'),'-')
+                                ifelse(!is.na(tmp_matrix$par.pos$nugget[ii]), ifelse(tmp_matrix$par.pos$nugget[ii], round(adjusted_effects[7,ii],3),"-"),"-")
                     )
                     )
                   }
@@ -544,13 +544,13 @@ setMethod("show",
           signature(object = "coco"),
           function(object){
             
-            if(object@type == 'dense'){
+            if(object@type == "dense"){
               cat(sprintf("%-30s %30s\n", "coco object", object@type))
-              cat(sprintf("%-30s %30s\n", "fitted", ifelse(identical(object@output, list()), yes = 'no', 
-                                                           no = 'yes')))
+              cat(sprintf("%-30s %30s\n", "fitted", ifelse(identical(object@output, list()), yes = "no", 
+                                                           no = "yes")))
               
               cat(rep("-", 40), "\n")
-              cat(sprintf("%-30s %30s\n", "dataset dim", paste0(dim(object@data), collapse = ', ')))
+              cat(sprintf("%-30s %30s\n", "dataset dim", paste0(dim(object@data), collapse = ", ")))
               
               # number of parameters
               
@@ -564,18 +564,18 @@ setMethod("show",
               
               # covariates names
               
-              cat(sprintf("%-30s %10s", "covariates ", paste0(colnames(coco_info_light$model.matrix),collapse = ', ')))
+              cat(sprintf("%-30s %10s", "covariates ", paste0(colnames(coco_info_light$model.matrix),collapse = ", ")))
               
             }
             
-            if(object@type == 'sparse'){
+            if(object@type == "sparse"){
               cat(sprintf("%-30s %30s\n", "coco object", object@type))
-              cat(sprintf("%-30s %30s\n", "fitted", ifelse(identical(object@output, list()), yes = 'no', 
-                                                           no = 'yes')))
+              cat(sprintf("%-30s %30s\n", "fitted", ifelse(identical(object@output, list()), yes = "no", 
+                                                           no = "yes")))
               # cat(sprintf("%-30s %30s\n", "taper function", paste(object@info$taper)))
               
               cat(rep("-", 40), "\n")
-              cat(sprintf("%-30s %30s\n", "dataset dim", paste0(dim(object@data), collapse = ', ')))
+              cat(sprintf("%-30s %30s\n", "dataset dim", paste0(dim(object@data), collapse = ", ")))
               
               # number of parameters
               
@@ -589,7 +589,7 @@ setMethod("show",
               
               # covariates names
               
-              cat(sprintf("%-30s %10s", "covariates ", paste0(colnames(coco_info_light$model.matrix),collapse = ', ')))
+              cat(sprintf("%-30s %10s", "covariates ", paste0(colnames(coco_info_light$model.matrix),collapse = ", ")))
               
             }
             

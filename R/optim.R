@@ -16,7 +16,7 @@
 #' 
 cocoOptim <- function(coco.object, boundaries = list(), 
                        ncores = parallel::detectCores(), 
-                       optim.control = NULL, optim.type = 'mle', ...){
+                       optim.control = NULL, optim.type = "mle", ...){
   
   if(length(boundaries) > 0){
     .cocons.check.boundaries(boundaries)
@@ -27,7 +27,7 @@ cocoOptim <- function(coco.object, boundaries = list(),
   
   if (coco.object@type == "dense") {
     
-    if(optim.type == 'mle'){
+    if(optim.type == "mle"){
       
       designMatrix <- cocons::getDesignMatrix(
         model.list = coco.object@model.list,
@@ -99,7 +99,7 @@ cocoOptim <- function(coco.object, boundaries = list(),
       
       # if optim.control not provided, then some general Optim.control is provided
       if (is.null(optim.control)) {
-        optim.control <- getOption("coco.Optim.Control")
+        optim.control <- getOption("cocons.Optim.Control")
       } else{
         optim.control <- .cocons.update.optim.control(optim.control)
       }
@@ -123,20 +123,20 @@ cocoOptim <- function(coco.object, boundaries = list(),
       coco.object@info$boundaries <- boundaries
       coco.object@info$mean.vector <- tmp_values$mean.vector
       coco.object@info$sd.vector <- tmp_values$sd.vector
-      coco.object@info$optim.type <- 'mle'
+      coco.object@info$optim.type <- "mle"
       
       return(coco.object)
       
     }
     
-    if(optim.type == 'pmle'){
+    if(optim.type == "pmle"){
       
       designMatrix <- cocons::getDesignMatrix(
         model.list = coco.object@model.list,
         data = coco.object@data
       )
       
-      if(!is.logical(designMatrix$par.pos$mean)){stop('profile ML only available when considering covariates in the trend')}
+      if(!is.logical(designMatrix$par.pos$mean)){stop("profile ML only available when considering covariates in the trend")}
       
       if (length(boundaries) == 0) {
         boundaries <- cocons::getBoundaries(
@@ -225,7 +225,7 @@ cocoOptim <- function(coco.object, boundaries = list(),
       
       # if optim.control not provided, then some general Optim.control is provided
       if (is.null(optim.control)) {
-        optim.control <- getOption("coco.Optim.Control")
+        optim.control <- getOption("cocons.Optim.Control")
       } else{
         optim.control <- .cocons.update.optim.control(optim.control)
       }
@@ -238,7 +238,7 @@ cocoOptim <- function(coco.object, boundaries = list(),
       parallel::stopCluster(cl)
       
       theta_list <- cocons::getModelLists(theta = output_dense$par, 
-                                         par.pos = args_optim$par.pos, type = 'diff')
+                                         par.pos = args_optim$par.pos, type = "diff")
       
       Sigma_cpp <- cocons::cov_rns(theta = theta_list[-1], locs = args_optim$locs,
                                   x_covariates  =  args_optim$x_covariates,
@@ -260,7 +260,7 @@ cocoOptim <- function(coco.object, boundaries = list(),
       coco.object@info$boundaries <- tmp_boundaries
       coco.object@info$mean.vector <- tmp_values$mean.vector
       coco.object@info$sd.vector <- tmp_values$sd.vector
-      coco.object@info$optim.type <- 'pmle'
+      coco.object@info$optim.type <- "pmle"
       
       return(coco.object)
       
@@ -270,7 +270,7 @@ cocoOptim <- function(coco.object, boundaries = list(),
   
   if (coco.object@type == "sparse") {
     
-    if(optim.type == 'mle'){
+    if(optim.type == "mle"){
       
       designMatrix <- cocons::getDesignMatrix(
         model.list = coco.object@model.list,
@@ -362,7 +362,7 @@ cocoOptim <- function(coco.object, boundaries = list(),
       
       # if optim.control not provided, then some general Optim.control is provided
       if (is.null(optim.control)) {
-        optim.control <- getOption("coco.Optim.Control")
+        optim.control <- getOption("cocons.Optim.Control")
       } else{
         optim.control <- .cocons.update.optim.control(optim.control)
       }
@@ -384,13 +384,13 @@ cocoOptim <- function(coco.object, boundaries = list(),
       coco.object@info$boundaries <- boundaries
       coco.object@info$mean.vector <- tmp_values$mean.vector
       coco.object@info$sd.vector <- tmp_values$sd.vector
-      coco.object@info$optim.type <- 'mle'
+      coco.object@info$optim.type <- "mle"
       # Add some warning related to the convergence of the optim routine
       
       return(coco.object)
     }
     
-    if(optim.type == 'pmle'){
+    if(optim.type == "pmle"){
       
       designMatrix <- cocons::getDesignMatrix(
         model.list = coco.object@model.list,
@@ -497,7 +497,7 @@ cocoOptim <- function(coco.object, boundaries = list(),
       
       # if optim.control not provided, then some general Optim.control is provided
       if (is.null(optim.control)) {
-        optim.control <- getOption("coco.Optim.Control")
+        optim.control <- getOption("cocons.Optim.Control")
       } else{
         optim.control <- .cocons.update.optim.control(optim.control)
       }
@@ -511,7 +511,7 @@ cocoOptim <- function(coco.object, boundaries = list(),
       
       if(T){
         
-        theta_list <- getModelLists(theta = output_taper$par, par.pos = args_optim$par.pos, type = 'diff')
+        theta_list <- getModelLists(theta = output_taper$par, par.pos = args_optim$par.pos, type = "diff")
         
         args_optim$ref_taper@entries <- args_optim$ref_taper@entries * cov_rns_taper_optimized_range(theta = theta_list[-1], 
                                                                                                      locs = args_optim$locs, 
@@ -532,7 +532,7 @@ cocoOptim <- function(coco.object, boundaries = list(),
       tmp_global_scale <- output_taper$par[first_scale]
       
       first_par <- log(sigma_0) + tmp_global_scale
-      names(first_par) <- 'std.dev.limits'
+      names(first_par) <- "std.dev.limits"
       second_par <- log(sigma_0) - tmp_global_scale
       
       if(is.logical(args_optim$par.pos$mean)){
@@ -575,7 +575,7 @@ cocoOptim <- function(coco.object, boundaries = list(),
       coco.object@info$boundaries <- boundaries_temp
       coco.object@info$mean.vector <- tmp_values$mean.vector
       coco.object@info$sd.vector <- tmp_values$sd.vector
-      coco.object@info$optim.type <- 'pmle'
+      coco.object@info$optim.type <- "pmle"
       # Add some warning related to the convergence of the optim routine
       
       return(coco.object)

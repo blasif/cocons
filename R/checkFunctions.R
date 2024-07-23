@@ -244,9 +244,9 @@
 }
 
 .cocons.check.ncores <- function(ncores){
-  #if(!is.integer(ncores)){stop('ncores needs to be an integer.')}
-  if(ncores > parallel::detectCores()){stop('ncores must be less than available cores.')}
-  if(ncores < 1){stop('ncores must be >=1')}
+  #if(!is.integer(ncores)){stop("ncores needs to be an integer.")}
+  if(ncores > parallel::detectCores()){stop("ncores must be less than available cores.")}
+  if(ncores < 1){stop("ncores must be >=1")}
 }
 
 .cocons.check.boundaries <- function(boundaries){

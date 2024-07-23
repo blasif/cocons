@@ -10,17 +10,17 @@
 #' @param index index to perform local covariance matrix (not implemented yet)
 #' @returns a vector with the adjusted trend
 #' @author Federico Blasi
-getCovMatrix <- function(coco.object, type = 'global', index = NULL){
+getCovMatrix <- function(coco.object, type = "global", index = NULL){
   
   x_covs <- cocons::getScale(coco.object)$std.covs
   
   par.pos <- getDesignMatrix(coco.object@model.list, data = coco.object@data)$par.pos
   
-  if(coco.object@type == 'dense'){
+  if(coco.object@type == "dense"){
     
-    if(type == 'global'){
+    if(type == "global"){
       theta_list <- cocons::getModelLists(coco.object@output$par,par.pos = par.pos, 
-                                         type = 'diff')
+                                         type = "diff")
       
       return(cocons::cov_rns(theta = theta_list,
                             locs = coco.object@locs,
@@ -28,19 +28,19 @@ getCovMatrix <- function(coco.object, type = 'global', index = NULL){
                             smooth_limits = coco.object@info$smooth_limits))
     }
     
-    if(type == 'local'){
+    if(type == "local"){
       
     }
     
   }
   
-  if(coco.object@type == 'sparse'){
+  if(coco.object@type == "sparse"){
     
-    if(type == 'global'){
+    if(type == "global"){
       
       
       theta_list <- cocons::getModelLists(coco.object@output$par,par.pos = par.pos, 
-                                         type = 'diff')
+                                         type = "diff")
       
       # taper
       ref_taper <- coco.object@info$taper(
@@ -59,7 +59,7 @@ getCovMatrix <- function(coco.object, type = 'global', index = NULL){
       
     }
     
-    if(type == 'local'){
+    if(type == "local"){
       
       
     }
@@ -122,7 +122,7 @@ getSpatEffects <- function(coco.object){
                            sd.vector = coco.object@info$sd.vector
   )
   
-  if(coco.object@type == 'dense'){
+  if(coco.object@type == "dense"){
     
     tp_se <- exp(0.5 * X_std$std.covs %*% theta_list$std.dev)
     tp_ga <- exp(X_std$std.covs %*% theta_list$aniso)
@@ -132,17 +132,17 @@ getSpatEffects <- function(coco.object){
     tp_mr_x <- sin(tp_tl) * exp(X_std$std.covs %*% theta_list$scale)
     tp_mr_y <- sin(tp_tl) * exp(X_std$std.covs %*% theta_list$scale) * exp(X_std$std.covs %*% theta_list$aniso)
     
-    return(list('sd' = tp_se,
-                'scale_x' = tp_mr_x,
-                'scale_y' = tp_mr_y,
-                'aniso' = tp_ga,
-                'tilt' = cos(tp_tl),
-                'smooth' = tp_smooth,
-                'nugget' = tp_ng))
+    return(list("sd" = tp_se,
+                "scale_x" = tp_mr_x,
+                "scale_y" = tp_mr_y,
+                "aniso" = tp_ga,
+                "tilt" = cos(tp_tl),
+                "smooth" = tp_smooth,
+                "nugget" = tp_ng))
     
   }
   
-  if(coco.object@type == 'sparse'){
+  if(coco.object@type == "sparse"){
     
     tp_se <- exp(0.5 * X_std$std.covs %*% theta_list$std.dev)
     #tp_ga <- exp(X_std$std.covs %*% theta_list$aniso)
@@ -152,10 +152,10 @@ getSpatEffects <- function(coco.object){
     tp_mr <- exp(X_std$std.covs %*% theta_list$scale)
     #tp_mr_y <- sin(tp_tl) * exp(X_std$std.covs %*% theta_list$scale) * exp(X_std$std.covs %*% theta_list$aniso)
     
-    return(list('sd' = tp_se,
-                'scale_x' = tp_mr,
-                'smooth' = tp_smooth,
-                'nugget' = tp_ng))
+    return(list("sd" = tp_se,
+                "scale_x" = tp_mr,
+                "smooth" = tp_smooth,
+                "nugget" = tp_ng))
     
   }
   
@@ -289,7 +289,7 @@ getLoglik <- function(coco.object){
 getBIC <- function(coco.object){
   
   if(length(coco.object@output) == 0){
-    stop('object has not been fitted yet.')
+    stop("object has not been fitted yet.")
   }
   
   temp_par.pos <- cocons::getDesignMatrix(coco.object@model.list,coco.object@data)$par.pos
@@ -309,7 +309,7 @@ getBIC <- function(coco.object){
 getAIC <- function(coco.object){
   
   if(length(coco.object@output) == 0){
-    stop('object has not been fitted yet.')
+    stop("object has not been fitted yet.")
   }
   
   temp_par.pos <- cocons::getDesignMatrix(coco.object@model.list,coco.object@data)$par.pos
@@ -331,7 +331,7 @@ getEstims <- function(coco.object){
   return(cocons::getModelLists(coco.object@output$par, 
                               par.pos = getDesignMatrix(coco.object@model.list,
                                                         data = coco.object@data)$par.pos,
-                              type = 'diff'))
+                              type = "diff"))
 }
 
 #' Fast and simple standardization for the design matrix
@@ -347,7 +347,7 @@ getEstims <- function(coco.object){
 #' 
 getScale <- function(x, mean.vector = NULL, sd.vector = NULL){
   
-  if(methods::is(x, "cocons")){
+  if(methods::is(x, "coco")){
     
     x_std <- getDesignMatrix(x@model.list, x@data)$model.matrix
     
@@ -361,9 +361,9 @@ getScale <- function(x, mean.vector = NULL, sd.vector = NULL){
     }
     
     if(dim(x_std)[2] == 1){
-      return(list('std.covs' = x_std,
-                  'mean.vector' = mean.vector,
-                  'sd.vector' = sd.vector))
+      return(list("std.covs" = x_std,
+                  "mean.vector" = mean.vector,
+                  "sd.vector" = sd.vector))
     }
     
     for(ii in 2:dim(x_std)[2]){
@@ -372,9 +372,9 @@ getScale <- function(x, mean.vector = NULL, sd.vector = NULL){
       
     }
     
-    return(list('std.covs' = x_std,
-                'mean.vector' = mean.vector,
-                'sd.vector' = sd.vector))
+    return(list("std.covs" = x_std,
+                "mean.vector" = mean.vector,
+                "sd.vector" = sd.vector))
     
   } else{
     
@@ -388,9 +388,9 @@ getScale <- function(x, mean.vector = NULL, sd.vector = NULL){
     }
     
     if(dim(x)[2] == 1){
-      return(list('std.covs' = x,
-                  'mean.vector' = mean.vector,
-                  'sd.vector' = sd.vector))
+      return(list("std.covs" = x,
+                  "mean.vector" = mean.vector,
+                  "sd.vector" = sd.vector))
     }
     
     for(ii in 2:dim(x)[2]){
@@ -399,9 +399,9 @@ getScale <- function(x, mean.vector = NULL, sd.vector = NULL){
       
     }
     
-    return(list('std.covs' = x,
-                'mean.vector' = mean.vector,
-                'sd.vector' = sd.vector))
+    return(list("std.covs" = x,
+                "mean.vector" = mean.vector,
+                "sd.vector" = sd.vector))
   }
 }
 
@@ -443,7 +443,7 @@ getDesignMatrix <- function(model.list, data){
   # no formula detected, therefore no design matrix
   
   if(is.na(first_formula)){
-    warning('No formula detected')
+    warning("No formula detected")
     return(0)
   }
   
@@ -468,8 +468,8 @@ getDesignMatrix <- function(model.list, data){
     
     base::names(par.pos_list) <- base::names(model.list)
     
-    return(list('model.matrix' = stats::model.matrix(tmp_dense_formula, data),
-                'par.pos' = par.pos_list))
+    return(list("model.matrix" = stats::model.matrix(tmp_dense_formula, data),
+                "par.pos" = par.pos_list))
   }
   
   ####
@@ -530,8 +530,8 @@ getDesignMatrix <- function(model.list, data){
   
   base::names(par.pos_list) <- base::names(model.list)
   
-  return(list('model.matrix' = stats::model.matrix(tmp_dense_formula, data),
-              'par.pos' = par.pos_list)
+  return(list("model.matrix" = stats::model.matrix(tmp_dense_formula, data),
+              "par.pos" = par.pos_list)
   )
 }
 
@@ -547,7 +547,7 @@ getDesignMatrix <- function(model.list, data){
 #' a difference parameterization 'diff' . Default set to 'diff'.
 #' @returns a list() of different spatial aspects and mean required for the cov.rns functions
 #' @author Federico Blasi
-getModelLists <- function(theta, par.pos, type = 'diff'){
+getModelLists <- function(theta, par.pos, type = "diff"){
   
   # add a check here length theta and par.pos
   
@@ -570,11 +570,11 @@ getModelLists <- function(theta, par.pos, type = 'diff'){
   
   names(list_pars) <- names(par.pos)
   
-  if(type == 'classic'){
+  if(type == "classic"){
     return(list_pars)
   }
   
-  if(type == 'diff'){
+  if(type == "diff"){
     
     tmp_info <- lapply(par.pos, FUN = is.logical)
     
@@ -608,9 +608,9 @@ getModelLists <- function(theta, par.pos, type = 'diff'){
 #' 
 getBoundaries <- function(x, lower.value, upper.value){
   
-  if(upper.value < lower.value){stop('upper.value lower than lower.value')}
+  if(upper.value < lower.value){stop("upper.value lower than lower.value")}
   
-  if(methods::is(x,"cocons")){
+  if(methods::is(x,"coco")){
     
     tmp_par.pos <- cocons::getDesignMatrix(model.list = x@model.list,
                                           data = x@data)$par.pos
@@ -622,11 +622,11 @@ getBoundaries <- function(x, lower.value, upper.value){
     theta_upper <- rep(upper.value, length(theta_init))
     theta_lower <- rep(lower.value, length(theta_init))
     
-    return(list('theta_init' = theta_init,
-                'theta_upper' = theta_upper,
-                'theta_lower' = theta_lower))
+    return(list("theta_init" = theta_init,
+                "theta_upper" = theta_upper,
+                "theta_lower" = theta_lower))
     
-  } else {stop('provide an coco object.')}
+  } else {stop("provide an coco object.")}
   
 }
 
@@ -656,7 +656,7 @@ getBoundariesV2 <- function(coco.object,
                             nugget.limits){
   
   if(!is.null(coco.object)){
-    if(methods::is(coco.object,"cocons")){
+    if(methods::is(coco.object,"coco")){
       
       limits <- rbind(mean.limits,
                       std.dev.limits,
@@ -683,13 +683,13 @@ getBoundariesV2 <- function(coco.object,
         
       }
       
-      return(list('theta_init' = theta_init,
-                  'theta_upper' = theta_upper,
-                  'theta_lower' = theta_lower))
+      return(list("theta_init" = theta_init,
+                  "theta_upper" = theta_upper,
+                  "theta_lower" = theta_lower))
       
     }
     
-  } else{stop('coco.object required')}
+  } else{stop("coco.object required")}
 }
 
 #' Simple build of boundaries (v3)
@@ -722,7 +722,7 @@ getBoundariesV3 <- function(coco.object,
                             nugget.max.effects){
   
   if(!is.null(coco.object)){
-    if(methods::is(coco.object,"cocons")){
+    if(methods::is(coco.object,"coco")){
       
       # lower bounds for global effects
       
@@ -792,7 +792,7 @@ getBoundariesV3 <- function(coco.object,
       
       if(is.logical(tmp_par.pos$nugget)){
         
-        names(nugget.max.effects) <- 'nugget.max.effects'
+        names(nugget.max.effects) <- "nugget.max.effects"
         theta_lower <- append(theta_lower, rep(log(1/nugget.max.effects), sum(tmp_par.pos[[7]])))
         theta_init <- append(theta_init, rep(0,sum(tmp_par.pos[[7]])))
         theta_upper <- append(theta_upper, rep(log(nugget.max.effects), sum(tmp_par.pos[[7]])))
@@ -814,13 +814,13 @@ getBoundariesV3 <- function(coco.object,
       
       theta_init[first_smooth] <- theta_lower[first_smooth]
       
-      return(list('theta_init' = theta_init,
-                  'theta_upper' = theta_upper,
-                  'theta_lower' = theta_lower))
+      return(list("theta_init" = theta_init,
+                  "theta_upper" = theta_upper,
+                  "theta_lower" = theta_lower))
       
     }
     
-  } else{stop('coco.object required')}
+  } else{stop("coco object required")}
 }
 
 #' getHessian
@@ -835,7 +835,7 @@ getBoundariesV3 <- function(coco.object,
 getHessian <- function(coco.object, ncores = parallel::detectCores() - 1, 
                        eps = .Machine$double.eps^(1/4)){
   
-  if(coco.object@type == 'dense'){
+  if(coco.object@type == "dense"){
     
     f00 <- coco.object@output$value
     
@@ -943,7 +943,7 @@ getHessian <- function(coco.object, ncores = parallel::detectCores() - 1,
     return(H)
   }
   
-  if(coco.object@type == 'sparse'){
+  if(coco.object@type == "sparse"){
     
     f00 <- coco.object@output$value
     

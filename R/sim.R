@@ -26,19 +26,19 @@ cocoSim <- function(coco.object,
                      n = 1,
                      seed = NULL, 
                      standardize = TRUE, 
-                     type = 'classic',
+                     type = "classic",
                      sim.type = NULL,
                      cond.info = NULL){
   
   # add a check to test whether length of pars match model specification
   
-  if(!(coco.object@type %in% c('dense', 'sparse'))){stop('')} # should not be necessary if using a 
+  if(!(coco.object@type %in% c("dense", "sparse"))){stop("")} # should not be necessary if using a 
   # valid coco object
   
-  if(coco.object@type == 'dense'){
+  if(coco.object@type == "dense"){
     
     if(!is.null(sim.type)){
-      if(sim.type == 'cond'){
+      if(sim.type == "cond"){
         
         # check object fitted
         
@@ -53,7 +53,7 @@ cocoSim <- function(coco.object,
         
         to_pass <- cocons::getModelLists(coco.object@output$par, 
                                         par.pos = test_here$par.pos, 
-                                        type = 'diff')
+                                        type = "diff")
         
         covmat <- cocons::cov_rns(theta = to_pass[-1], 
                                  locs = coco.object@locs,
@@ -83,7 +83,7 @@ cocoSim <- function(coco.object,
         step_one <- cocons::cocoPredict(coco.object, 
                                         newdataset = cond.info$newdataset, 
                                         newlocs = as.matrix(cond.info$newlocs), 
-                                        type = 'mean')
+                                        type = "mean")
         
         tmp_mu <- step_one$trend + step_one$mean
         
@@ -95,12 +95,12 @@ cocoSim <- function(coco.object,
           step_one <- cocons::cocoPredict(coco.object, 
                                           newdataset = cond.info$newdataset, 
                                           newlocs = as.matrix(cond.info$newlocs), 
-                                          type = 'mean')
+                                          type = "mean")
           
           step_two <- cocons::cocoSim(coco.object, pars = pars, n = n, seed = seed,
                                       standardize = standardize, type = type)
           
-          tmp_coco_object <- coco(type = 'dense',
+          tmp_coco_object <- coco(type = "dense",
                                     locs = as.matrix(cond.info$newlocs),
                                     data = cond.info$newdataset,
                                     z = numeric(length = dim(cond.info$newdataset)[1]),
@@ -121,7 +121,7 @@ cocoSim <- function(coco.object,
             step_four <- cocons::cocoPredict(coco.object_four, 
                                              newdataset = cond.info$newdataset, 
                                              newlocs = as.matrix(cond.info$newlocs),
-                                             type = 'mean')
+                                             type = "mean")
             
             matrix_return[ii, ] <- c(step_one$mean + step_one$trend) + c(step_three[ii, ]) - 
               c(step_four$trend + step_four$mean) # trend should not be part of the simulation here I think!
@@ -148,7 +148,7 @@ cocoSim <- function(coco.object,
                                            par.pos = coco_items$par.pos, 
                                            type = type)
       
-      if(type == 'classic'){
+      if(type == "classic"){
         
         if(!is.formula(coco.object@model.list$smooth)){
           
@@ -162,7 +162,7 @@ cocoSim <- function(coco.object,
         
       }
       
-      if(type == 'diff'){
+      if(type == "diff"){
         covmat <- cocons::cov_rns(theta = theta_to_fit[-1], 
                                  locs = coco.object@locs,
                                  x_covariates = std_coco$std.covs,
@@ -184,7 +184,7 @@ cocoSim <- function(coco.object,
     }
   } 
   
-  if(coco.object@type == 'sparse'){
+  if(coco.object@type == "sparse"){
     
     coco_items <- getDesignMatrix(model.list = coco.object@model.list, data = coco.object@data)
     
