@@ -82,6 +82,26 @@ getLogScore <- function(z.pred, mean.pred, sd.pred){
   
 }
 
+#' Returns the penalization term
+#' @description Returns the penalization term
+#'
+#' @usage getPen(n, lambda, theta_list, smooth.limits)
+#' @param n ...
+#' @param lambda ...
+#' @param theta_list ...
+#' @param smooth.limits ...
+#' @returns retrieves penalization term
+#' @author Federico Blasi
+getPen <- function(n, lambda, theta_list, smooth.limits){
+  
+  return(2 * n * lambda * exp(theta_list$scale[1]) * 
+    sqrt(((smooth.limits[2]-smooth.limits[1])/ 
+            (1 + exp(-theta_list$smooth[1])) + 
+            smooth.limits[1]))
+    )
+  
+}
+
 #' Based on a set of predictions retrieves the Logrank
 #' @description Retrieves the estimated spatial effects of the spatial structure
 #'

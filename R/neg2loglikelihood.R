@@ -36,10 +36,7 @@ GetNeg2loglikelihoodTaper <- function(theta, par.pos, ref_taper, locs,
   
   return(n * log(2 * pi) + 2 * c(spam::determinant.spam.chol.NgPeyton(Sigma_cpp)$modulus) + 
            sum(resid * spam::solve.spam(Sigma_cpp, resid)) + 
-           n * 2 * lambda * exp(theta_list$scale[1]) * 
-           sqrt(((smooth.limits[2]-smooth.limits[1])/ 
-                       (1 + exp(-theta_list$smooth[1])) + 
-                  smooth.limits[1]))
+           getPen(n, lambda, theta_list, smooth.limits)
   )
 }
 
@@ -81,11 +78,9 @@ GetNeg2loglikelihoodTaperProfile <- function(theta, par.pos, ref_taper, locs,
   
   # check
   return(n * log(2 * pi / n) + n + 2 * logdet + 
-           n * log(sum(resid * spam::solve.spam(Sigma_cpp, resid)))) + 
-    n * 2 * lambda * exp(theta_list$scale[1]) * 
-    sqrt(((smooth.limits[2]-smooth.limits[1])/ 
-            (1 + exp(-theta_list$smooth[1])) + 
-            smooth.limits[1]))
+           n * log(sum(resid * spam::solve.spam(Sigma_cpp, resid))) + 
+           getPen(n, lambda, theta_list, smooth.limits)
+  )
   
 }
 
@@ -127,10 +122,8 @@ GetNeg2loglikelihoodProfile <- function(theta, par.pos, locs, x_covariates,
   temp_thetas <- cocons::getModelLists(theta = theta, par.pos = par.pos, type = "classic")
   
   return(n * log(2 * pi) + 2 * logdet + quad_sum + 
-           2 * n * lambda * exp(theta_list$scale[1]) * 
-           sqrt(((smooth.limits[2]-smooth.limits[1])/ 
-                       (1 + exp(-theta_list$smooth[1])) + 
-                       smooth.limits[1])))
+           getPen(n, lambda, theta_list, smooth.limits)
+  )
 }
 
 #' GetNeg2loglikelihood
@@ -164,8 +157,8 @@ GetNeg2loglikelihood <- function(theta,
   Sigma_cpp <- cocons::cov_rns(theta = theta_list[-1], locs = locs, x_covariates =  x_covariates,
                               smooth_limits = smooth.limits)
   
-  possibleError <- tryCatch(cholS <- base::chol(Sigma_cpp), error = function(e) e)
-  if (inherits(possibleError, "error")) {
+  check_pd <- tryCatch(cholS <- base::chol(Sigma_cpp), error = function(e) e)
+  if (inherits(check_pd, "error")) {
     return(1e+06)
   } else{
     for(ii in 1:dim(z)[2]){
@@ -183,10 +176,8 @@ GetNeg2loglikelihood <- function(theta,
       
     }
     
-    return(sum_logliks + 2 * dim(z)[2] * n * lambda * exp(theta_list$scale[1]) * 
-             sqrt(((smooth.limits[2] - smooth.limits[1])/ 
-                         (1 + exp(-theta_list$smooth[1])) + 
-                         smooth.limits[1]))
+    return(sum_logliks +  
+             getPen(n * dim(z)[2], lambda, theta_list, smooth.limits)
            )
   }
 }
