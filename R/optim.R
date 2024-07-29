@@ -1,29 +1,28 @@
 
 #' Optimizer for object class coco
-#' @description Optimizer based on Optimparallel L-BFGS-B optimizier for coco class. 
+#' @description Optimizer based on multi-thread Optimparallel L-BFGS-B optimizers. 
 #' @usage cocoOptim(coco.object, boundaries = list(), 
-#' ncores = parallel::detectCores(), optim.control, optim.type,...)
+#' ncores = parallel::detectCores(), optim.control, optim.type)
 #' @param coco.object a coco object. See ?coco()
 #' @param boundaries if provided, a list with lower, init, and upper values. 
 #' if not is computed based on generic fast_init_boundaries()
-#' @param ncores number of cores for the optimization routine.
-#' @param optim.control number of cores for the optimization routine.
-#' @param optim.type Optimization approach.
-#' @param ... extra arguments passed to the optimparallel function
-#' @returns a coco object with an updated output slot, with extra information 
-#' with boundaries information
+#' @param ncores number of cores to be used for the optimization routine.
+#' @param optim.control list with settings to be passed to the optimparallel function
+#' @param optim.type Optimization approach: whether 'mle' for classical Maximum Likelihood approach, 
+#' or 'pmle' to factor out the spatial trend (when handling 'dense' coco objects), or
+#' to factor out the global marginal standard deviation parameter (when considering 'sparse' coco objects)
+#' @returns a fitted coco object
 #' @author Federico Blasi
 #' 
 cocoOptim <- function(coco.object, boundaries = list(), 
                        ncores = parallel::detectCores(), 
-                       optim.control = NULL, optim.type = "mle", ...){
+                       optim.control = NULL, optim.type = "mle"){
   
   if(length(boundaries) > 0){
     .cocons.check.boundaries(boundaries)
   }
   
   .cocons.check.ncores(ncores)
-  .cocons.check.z(coco.object@z) # again checking here due to object might be used to simulate and then attached the realization to x@z
   
   if (coco.object@type == "dense") {
     
@@ -43,28 +42,11 @@ cocoOptim <- function(coco.object, boundaries = list(),
         )
       }
       
+      # Categorical variables ? 
       if(!is.null(coco.object@info$cat.vars)){
-        
-        to_not_std <- colnames(coco.object@data)[coco.object@info$cat.vars]
-        to_avoid_std <- colnames(designMatrix$model.matrix) %in% to_not_std
-        
-        tmp_values <- cocons::getScale(designMatrix$model.matrix[,!to_avoid_std])
-        
-        empty_matrix <- matrix(0, ncol = dim(designMatrix$model.matrix)[2], 
-                               nrow = dim(designMatrix$model.matrix)[1])
-        
-        empty_matrix[, !to_avoid_std] <- tmp_values$std.covs
-        empty_matrix[, to_avoid_std] <- designMatrix$model.matrix[, to_avoid_std]
-        
-        mean_vector_empty <- rep(0,dim(designMatrix$model.matrix)[2])
-        mean_sd_empty <- rep(1,dim(designMatrix$model.matrix)[2])
-        
-        mean_vector_empty[!to_avoid_std] <- tmp_values$mean.vector
-        mean_sd_empty[!to_avoid_std] <- tmp_values$sd.vector
-        
-        tmp_values$mean.vector <- mean_vector_empty
-        tmp_values$sd.vector <- mean_sd_empty
-        
+        tmp_info <- .cocons.setDesignMatrixCat(coco.object, designMatrix = designMatrix)
+        tmp_values <- tmp_info$tmp_values
+        empty_matrix <- tmp_values$empty_matrix
       } else{
         tmp_values <- cocons::getScale(designMatrix$model.matrix)
         empty_matrix <- tmp_values$std.covs
@@ -104,6 +86,7 @@ cocoOptim <- function(coco.object, boundaries = list(),
         optim.control <- .cocons.update.optim.control(optim.control)
       }
       
+      # Call optim routine
       output_dense <- do.call(what = optimParallel::optimParallel, args = c(
         args_optim,
         optim.control
@@ -146,31 +129,13 @@ cocoOptim <- function(coco.object, boundaries = list(),
         )
       }
       
-      # Categorical variables
+      # Categorical variables ?
       # problem here: i can specify categorical values in data but then
       # not use any in formula
       if(!is.null(coco.object@info$cat.vars)){
-        
-        to_not_std <- colnames(coco.object@data)[coco.object@info$cat.vars]
-        to_avoid_std <- colnames(designMatrix$model.matrix) %in% to_not_std
-        
-        tmp_values <- cocons::getScale(designMatrix$model.matrix[,!to_avoid_std])
-        
-        empty_matrix <- matrix(0, ncol = dim(designMatrix$model.matrix)[2], 
-                               nrow = dim(designMatrix$model.matrix)[1])
-        
-        empty_matrix[, !to_avoid_std] <- tmp_values$std.covs
-        empty_matrix[, to_avoid_std] <- designMatrix$model.matrix[, to_avoid_std]
-        
-        mean_vector_empty <- rep(0,dim(designMatrix$model.matrix)[2])
-        mean_sd_empty <- rep(1,dim(designMatrix$model.matrix)[2])
-        
-        mean_vector_empty[!to_avoid_std] <- tmp_values$mean.vector
-        mean_sd_empty[!to_avoid_std] <- tmp_values$sd.vector
-        
-        tmp_values$mean.vector <- mean_vector_empty
-        tmp_values$sd.vector <- mean_sd_empty
-        
+        tmp_info <- .cocons.setDesignMatrixCat(coco.object, designMatrix = designMatrix)
+        tmp_values <- tmp_info$tmp_values
+        empty_matrix <- tmp_values$empty_matrix
       } else{
         tmp_values <- cocons::getScale(designMatrix$model.matrix)
         empty_matrix <- tmp_values$std.covs
@@ -230,6 +195,7 @@ cocoOptim <- function(coco.object, boundaries = list(),
         optim.control <- .cocons.update.optim.control(optim.control)
       }
       
+      # Call optim routine
       output_dense <- do.call(what = optimParallel::optimParallel, args = c(
         args_optim,
         optim.control
@@ -288,31 +254,18 @@ cocoOptim <- function(coco.object, boundaries = list(),
       # Categorical variables
       # problem here: i can specify categorical values in data but then
       # not use any in formula
+      # Categorical variables ? 
       if(!is.null(coco.object@info$cat.vars)){
         
-        to_not_std <- colnames(coco.object@data)[coco.object@info$cat.vars]
-        to_avoid_std <- colnames(designMatrix$model.matrix) %in% to_not_std
-        
-        tmp_values <- cocons::getScale(designMatrix$model.matrix[,!to_avoid_std])
-        
-        empty_matrix <- matrix(0, ncol = dim(designMatrix$model.matrix)[2], 
-                               nrow = dim(designMatrix$model.matrix)[1])
-        
-        empty_matrix[, !to_avoid_std] <- tmp_values$std.covs
-        empty_matrix[, to_avoid_std] <- designMatrix$model.matrix[, to_avoid_std]
-        
-        mean_vector_empty <- rep(0,dim(designMatrix$model.matrix)[2])
-        mean_sd_empty <- rep(1,dim(designMatrix$model.matrix)[2])
-        
-        mean_vector_empty[!to_avoid_std] <- tmp_values$mean.vector
-        mean_sd_empty[!to_avoid_std] <- tmp_values$sd.vector
-        
-        tmp_values$mean.vector <- mean_vector_empty
-        tmp_values$sd.vector <- mean_sd_empty
+        tmp_info <- .cocons.setDesignMatrixCat(coco.object, designMatrix = designMatrix)
+        tmp_values <- tmp_info$tmp_values
+        empty_matrix <- tmp_values$empty_matrix
         
       } else{
+        
         tmp_values <- cocons::getScale(designMatrix$model.matrix)
         empty_matrix <- tmp_values$std.covs
+        
       }
       
       # taper
@@ -367,6 +320,7 @@ cocoOptim <- function(coco.object, boundaries = list(),
         optim.control <- .cocons.update.optim.control(optim.control)
       }
       
+      # Call optim routine
       output_taper <- do.call(what = optimParallel::optimParallel, args = c(
         args_optim,
         optim.control
@@ -409,27 +363,9 @@ cocoOptim <- function(coco.object, boundaries = list(),
       # problem here: i can specify categorical values in data but then
       # not use any in formula
       if(!is.null(coco.object@info$cat.vars)){
-        
-        to_not_std <- colnames(coco.object@data)[coco.object@info$cat.vars]
-        to_avoid_std <- colnames(designMatrix$model.matrix) %in% to_not_std
-        
-        tmp_values <- cocons::getScale(designMatrix$model.matrix[,!to_avoid_std])
-        
-        empty_matrix <- matrix(0, ncol = dim(designMatrix$model.matrix)[2], 
-                               nrow = dim(designMatrix$model.matrix)[1])
-        
-        empty_matrix[, !to_avoid_std] <- tmp_values$std.covs
-        empty_matrix[, to_avoid_std] <- designMatrix$model.matrix[, to_avoid_std]
-        
-        mean_vector_empty <- rep(0,dim(designMatrix$model.matrix)[2])
-        mean_sd_empty <- rep(1,dim(designMatrix$model.matrix)[2])
-        
-        mean_vector_empty[!to_avoid_std] <- tmp_values$mean.vector
-        mean_sd_empty[!to_avoid_std] <- tmp_values$sd.vector
-        
-        tmp_values$mean.vector <- mean_vector_empty
-        tmp_values$sd.vector <- mean_sd_empty
-        
+        tmp_info <- .cocons.setDesignMatrixCat(coco.object, designMatrix = designMatrix)
+        tmp_values <- tmp_info$tmp_values
+        empty_matrix <- tmp_values$empty_matrix
       } else{
         tmp_values <- cocons::getScale(designMatrix$model.matrix)
         empty_matrix <- tmp_values$std.covs
@@ -502,6 +438,7 @@ cocoOptim <- function(coco.object, boundaries = list(),
         optim.control <- .cocons.update.optim.control(optim.control)
       }
       
+      # Call optim routine
       output_taper <- do.call(what = optimParallel::optimParallel, args = c(
         args_optim,
         optim.control

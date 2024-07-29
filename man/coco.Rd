@@ -9,23 +9,40 @@ coco(type, data, locs, z, model.list, info, output = list())
 \arguments{
 \item{type}{One of two available types "dense" or "sparse". See description.}
 
-\item{data}{A data.frame with covariates information, where colnames(data) matches model.list specification}
+\item{data}{A data.frame with covariates information, where colnames(data) matches model.list specification.}
 
-\item{locs}{a matrix with locs matching data}
+\item{locs}{A matrix with locs matching data.}
 
-\item{z}{A vector with response values}
+\item{z}{A matrix of n x r response realizations, one realization per column. When considering only one realization, a vector can also be provided.}
 
-\item{model.list}{A list specyfing a model for each aspect of the spatial structure.}
+\item{model.list}{A list specifying a model for each aspect of the spatial structure.}
 
-\item{info}{A list specifying characteristics of the coco object}
+\item{info}{A list specifying characteristics of the coco object.}
 
-\item{output}{empty or an output from optimparallel output, including as well boundaries}
+\item{output}{Empty or an output from optimparallel output, including as well boundaries.}
 }
 \value{
-Creates a coco object
+Creates a coco object.
 }
 \description{
-Creates a coco object
+Creates a coco S4 object.
+}
+\details{
+This S4 class is the centerpiece of the cocons package. Two types of coco objects can be created. One is a "dense" type, meaning that the associated nonstationary covariance functions are dense, or
+a "sparse" object, which, in combination with the Tapering approach, induce zeroes in the covariance matrix to make it sparse and to unlock a set of efficient algorithms to speed up estimation and prediction routines.
+
+Another important component of the coco S4 class is the model.list specification, involving different formulas provided as a list, where each of them specifies a source of nonstationarity, based on covariates. It involves "trend" for the spatial trend,
+the "std. dev" for the marginal standard deviation, "scale", "aniso" and "tilt", each of them shaping specific aspects of the local spatial geometrically anisotropy structure,
+"smooth" handling local smoothness, and "nugget" handling the local nugget effect.
+
+Lastly, arguments for the info list argument involve:
+\itemize{
+\item 'lambda': a positive scalar specifying the regularization parameter.
+\item 'smooth_limits': specifying the allowed range of variation for the spatially varying smoothness.
+\item 'taper': specifying the desired taper function from the spam package (only for 'sparse' coco objects).
+\item 'delta': specifying the taper range/scale (only for 'sparse' coco objects).
+\item 'cat.vars': index of those variables in the data object which are categorical or should not be scaled during the optimization.
+}
 }
 \seealso{
 \code{\link[spam:covmat]{spam::cov.wend1()}}

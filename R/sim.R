@@ -1,5 +1,5 @@
 
-#' Marginal simulation of Gaussian processes with nonstationary covariance function
+#' Marginal and conditional simulation of Gaussian processes with nonstationary covariance function
 #' @description simulates a Gaussian process with nonstationary covariance function
 #' from an coco object.
 #' 

@@ -2,11 +2,11 @@
 #' Prediction for object class coco
 #' @description Prediction for a fitted coco object.
 #' @usage cocoPredict(coco.object, newdataset, newlocs, type = 'mean')
-#' @param coco.object a coco object
-#' @param newdataset a data.frame including covariates present in model.list
-#' @param newlocs a matrix with locations related to newdataset
-#' @param type whether "mean" or "pred", which gives a point prediction as well as the prediction uncertainty
-#' @returns a list with mean predictions and CRPS values, latter if specified.
+#' @param coco.object a fitted coco object
+#' @param newdataset a data.frame including covariates present in model.list at prediction locations
+#' @param newlocs a matrix with locations related to prediction locations, matching indexing of newdataset
+#' @param type whether "mean" or "pred", which gives a point prediction for the former, as well as a combination of point prediction as well as prediction uncertainty for the latter
+#' @returns a list with trend, and mean predictions and uncertainty quantification, if 'pred' is specified.
 #' @author Federico Blasi
 #' 
 cocoPredict <- function(coco.object, 

@@ -264,3 +264,29 @@
 .cocons.check.object <- function(object){
   
 }
+
+.cocons.setDesignMatrixCat <- function(coco.object, designMatrix){
+  
+  to_not_std <- colnames(coco.object@data)[coco.object@info$cat.vars]
+  to_avoid_std <- colnames(designMatrix$model.matrix) %in% to_not_std
+  
+  tmp_values <- cocons::getScale(designMatrix$model.matrix[,!to_avoid_std])
+  
+  empty_matrix <- matrix(0, ncol = dim(designMatrix$model.matrix)[2], 
+                         nrow = dim(designMatrix$model.matrix)[1])
+  
+  empty_matrix[, !to_avoid_std] <- tmp_values$std.covs
+  empty_matrix[, to_avoid_std] <- designMatrix$model.matrix[, to_avoid_std]
+  
+  mean_vector_empty <- rep(0,dim(designMatrix$model.matrix)[2])
+  mean_sd_empty <- rep(1,dim(designMatrix$model.matrix)[2])
+  
+  mean_vector_empty[!to_avoid_std] <- tmp_values$mean.vector
+  mean_sd_empty[!to_avoid_std] <- tmp_values$sd.vector
+  
+  tmp_values$mean.vector <- mean_vector_empty
+  tmp_values$sd.vector <- mean_sd_empty
+  
+  return(list('empty_matrix' = empty_matrix,
+              'tmp_values' = tmp_values))
+}

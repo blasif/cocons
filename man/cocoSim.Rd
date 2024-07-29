@@ -2,7 +2,7 @@
 % Please edit documentation in R/sim.R
 \name{cocoSim}
 \alias{cocoSim}
-\title{Marginal simulation of Gaussian processes with nonstationary covariance function}
+\title{Marginal and conditional simulation of Gaussian processes with nonstationary covariance function}
 \usage{
 cocoSim(coco.object, pars, n, seed, standardize, 
 type = 'classic', sim.type = NULL, cond.info = NULL)

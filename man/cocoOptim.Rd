@@ -5,7 +5,7 @@
 \title{Optimizer for object class coco}
 \usage{
 cocoOptim(coco.object, boundaries = list(), 
-ncores = parallel::detectCores(), optim.control, optim.type,...)
+ncores = parallel::detectCores(), optim.control, optim.type)
 }
 \arguments{
 \item{coco.object}{a coco object. See ?coco()}
@@ -13,20 +13,19 @@ ncores = parallel::detectCores(), optim.control, optim.type,...)
 \item{boundaries}{if provided, a list with lower, init, and upper values.
 if not is computed based on generic fast_init_boundaries()}
 
-\item{ncores}{number of cores for the optimization routine.}
+\item{ncores}{number of cores to be used for the optimization routine.}
 
-\item{optim.control}{number of cores for the optimization routine.}
+\item{optim.control}{list with settings to be passed to the optimparallel function}
 
-\item{optim.type}{Optimization approach.}
-
-\item{...}{extra arguments passed to the optimparallel function}
+\item{optim.type}{Optimization approach: whether 'mle' for classical Maximum Likelihood approach,
+or 'pmle' to factor out the spatial trend (when handling 'dense' coco objects), or
+to factor out the global marginal standard deviation parameter (when considering 'sparse' coco objects)}
 }
 \value{
-a coco object with an updated output slot, with extra information
-with boundaries information
+a fitted coco object
 }
 \description{
-Optimizer based on Optimparallel L-BFGS-B optimizier for coco class.
+Optimizer based on multi-thread Optimparallel L-BFGS-B optimizers.
 }
 \author{
 Federico Blasi
