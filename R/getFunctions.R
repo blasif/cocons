@@ -38,7 +38,6 @@ getCovMatrix <- function(coco.object, type = "global", index = NULL){
     
     if(type == "global"){
       
-      
       theta_list <- cocons::getModelLists(coco.object@output$par,par.pos = par.pos, 
                                          type = "diff")
       

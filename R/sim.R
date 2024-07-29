@@ -18,7 +18,7 @@
 #' a difference parameterization 'diff' . Default set to 'classic'.
 #' @param sim.type if set 'cond' then a conditional simulation takes place.
 #' @param cond.info a list containing information to perform a conditional simulation.
-#' @returns a list() with the structure needed to fit cov.rns functions
+#' @returns a matrix n x dim(data)\[1\]
 #' @author Federico Blasi
 #' 
 cocoSim <- function(coco.object, 

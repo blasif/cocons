@@ -1,6 +1,8 @@
 
 #' Optimizer for object class coco
-#' @description Optimizer based on multi-thread Optimparallel L-BFGS-B optimizers. 
+#' @description Optimizer based on multi-thread Optimparallel L-BFGS-B optimizers.
+#' @details
+#'  Current implementations only allow single realizations for 'pmle' optim.type. 
 #' @usage cocoOptim(coco.object, boundaries = list(), 
 #' ncores = parallel::detectCores(), optim.control, optim.type)
 #' @param coco.object a coco object. See ?coco()
@@ -24,33 +26,38 @@ cocoOptim <- function(coco.object, boundaries = list(),
   
   .cocons.check.ncores(ncores)
   
+  # Init objects
+  if(T){
+    
+    designMatrix <- cocons::getDesignMatrix(
+      model.list = coco.object@model.list,
+      data = coco.object@data
+    )
+    
+    if (length(boundaries) == 0) {
+      boundaries <- cocons::getBoundaries(
+        x = coco.object, 
+        lower.value = -2,
+        upper.value = 2
+      )
+    }
+    
+    # Categorical variables
+    # problem here: i can specify categorical values in data but then not use any in formula
+    if(!is.null(coco.object@info$cat.vars)){
+      tmp_info <- .cocons.setDesignMatrixCat(coco.object, designMatrix = designMatrix)
+      tmp_values <- tmp_info$tmp_values
+      empty_matrix <- tmp_info$empty_matrix
+    } else{
+      tmp_values <- cocons::getScale(designMatrix$model.matrix)
+      empty_matrix <- tmp_values$std.covs
+    }
+    
+  }
+  
   if (coco.object@type == "dense") {
     
     if(optim.type == "mle"){
-      
-      designMatrix <- cocons::getDesignMatrix(
-        model.list = coco.object@model.list,
-        data = coco.object@data
-      )
-      
-      # If boundaries not provided, then some general boundaries are set
-      if (length(boundaries) == 0) {
-        boundaries <- cocons::getBoundaries(
-          x = coco.object, 
-          lower.value = -2,
-          upper.value = 2
-        )
-      }
-      
-      # Categorical variables ? 
-      if(!is.null(coco.object@info$cat.vars)){
-        tmp_info <- .cocons.setDesignMatrixCat(coco.object, designMatrix = designMatrix)
-        tmp_values <- tmp_info$tmp_values
-        empty_matrix <- tmp_values$empty_matrix
-      } else{
-        tmp_values <- cocons::getScale(designMatrix$model.matrix)
-        empty_matrix <- tmp_values$std.covs
-      }
       
       # Suggested by OptimParallel
       if(tolower(.Platform$OS.type) != "windows"){
@@ -114,35 +121,12 @@ cocoOptim <- function(coco.object, boundaries = list(),
     
     if(optim.type == "pmle"){
       
-      designMatrix <- cocons::getDesignMatrix(
-        model.list = coco.object@model.list,
-        data = coco.object@data
-      )
+      if(dim(coco.object@z)[2] > 1){stop('profile ML routines only handle single realizations.')}
       
       if(!is.logical(designMatrix$par.pos$mean)){stop("profile ML only available when considering covariates in the trend")}
-      
-      if (length(boundaries) == 0) {
-        boundaries <- cocons::getBoundaries(
-          x = coco.object, 
-          lower.value = -3,
-          upper.value = 3
-        )
-      }
-      
-      # Categorical variables ?
-      # problem here: i can specify categorical values in data but then
-      # not use any in formula
-      if(!is.null(coco.object@info$cat.vars)){
-        tmp_info <- .cocons.setDesignMatrixCat(coco.object, designMatrix = designMatrix)
-        tmp_values <- tmp_info$tmp_values
-        empty_matrix <- tmp_values$empty_matrix
-      } else{
-        tmp_values <- cocons::getScale(designMatrix$model.matrix)
-        empty_matrix <- tmp_values$std.covs
-      }
-      
+
       if(is.logical(designMatrix$par.pos$mean)){
-        x_betas <- getScale(coco.object)$std.covs[, designMatrix$par.pos$mean] # does not match when categorical variables
+        x_betas <- empty_matrix[, designMatrix$par.pos$mean]
       }
       
       tmp_boundaries <- boundaries
@@ -238,36 +222,6 @@ cocoOptim <- function(coco.object, boundaries = list(),
     
     if(optim.type == "mle"){
       
-      designMatrix <- cocons::getDesignMatrix(
-        model.list = coco.object@model.list,
-        data = coco.object@data
-      )
-      
-      if (length(boundaries) == 0) {
-        boundaries <- cocons::getBoundaries(
-          x = coco.object, 
-          lower.value = -3,
-          upper.value = 3
-        )
-      }
-      
-      # Categorical variables
-      # problem here: i can specify categorical values in data but then
-      # not use any in formula
-      # Categorical variables ? 
-      if(!is.null(coco.object@info$cat.vars)){
-        
-        tmp_info <- .cocons.setDesignMatrixCat(coco.object, designMatrix = designMatrix)
-        tmp_values <- tmp_info$tmp_values
-        empty_matrix <- tmp_values$empty_matrix
-        
-      } else{
-        
-        tmp_values <- cocons::getScale(designMatrix$model.matrix)
-        empty_matrix <- tmp_values$std.covs
-        
-      }
-      
       # taper
       ref_taper <- coco.object@info$taper(
         spam::nearest.dist(coco.object@locs, delta = coco.object@info$delta, upper = NULL),
@@ -276,6 +230,7 @@ cocoOptim <- function(coco.object, boundaries = list(),
       
       print(summary(ref_taper))
       
+      # Suggested by OptimParallel
       if(tolower(.Platform$OS.type) != "windows"){
         cl <- parallel::makeCluster(spec = ncores, type = "FORK", outfile = "",
                                     useXDR = FALSE)
@@ -346,30 +301,7 @@ cocoOptim <- function(coco.object, boundaries = list(),
     
     if(optim.type == "pmle"){
       
-      designMatrix <- cocons::getDesignMatrix(
-        model.list = coco.object@model.list,
-        data = coco.object@data
-      )
-      
-      if (length(boundaries) == 0) {
-        boundaries <- cocons::getBoundaries(
-          x = coco.object, 
-          lower.value = -3,
-          upper.value = 3
-        )
-      }
-      
-      # Categorical variables
-      # problem here: i can specify categorical values in data but then
-      # not use any in formula
-      if(!is.null(coco.object@info$cat.vars)){
-        tmp_info <- .cocons.setDesignMatrixCat(coco.object, designMatrix = designMatrix)
-        tmp_values <- tmp_info$tmp_values
-        empty_matrix <- tmp_values$empty_matrix
-      } else{
-        tmp_values <- cocons::getScale(designMatrix$model.matrix)
-        empty_matrix <- tmp_values$std.covs
-      }
+      if(dim(coco.object@z)[2] > 1){stop('profile ML routines only handle single realizations.')}
       
       # taper
       ref_taper <- coco.object@info$taper(

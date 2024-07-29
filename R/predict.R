@@ -1,10 +1,11 @@
 
 #' Prediction for object class coco
 #' @description Prediction for a fitted coco object.
-#' @usage cocoPredict(coco.object, newdataset, newlocs, type = 'mean')
+#' @usage cocoPredict(coco.object, newdataset, newlocs, index.pred = 1, type = 'mean')
 #' @param coco.object a fitted coco object
 #' @param newdataset a data.frame including covariates present in model.list at prediction locations
 #' @param newlocs a matrix with locations related to prediction locations, matching indexing of newdataset
+#' @param index.pred when coco.object has multiple realizations, which index of coco.object\@z should be used to perform predictions
 #' @param type whether "mean" or "pred", which gives a point prediction for the former, as well as a combination of point prediction as well as prediction uncertainty for the latter
 #' @returns a list with trend, and mean predictions and uncertainty quantification, if 'pred' is specified.
 #' @author Federico Blasi
@@ -12,6 +13,7 @@
 cocoPredict <- function(coco.object, 
                         newdataset,
                         newlocs,
+                        index.pred = 1,
                         type = "mean") {
   
   if (!('coco' %in% class(coco.object))){
@@ -20,6 +22,10 @@ cocoPredict <- function(coco.object,
   
   if (length(coco.object@output) == 0) {
     stop("object has not yet been fitted.")
+  }
+  
+  if(index.pred > dim(coco.object@z)[2]){
+    stop("index.pred is larger than dim(coco.object@z)[2]")
   }
   
   .cocons.check.newdataset(newdataset)

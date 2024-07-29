@@ -32,12 +32,19 @@ GetNeg2loglikelihoodTaper <- function(theta, par.pos, ref_taper, locs,
   Sigma_cpp <- spam::update.spam.chol.NgPeyton(cholS, ref_taper)
   logdet <- c(spam::determinant.spam.chol.NgPeyton(Sigma_cpp)$modulus)
   
-  resid <- z - c(x_covariates %*% theta_list$mean)
+  sumlogs <- 0
   
-  return(n * log(2 * pi) + 2 * c(spam::determinant.spam.chol.NgPeyton(Sigma_cpp)$modulus) + 
-           sum(resid * spam::solve.spam(Sigma_cpp, resid)) + 
-           getPen(n, lambda, theta_list, smooth.limits)
-  )
+  for(ii in 1:dim(z)[2]){
+    
+    resid <- z[,ii] - c(x_covariates %*% theta_list$mean)
+    
+    sumlogs <- sumlogs + n * log(2 * pi) + 2 * c(spam::determinant.spam.chol.NgPeyton(Sigma_cpp)$modulus) + 
+      sum(resid * spam::solve.spam(Sigma_cpp, resid))
+    
+  }
+  
+  return(sumlogs + getPen(n * dim(z)[2], lambda, theta_list, smooth.limits))
+
 }
 
 #' GetNeg2loglikelihoodTaperProfile
@@ -72,16 +79,14 @@ GetNeg2loglikelihoodTaperProfile <- function(theta, par.pos, ref_taper, locs,
                                                                          rowpointers = ref_taper@rowpointers,
                                                                          smooth_limits =  smooth.limits)
   
-  resid <- z - c(x_covariates %*% theta_list$mean)
   Sigma_cpp <- spam::update.spam.chol.NgPeyton(cholS, ref_taper)
   logdet <- c(spam::determinant.spam.chol.NgPeyton(Sigma_cpp)$modulus)
   
-  # check
-  return(n * log(2 * pi / n) + n + 2 * logdet + 
-           n * log(sum(resid * spam::solve.spam(Sigma_cpp, resid))) + 
-           getPen(n, lambda, theta_list, smooth.limits)
-  )
+  resid <- z - c(x_covariates %*% theta_list$mean)
   
+  return(n * log(2 * pi / n) + n + 2 * logdet + 
+    n * log(sum(resid * spam::solve.spam(Sigma_cpp, resid))) + getPen(n, lambda, theta_list, smooth.limits))
+
 }
 
 #' GetNeg2loglikelihoodProfile
@@ -113,19 +118,22 @@ GetNeg2loglikelihoodProfile <- function(theta, par.pos, locs, x_covariates,
   SigmaX <- solve(Sigma_cpp, x_betas)
   P_tete <- solve(Sigma_cpp) - SigmaX %*% solve(t(x_betas) %*% SigmaX) %*% t(SigmaX)
   
-  # Quadratic Term
-  quad_sum <- t(z) %*% P_tete %*% z
-  
-  cholS <- base::chol(Sigma_cpp)
-  logdet <- sum(log(diag(cholS)))
-  
-  temp_thetas <- cocons::getModelLists(theta = theta, par.pos = par.pos, type = "classic")
-  
-  return(n * log(2 * pi) + 2 * logdet + quad_sum + 
-           getPen(n, lambda, theta_list, smooth.limits)
-  )
+  check_pd <- tryCatch(cholS <- base::chol(Sigma_cpp), error = function(e) e)
+  if (inherits(check_pd, "error")) {
+    return(1e+06)
+  } else{
+    
+    logdet <- sum(log(diag(cholS)))
+    quad_sum <- t(z) %*% P_tete %*% z
+    
+    temp_thetas <- cocons::getModelLists(theta = theta, par.pos = par.pos, type = "classic")
+    
+    return(n * log(2 * pi) + 2 * logdet + quad_sum + 
+      getPen(n, lambda, theta_list, smooth.limits))
+    
+  }
 }
-
+    
 #' GetNeg2loglikelihood
 #' @description compute the negative 2 log likelihood based on theta
 #'
@@ -150,8 +158,6 @@ GetNeg2loglikelihood <- function(theta,
                                  n,
                                  lambda) {
   
-  sum_logliks <- 0
-  
   theta_list <- cocons::getModelLists(theta = theta, par.pos = par.pos, type = "diff")
   
   Sigma_cpp <- cocons::cov_rns(theta = theta_list[-1], locs = locs, x_covariates =  x_covariates,
@@ -161,11 +167,13 @@ GetNeg2loglikelihood <- function(theta,
   if (inherits(check_pd, "error")) {
     return(1e+06)
   } else{
+    
+    logdet <- sum(log(diag(cholS)))
+    sum_logliks <- 0
+    
     for(ii in 1:dim(z)[2]){
       
       resid <- c(z[,ii]) - c(x_covariates %*% theta_list$mean)
-      
-      logdet <- sum(log(diag(cholS)))
       
       sum_logliks <- sum_logliks + n * log(2 * pi) + 2 * logdet + sum(resid * backsolve(cholS,
                                                                                         forwardsolve(cholS, 
@@ -176,8 +184,7 @@ GetNeg2loglikelihood <- function(theta,
       
     }
     
-    return(sum_logliks +  
-             getPen(n * dim(z)[2], lambda, theta_list, smooth.limits)
-           )
+    return(sum_logliks +  getPen(n * dim(z)[2], lambda, theta_list, smooth.limits))
+    
   }
 }

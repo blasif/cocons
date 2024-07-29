@@ -27,6 +27,9 @@ a fitted coco object
 \description{
 Optimizer based on multi-thread Optimparallel L-BFGS-B optimizers.
 }
+\details{
+Current implementations only allow single realizations for 'pmle' optim.type.
+}
 \author{
 Federico Blasi
 }

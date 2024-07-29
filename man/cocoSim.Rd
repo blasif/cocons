@@ -28,7 +28,7 @@ a difference parameterization 'diff' . Default set to 'classic'.}
 \item{cond.info}{a list containing information to perform a conditional simulation.}
 }
 \value{
-a list() with the structure needed to fit cov.rns functions
+a matrix n x dim(data)[1]
 }
 \description{
 simulates a Gaussian process with nonstationary covariance function
