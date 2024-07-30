@@ -15,13 +15,13 @@ each of the models}
 
 \item{n}{number of realizations to simulate}
 
-\item{seed}{seed number. defalt set to NULL.}
+\item{seed}{seed number. default set to NULL.}
 
 \item{standardize}{logical argument describing whether provided covariates
 should be standardize (TRUE) or not (FALSE). By default set to TRUE}
 
-\item{type}{wether parameters are related to a classical parameterization ('classic') or
-a difference parameterization 'diff' . Default set to 'classic'.}
+\item{type}{whether parameters are related to a classical parameterization ('classic') or
+a difference parameterization 'diff' . Default set to 'classic'. For 'sparse' coco objects, only 'diff' is available.}
 
 \item{sim.type}{if set 'cond' then a conditional simulation takes place.}
 

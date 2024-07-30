@@ -11,11 +11,11 @@
 #' @param n number of realizations to simulate
 #' @param seed a list detailing in which position of each aspect the elements
 #' of theta should be placed. Expected to be output of getDesignMatrix
-#' @param seed seed number. defalt set to NULL.
+#' @param seed seed number. default set to NULL.
 #' @param standardize logical argument describing whether provided covariates
 #' should be standardize (TRUE) or not (FALSE). By default set to TRUE
-#' @param type wether parameters are related to a classical parameterization ('classic') or
-#' a difference parameterization 'diff' . Default set to 'classic'.
+#' @param type whether parameters are related to a classical parameterization ('classic') or
+#' a difference parameterization 'diff' . Default set to 'classic'. For 'sparse' coco objects, only 'diff' is available.
 #' @param sim.type if set 'cond' then a conditional simulation takes place.
 #' @param cond.info a list containing information to perform a conditional simulation.
 #' @returns a matrix n x dim(data)\[1\]
@@ -41,8 +41,6 @@ cocoSim <- function(coco.object,
       if(sim.type == "cond"){
         
         # check object fitted
-        
-        # test new
         
         std_coco <- getScale(coco.object)$std.covs
         
@@ -89,47 +87,6 @@ cocoSim <- function(coco.object,
         
         return(sweep(t(iiderrors) %*% L, 2, tmp_mu, "+"))
         
-        if(F){
-          # end test new
-          
-          step_one <- cocons::cocoPredict(coco.object, 
-                                          newdataset = cond.info$newdataset, 
-                                          newlocs = as.matrix(cond.info$newlocs), 
-                                          type = "mean")
-          
-          step_two <- cocons::cocoSim(coco.object, pars = pars, n = n, seed = seed,
-                                      standardize = standardize, type = type)
-          
-          tmp_coco_object <- coco(type = "dense",
-                                    locs = as.matrix(cond.info$newlocs),
-                                    data = cond.info$newdataset,
-                                    z = numeric(length = dim(cond.info$newdataset)[1]),
-                                    model.list = coco.object@model.list,
-                                    info = coco.object@info)
-          
-          step_three <- cocons::cocoSim(tmp_coco_object, pars = pars, n = n, seed = seed, 
-                                        standardize = standardize, type = type)
-          
-          matrix_return <- matrix(NA, nrow = dim(step_three)[1], ncol = dim(step_three)[2])
-          
-          coco.object_four <- coco.object
-          
-          for(ii in 1:n){
-            
-            coco.object_four@z <- c(step_two[ii, ])
-            
-            step_four <- cocons::cocoPredict(coco.object_four, 
-                                             newdataset = cond.info$newdataset, 
-                                             newlocs = as.matrix(cond.info$newlocs),
-                                             type = "mean")
-            
-            matrix_return[ii, ] <- c(step_one$mean + step_one$trend) + c(step_three[ii, ]) - 
-              c(step_four$trend + step_four$mean) # trend should not be part of the simulation here I think!
-            
-          }
-          
-          return(matrix_return)
-        }
       } 
     } else{
       
@@ -211,7 +168,7 @@ cocoSim <- function(coco.object,
                                                                            colindices = ref_taper@colindices, 
                                                                            rowpointers = ref_taper@rowpointers,
                                                                            smooth_limits =  coco.object@info$smooth_limits)
-    cholS <- spam::chol(ref_taper) # check rmvnorm.spam
+    cholS <- spam::chol(ref_taper)
     iord <- spam::ordering(cholS, inv = TRUE)
     cholS <- spam::as.spam(cholS)
     
