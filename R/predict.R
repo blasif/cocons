@@ -30,7 +30,7 @@ cocoPredict <- function(coco.object,
     index.pred <- 1
   } else{
     
-    if(!exists(index.pred)){
+    if(!exists("index.pred")){
       index.pred <- 1
     } else{
       if(index.pred > dim(coco.object@z)[2]){
