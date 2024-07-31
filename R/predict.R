@@ -1,20 +1,20 @@
 
 #' Prediction for object class coco
 #' @description Prediction for a fitted coco object.
-#' @usage cocoPredict(coco.object, newdataset, newlocs, index.pred = 1, type = 'mean')
+#' @usage cocoPredict(coco.object, newdataset, newlocs, type = 'mean', ...)
 #' @param coco.object a fitted coco object
 #' @param newdataset a data.frame including covariates present in model.list at prediction locations
 #' @param newlocs a matrix with locations related to prediction locations, matching indexing of newdataset
-#' @param index.pred when coco.object has multiple realizations, which index of coco.object\@z should be used to perform predictions
 #' @param type whether "mean" or "pred", which gives a point prediction for the former, as well as a combination of point prediction as well as prediction uncertainty for the latter
+#' @param ... when coco.object has multiple realizations, specifying 'index.pred' specifying which column of coco.object\@z should be used to perform predictions
 #' @returns a list with trend, and mean predictions and uncertainty quantification, if 'pred' is specified.
 #' @author Federico Blasi
 #' 
 cocoPredict <- function(coco.object, 
                         newdataset,
                         newlocs,
-                        index.pred = 1,
-                        type = "mean") {
+                        type = "mean",
+                        ...) {
   
   if (!('coco' %in% class(coco.object))){
     stop("coco class required.")
@@ -24,15 +24,26 @@ cocoPredict <- function(coco.object,
     stop("object has not yet been fitted.")
   }
   
-  if(index.pred > dim(coco.object@z)[2]){
-    stop("index.pred is larger than dim(coco.object@z)[2]")
+  
+  
+  if(dim(coco.object@z)[2] == 1){
+    index.pred <- 1
+  } else{
+    
+    if(!exists(index.pred)){
+      index.pred <- 1
+    } else{
+      if(index.pred > dim(coco.object@z)[2]){
+        stop("index.pred is larger than dim(coco.object@z)[2]")
+      }
+      }
   }
   
   .cocons.check.newdataset(newdataset)
   .cocons.check.newlocs(newlocs)
   .cocons.check.type_pred(type)
   .cocons.check.object(coco.object)
-  
+    
   # add check on the names of newdataset names and model.list
   # add check type
   
@@ -79,7 +90,7 @@ cocoPredict <- function(coco.object,
     trend_pred <- c(X_pred_std$std.covs %*% adjusted_eff_values$mean)
     trendObs <- c(X_std$std.covs %*% adjusted_eff_values$mean)
     
-    coco.resid <- coco.object@z[,1] - trendObs # Future updates add slice to pick from the samples
+    coco.resid <- coco.object@z[,index.pred] - trendObs # Future updates add slice to pick from the samples
     
     # mean part
     mean_part <- c(crossprod(coco.resid, inv_cov))
@@ -180,7 +191,7 @@ cocoPredict <- function(coco.object,
     # trend
     trend_pred <- c(X_pred_std$std.covs %*% adjusted_eff_values$mean) # crossprod ?
     trend_obs <- c(X_std$std.covs %*% adjusted_eff_values$mean) # crossprod?
-    coco.resid <- coco.object@z[,1,drop=FALSE] - trend_obs
+    coco.resid <- coco.object@z[,index.pred] - trend_obs
     
     # mean part
     
