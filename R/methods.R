@@ -74,7 +74,7 @@ setMethod("plot",
                 tp_se <- exp(0.5 * X_std$std.covs %*% theta_list$std.dev)
                 tp_ga <- exp(X_std$std.covs %*% theta_list$aniso)
                 tp_tl <- pi / (1 + exp(-X_std$std.covs %*% theta_list$tilt))
-                tp_smooth <- (x@info$smooth_limits[2] - x@info$smooth_limits[1]) / (1 + exp(-X_std$std.covs %*% theta_list$smooth)) + x@info$smooth_limits[1]
+                tp_smooth <- (x@info$smooth.limits[2] - x@info$smooth.limits[1]) / (1 + exp(-X_std$std.covs %*% theta_list$smooth)) + x@info$smooth.limits[1]
                 tp_ng <- exp(X_std$std.covs %*% theta_list$nugget)
                 tp_mr <- sin(tp_tl) * exp(X_std$std.covs %*% theta_list$scale) # *  exp(X_std$std.covs %*% theta_list$aniso)
                 
@@ -168,7 +168,7 @@ setMethod("plot",
                 if (x@type == "dense" && type == "correlations") {
 
                   tmp_cov <- stats::cov2cor(cocons::cov_rns(theta_list, x@locs, X_std$std.covs,
-                                                           smooth_limits = x@info$smooth_limits
+                                                           smooth_limits = x@info$smooth.limits
                   ))
                   
                   theta_list <- cocons::getModelLists(
@@ -206,7 +206,7 @@ setMethod("plot",
                       data = x@data,
                       z = x@z,
                       model.list = model.list,
-                      info = list("smooth_limits" = x@info$smooth_limits)
+                      info = list("smooth.limits" = x@info$smooth.limits)
                     )
                     
                     teteee <- getDesignMatrix(model.list = model.list, 
@@ -223,7 +223,7 @@ setMethod("plot",
                     tmp_cov_two <- stats::cov2cor(cocons::cov_rns(
                       theta = here, locs = x@locs,
                       x_covariates = teteee$model.matrix,
-                      smooth_limits = x@info$smooth_limits
+                      smooth_limits = x@info$smooth.limits
                     ))
                     
                     fields::quilt.plot(x@locs, tmp_cov_two[ww, ])
@@ -243,7 +243,7 @@ setMethod("plot",
                                          sd.vector = x@info$sd.vector
                 )
                 
-                tp_smooth <- (x@info$smooth_limits[2] - x@info$smooth_limits[1]) / (1 + exp(-X_std$std.covs %*% theta_list$smooth)) + x@info$smooth_limits[1]
+                tp_smooth <- (x@info$smooth.limits[2] - x@info$smooth.limits[1]) / (1 + exp(-X_std$std.covs %*% theta_list$smooth)) + x@info$smooth.limits[1]
                 
                 # tp_eff_range <- sqrt(8 * tp_smooth) * exp(X_std$std.covs %*% theta_list$scale)
                 tp_eff_range <- exp(X_std$std.covs %*% theta_list$scale)

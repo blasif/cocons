@@ -1,14 +1,12 @@
-# New ones
-
 #' Covariance matrix from a fitted coco object
 #' @description Retrieves the associated covariance matrix from a fitted coco object
 #'
 #' @usage getCovMatrix(coco.object, type = 'global', index = NULL)
-#' @param coco.object a coco class (fitted) object
-#' @param type whether 'global' to retrieve the regular covariance matrix, or 'local' to retrieve global covariance 
-#' based on the local aspect of a specific location (not implemented yet)
+#' @param coco.object a fitted [coco()] object.
+#' @param type whether \code{'global'} to retrieve the regular covariance matrix, or \code{'local'} to retrieve global covariance 
+#' based on the local aspects of a specific location (not implemented yet)
 #' @param index index to perform local covariance matrix (not implemented yet)
-#' @returns a vector with the adjusted trend
+#' @returns a covariance matrix
 #' @author Federico Blasi
 getCovMatrix <- function(coco.object, type = "global", index = NULL){
   
@@ -25,7 +23,7 @@ getCovMatrix <- function(coco.object, type = "global", index = NULL){
       return(cocons::cov_rns(theta = theta_list,
                             locs = coco.object@locs,
                             x_covariates = x_covs,
-                            smooth_limits = coco.object@info$smooth_limits))
+                            smooth_limits = coco.object@info$smooth.limits))
     }
     
     if(type == "local"){
@@ -52,7 +50,7 @@ getCovMatrix <- function(coco.object, type = "global", index = NULL){
                                                                                  x_covariates =  x_covs, 
                                                                                  colindices = ref_taper@colindices, 
                                                                                  rowpointers = ref_taper@rowpointers,
-                                                                                 smooth_limits =  coco.object@info$smooth_limits)
+                                                                                 smooth_limits =  coco.object@info$smooth.limits)
       
       return(as.matrix(ref_taper))
       
@@ -146,7 +144,7 @@ getSpatEffects <- function(coco.object){
     tp_se <- exp(0.5 * X_std$std.covs %*% theta_list$std.dev)
     tp_ga <- exp(X_std$std.covs %*% theta_list$aniso)
     tp_tl <- pi / (1 + exp(-X_std$std.covs %*% theta_list$tilt))
-    tp_smooth <- (coco.object@info$smooth_limits[2] - coco.object@info$smooth_limits[1]) / (1 + exp(-X_std$std.covs %*% theta_list$smooth)) + coco.object@info$smooth_limits[1]
+    tp_smooth <- (coco.object@info$smooth.limits[2] - coco.object@info$smooth.limits[1]) / (1 + exp(-X_std$std.covs %*% theta_list$smooth)) + coco.object@info$smooth.limits[1]
     tp_ng <- exp(X_std$std.covs %*% theta_list$nugget)
     tp_mr_x <- sin(tp_tl) * exp(X_std$std.covs %*% theta_list$scale)
     tp_mr_y <- sin(tp_tl) * exp(X_std$std.covs %*% theta_list$scale) * exp(X_std$std.covs %*% theta_list$aniso)
@@ -166,7 +164,7 @@ getSpatEffects <- function(coco.object){
     tp_se <- exp(0.5 * X_std$std.covs %*% theta_list$std.dev)
     #tp_ga <- exp(X_std$std.covs %*% theta_list$aniso)
     #tp_tl <- pi / (1 + exp(-X_std$std.covs %*% theta_list$tilt))
-    tp_smooth <- (coco.object@info$smooth_limits[2] - coco.object@info$smooth_limits[1]) / (1 + exp(-X_std$std.covs %*% theta_list$smooth)) + coco.object@info$smooth_limits[1]
+    tp_smooth <- (coco.object@info$smooth.limits[2] - coco.object@info$smooth.limits[1]) / (1 + exp(-X_std$std.covs %*% theta_list$smooth)) + coco.object@info$smooth.limits[1]
     tp_ng <- exp(X_std$std.covs %*% theta_list$nugget)
     tp_mr <- exp(X_std$std.covs %*% theta_list$scale)
     #tp_mr_y <- sin(tp_tl) * exp(X_std$std.covs %*% theta_list$scale) * exp(X_std$std.covs %*% theta_list$aniso)
@@ -198,12 +196,12 @@ getCondNumber <- function(coco.object){
   eigen(corr_mat)$values[1] / eigen(corr_mat)$values[dim(corr_mat)[1]]
 }
 
-#' Computes the trend of the coco object
+#' Computes the spatial trend of a (fitted) coco object
 #' @description Compute the trend of the (fitted) coco object
 #'
 #' @usage getTrend(coco.object)
-#' @param coco.object a coco class (fitted) object
-#' @returns a vector with the adjusted trend
+#' @param coco.object a fitted [coco()] object.
+#' @returns a vector with the adjusted trend.
 #' @author Federico Blasi
 getTrend <- function(coco.object){
   tmp_scaled <- getScale(coco.object)$std.covs
@@ -890,7 +888,7 @@ getHessian <- function(coco.object, ncores = parallel::detectCores() - 1,
     
     lambda <- coco.object@info$lambda
     
-    coco.info <- coco.object@info$smooth_limits
+    coco.info <- coco.object@info$smooth.limits
     
     pars <- coco.object@output$par
     
@@ -996,7 +994,7 @@ getHessian <- function(coco.object, ncores = parallel::detectCores() - 1,
     
     lambda <- coco.object@info$lambda
     
-    coco.info <- coco.object@info$smooth_limits
+    coco.info <- coco.object@info$smooth.limits
     
     pars <- coco.object@output$par
     

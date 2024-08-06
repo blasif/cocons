@@ -160,8 +160,10 @@ GetNeg2loglikelihood <- function(theta,
   
   theta_list <- cocons::getModelLists(theta = theta, par.pos = par.pos, type = "diff")
   
-  Sigma_cpp <- cocons::cov_rns(theta = theta_list[-1], locs = locs, x_covariates =  x_covariates,
-                              smooth_limits = smooth.limits)
+  Sigma_cpp <- cocons::cov_rns(theta = theta_list[-1], 
+                               locs = locs, 
+                               x_covariates =  x_covariates,
+                               smooth_limits = smooth.limits)
   
   check_pd <- tryCatch(cholS <- base::chol(Sigma_cpp), error = function(e) e)
   if (inherits(check_pd, "error")) {

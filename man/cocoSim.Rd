@@ -8,31 +8,34 @@ cocoSim(coco.object, pars, n, seed, standardize,
 type = 'classic', sim.type = NULL, cond.info = NULL)
 }
 \arguments{
-\item{coco.object}{a vector of length p, where p is the number of parameters for}
+\item{coco.object}{a \code{\link[=coco]{coco()}} object.}
 
-\item{pars}{a vector of length p, where p is the number of parameters for
-each of the models}
+\item{pars}{a vector of parameters values related to \code{model.list}.}
 
-\item{n}{number of realizations to simulate}
+\item{n}{number of realizations to simulate.}
 
 \item{seed}{seed number. default set to NULL.}
 
 \item{standardize}{logical argument describing whether provided covariates
-should be standardize (TRUE) or not (FALSE). By default set to TRUE}
+should be standardize (TRUE) or not (FALSE). By default set to TRUE.}
 
 \item{type}{whether parameters are related to a classical parameterization ('classic') or
-a difference parameterization 'diff' . Default set to 'classic'. For 'sparse' coco objects, only 'diff' is available.}
+a difference parameterization \code{'diff'}. Default set to \code{'classic'}. For \code{'sparse'} coco objects, only \code{'diff'} is available.}
 
-\item{sim.type}{if set 'cond' then a conditional simulation takes place.}
+\item{sim.type}{if set \code{'cond'} then a conditional simulation takes place.}
 
-\item{cond.info}{a list containing information to perform a conditional simulation.}
+\item{cond.info}{a list containing added information to perform conditional simulation.}
 }
 \value{
-a matrix n x dim(data)[1]
+a matrix n x dim(data)[1].
 }
 \description{
 simulates a Gaussian process with nonstationary covariance function
 from an coco object.
+}
+\details{
+\code{'cond'} sim.type requires specifying in \code{'cond.info'} a list with \code{'newdataset'} a data.frame containing covariates present in model.list at prediction locations,
+and \code{'newlocs'} a matrix with locations related to prediction locations, matching indexing of \code{'newdataset'}.
 }
 \author{
 Federico Blasi

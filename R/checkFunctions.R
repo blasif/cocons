@@ -134,6 +134,12 @@
   return(0)
 }
 
+.cocons.check.coco <- function(coco){
+  if(!is(coco,'coco')){
+    stop("not a coco object")
+  }
+}
+
 .cocons.check.data <- function(data) {
   if (!is.data.frame(data)) {
     stop("data must be provided as data.frame")
@@ -184,7 +190,7 @@
 # ADDED model.list here to check
 .cocons.check.info <- function(type, info, model.list){
   
-  if (is.null(info$smooth_limits)) {
+  if (is.null(info$smooth.limits)) {
     warning("smooth limits not specified. Maybe considering fixed smoothness?")
   }
   
@@ -194,12 +200,12 @@
     }
   }
     
-  if(!is.null(info$smooth_limits)){
-    if (info$smooth_limits[1] < 0) {
+  if(!is.null(info$smooth.limits)){
+    if (info$smooth.limits[1] < 0) {
       stop("lower bound smooth_limit is < 0 . Should be > 0")
     }
     
-    if (info$smooth_limits[1] > info$smooth_limits[2]) {
+    if (info$smooth.limits[1] > info$smooth.limits[2]) {
       stop("lower bound smooth_limit is > upper bound . Should be the opposite.")
     }
   }

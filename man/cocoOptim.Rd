@@ -8,27 +8,27 @@ cocoOptim(coco.object, boundaries = list(),
 ncores = parallel::detectCores(), optim.control, optim.type)
 }
 \arguments{
-\item{coco.object}{a coco object. See ?coco()}
+\item{coco.object}{a \code{\link[=coco]{coco()}} object.}
 
-\item{boundaries}{if provided, a list with lower, init, and upper values.
-if not is computed based on generic fast_init_boundaries()}
+\item{boundaries}{if provided, a list with lower, init, and upper values, as the one provided by \code{\link[=getBoundaries]{getBoundaries()}}. Otherwise,
+it is computed based on \code{\link[=getBoundaries]{getBoundaries()}} with global lower and upper values \eqn{-2} and \eqn{2}.}
 
-\item{ncores}{number of cores to be used for the optimization routine.}
+\item{ncores}{number of threads for the optimization routine.}
 
-\item{optim.control}{list with settings to be passed to the optimparallel function}
+\item{optim.control}{list with settings to be passed to the optimParallel function. See \code{\link[optimParallel:optimParallel]{optimParallel::optimParallel()}}.}
 
-\item{optim.type}{Optimization approach: whether 'mle' for classical Maximum Likelihood approach,
-or 'pmle' to factor out the spatial trend (when handling 'dense' coco objects), or
-to factor out the global marginal standard deviation parameter (when considering 'sparse' coco objects)}
+\item{optim.type}{Optimization approach: whether \code{'mle'} for classical Maximum Likelihood approach,
+or \code{'pmle'} to factor out the spatial trend (when handling \code{'dense'} coco objects), or
+to factor out the global marginal standard deviation parameter (when considering \code{'sparse'} coco objects).}
 }
 \value{
 a fitted coco object
 }
 \description{
-Optimizer based on multi-thread Optimparallel L-BFGS-B optimizers.
+Optimizer based on multi-thread Optimparallel L-BFGS-B routine.
 }
 \details{
-Current implementations only allow single realizations for 'pmle' optim.type.
+Current implementations only allow single realizations for \code{'pmle'} \code{optim.type}.
 }
 \author{
 Federico Blasi

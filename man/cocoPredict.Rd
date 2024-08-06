@@ -7,18 +7,18 @@
 cocoPredict(coco.object, newdataset, newlocs, type = 'mean', ...)
 }
 \arguments{
-\item{coco.object}{a fitted coco object}
+\item{coco.object}{a fitted \code{\link[=coco]{coco()}} object.}
 
-\item{newdataset}{a data.frame including covariates present in model.list at prediction locations}
+\item{newdataset}{a data.frame containing covariates present in model.list at prediction locations.}
 
-\item{newlocs}{a matrix with locations related to prediction locations, matching indexing of newdataset}
+\item{newlocs}{a matrix with locations related to prediction locations, matching indexing of newdataset.}
 
-\item{type}{whether "mean" or "pred", which gives a point prediction for the former, as well as a combination of point prediction as well as prediction uncertainty for the latter}
+\item{type}{whether \code{'mean'} or \code{'pred'}, which gives a point prediction for the former, as well as a combination of point prediction as well as prediction uncertainty for the latter.}
 
-\item{...}{when coco.object has multiple realizations, specifying 'index.pred' specifying which column of coco.object\@z should be used to perform predictions}
+\item{...}{when coco.object has multiple realizations, specifying \code{'index.pred'} specifying which column of coco.object\@z should be used to perform predictions.}
 }
 \value{
-a list with trend, and mean predictions and uncertainty quantification, if 'pred' is specified.
+a list with trend, and mean predictions and uncertainty quantification, if \code{'pred'} is specified.
 }
 \description{
 Prediction for a fitted coco object.

@@ -7,15 +7,15 @@
 getCovMatrix(coco.object, type = 'global', index = NULL)
 }
 \arguments{
-\item{coco.object}{a coco class (fitted) object}
+\item{coco.object}{a fitted \code{\link[=coco]{coco()}} object.}
 
-\item{type}{whether 'global' to retrieve the regular covariance matrix, or 'local' to retrieve global covariance
-based on the local aspect of a specific location (not implemented yet)}
+\item{type}{whether \code{'global'} to retrieve the regular covariance matrix, or \code{'local'} to retrieve global covariance
+based on the local aspects of a specific location (not implemented yet)}
 
 \item{index}{index to perform local covariance matrix (not implemented yet)}
 }
 \value{
-a vector with the adjusted trend
+a covariance matrix
 }
 \description{
 Retrieves the associated covariance matrix from a fitted coco object

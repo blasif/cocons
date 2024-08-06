@@ -1,18 +1,18 @@
 
 #' Optimizer for object class coco
-#' @description Optimizer based on multi-thread Optimparallel L-BFGS-B optimizers.
+#' @description Optimizer based on multi-thread Optimparallel L-BFGS-B routine.
 #' @details
-#'  Current implementations only allow single realizations for 'pmle' optim.type. 
+#'  Current implementations only allow single realizations for \code{'pmle'} \code{optim.type}. 
 #' @usage cocoOptim(coco.object, boundaries = list(), 
 #' ncores = parallel::detectCores(), optim.control, optim.type)
-#' @param coco.object a coco object. See ?coco()
-#' @param boundaries if provided, a list with lower, init, and upper values. 
-#' if not is computed based on generic fast_init_boundaries()
-#' @param ncores number of cores to be used for the optimization routine.
-#' @param optim.control list with settings to be passed to the optimparallel function
-#' @param optim.type Optimization approach: whether 'mle' for classical Maximum Likelihood approach, 
-#' or 'pmle' to factor out the spatial trend (when handling 'dense' coco objects), or
-#' to factor out the global marginal standard deviation parameter (when considering 'sparse' coco objects)
+#' @param coco.object a [coco()] object.
+#' @param boundaries if provided, a list with lower, init, and upper values, as the one provided by [getBoundaries()]. Otherwise,
+#' it is computed based on [getBoundaries()] with global lower and upper values \eqn{-2} and \eqn{2}.
+#' @param ncores number of threads for the optimization routine.
+#' @param optim.control list with settings to be passed to the optimParallel function. See [optimParallel::optimParallel()].
+#' @param optim.type Optimization approach: whether \code{'mle'} for classical Maximum Likelihood approach, 
+#' or \code{'pmle'} to factor out the spatial trend (when handling \code{'dense'} coco objects), or
+#' to factor out the global marginal standard deviation parameter (when considering \code{'sparse'} coco objects).
 #' @returns a fitted coco object
 #' @author Federico Blasi
 #' 
@@ -76,7 +76,7 @@ cocoOptim <- function(coco.object, boundaries = list(),
         "par" = boundaries$theta_init,
         "upper" = boundaries$theta_upper,
         "n" = dim(coco.object@z)[1],
-        "smooth.limits" = coco.object@info$smooth_limits,
+        "smooth.limits" = coco.object@info$smooth.limits,
         "z" = coco.object@z,
         "x_covariates" = empty_matrix,
         "par.pos" = designMatrix$par.pos,
@@ -161,7 +161,7 @@ cocoOptim <- function(coco.object, boundaries = list(),
         "par" = boundaries$theta_init,
         "upper" = boundaries$theta_upper,
         "n" = length(coco.object@z),
-        "smooth.limits" = coco.object@info$smooth_limits,
+        "smooth.limits" = coco.object@info$smooth.limits,
         "z" = coco.object@z,
         "x_covariates" = empty_matrix,
         "par.pos" = tmp_par_pos,
@@ -258,7 +258,7 @@ cocoOptim <- function(coco.object, boundaries = list(),
         "ref_taper" = ref_taper,
         "locs" = coco.object@locs,
         "x_covariates" = empty_matrix,
-        "smooth.limits" = coco.object@info$smooth_limits,
+        "smooth.limits" = coco.object@info$smooth.limits,
         "cholS" = spam::chol.spam(ref_taper),
         "z" = coco.object@z,
         "n" = length(coco.object@z),
@@ -353,7 +353,7 @@ cocoOptim <- function(coco.object, boundaries = list(),
         "ref_taper" = ref_taper,
         "locs" = coco.object@locs,
         "x_covariates" = empty_matrix,
-        "smooth.limits" = coco.object@info$smooth_limits,
+        "smooth.limits" = coco.object@info$smooth.limits,
         "cholS" = spam::chol.spam(ref_taper),
         "z" = coco.object@z,
         "n" = length(coco.object@z),

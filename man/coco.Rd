@@ -7,7 +7,7 @@
 coco(type, data, locs, z, model.list, info, output = list())
 }
 \arguments{
-\item{type}{One of two available types "dense" or "sparse". See description.}
+\item{type}{One of two available types \code{'dense'} or \code{'sparse'}. See description.}
 
 \item{data}{A data.frame with covariates information, where colnames(data) matches model.list specification.}
 
@@ -28,20 +28,20 @@ Creates a coco object.
 Creates a coco S4 object.
 }
 \details{
-This S4 class is the centerpiece of the cocons package. Two types of coco objects can be created. One is a "dense" type, meaning that the associated nonstationary covariance functions are dense, or
-a "sparse" object, which, in combination with the Tapering approach, induce zeroes in the covariance matrix to make it sparse and to unlock a set of efficient algorithms to speed up estimation and prediction routines.
+This S4 class is the centerpiece of the \pkg{cocons} package. Two types of coco objects can be created. One is a \code{'dense'} type, meaning that the associated nonstationary covariance functions are dense, or
+a \code{'sparse'} object, which, in combination with the Tapering approach, induce zeroes in the covariance matrix to make it sparse and to unlock a set of efficient algorithms to speed up estimation and prediction routines.
 
-Another important component of the coco S4 class is the model.list specification, involving different formulas provided as a list, where each of them specifies a source of nonstationarity, based on covariates. It involves "trend" for the spatial trend,
-the "std. dev" for the marginal standard deviation, "scale", "aniso" and "tilt", each of them shaping specific aspects of the local spatial geometrically anisotropy structure,
-"smooth" handling local smoothness, and "nugget" handling the local nugget effect.
+An important component of the coco S4 class is the \code{model.list} specification, involving different formulas provided as a list, where each of them specifies a covariate-based parametric model for a specific source of nonstationarity. It involves \code{"trend"} for the spatial trend,
+the \code{"std. dev"} for the marginal standard deviation, \code{"scale"}, \code{"aniso"} and \code{"tilt"}, each of them shaping specific aspects of the local spatial geometrically anisotropy structure,
+\code{"smooth"} handling local smoothness, and \code{"nugget"} handling the local nugget effect.
 
 Lastly, arguments for the info list argument involve:
 \itemize{
-\item 'lambda': a positive scalar specifying the regularization parameter.
-\item 'smooth_limits': specifying the allowed range of variation for the spatially varying smoothness.
-\item 'taper': specifying the desired taper function from the spam package (only for 'sparse' coco objects).
-\item 'delta': specifying the taper range/scale (only for 'sparse' coco objects).
-\item 'cat.vars': index of those variables in the data object which are categorical or should not be scaled during the optimization.
+\item \code{'lambda'}: a positive scalar specifying the regularization parameter.
+\item \code{'smooth.limits'}: specifying the allowed range of variation for the spatially varying smoothness.
+\item \code{'taper'}: specifying the desired taper function from the spam package (only for 'sparse' coco objects).
+\item \code{'delta'}: specifying the taper range/scale (only for 'sparse' coco objects).
+\item \code{'cat.vars'}: index of those variables in the data object which are categorical or should not be scaled during the optimization.
 }
 }
 \seealso{
