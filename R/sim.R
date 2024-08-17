@@ -1,7 +1,6 @@
 
-#' Marginal and conditional simulation of Gaussian processes with nonstationary covariance function
-#' @description simulates a Gaussian process with nonstationary covariance function
-#' from an coco object.
+#' Marginal and conditional simulation of nonstationary Gaussian process
+#' @description draw realizations of nonstationary Gaussian processes based on a \code{coco} object.
 #' @details \code{'cond'} sim.type requires specifying in \code{'cond.info'} a list with \code{'newdataset'} a data.frame containing covariates present in model.list at prediction locations, 
 #' and \code{'newlocs'} a matrix with locations related to prediction locations, matching indexing of \code{'newdataset'}.
 #' @usage cocoSim(coco.object, pars, n, seed, standardize, 
@@ -18,7 +17,7 @@
 #' @param cond.info a list containing added information to perform conditional simulation.
 #' @returns a matrix n x dim(data)\[1\].
 #' @author Federico Blasi
-#' 
+#' @seealso [coco()]
 cocoSim <- function(coco.object, 
                      pars,
                      n = 1,

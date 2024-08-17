@@ -2,7 +2,7 @@
 % Please edit documentation in R/sim.R
 \name{cocoSim}
 \alias{cocoSim}
-\title{Marginal and conditional simulation of Gaussian processes with nonstationary covariance function}
+\title{Marginal and conditional simulation of nonstationary Gaussian process}
 \usage{
 cocoSim(coco.object, pars, n, seed, standardize, 
 type = 'classic', sim.type = NULL, cond.info = NULL)
@@ -30,12 +30,14 @@ a difference parameterization \code{'diff'}. Default set to \code{'classic'}. Fo
 a matrix n x dim(data)[1].
 }
 \description{
-simulates a Gaussian process with nonstationary covariance function
-from an coco object.
+draw realizations of nonstationary Gaussian processes based on a \code{coco} object.
 }
 \details{
 \code{'cond'} sim.type requires specifying in \code{'cond.info'} a list with \code{'newdataset'} a data.frame containing covariates present in model.list at prediction locations,
 and \code{'newlocs'} a matrix with locations related to prediction locations, matching indexing of \code{'newdataset'}.
+}
+\seealso{
+\code{\link[=coco]{coco()}}
 }
 \author{
 Federico Blasi

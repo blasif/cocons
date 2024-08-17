@@ -135,7 +135,7 @@
 }
 
 .cocons.check.coco <- function(coco){
-  if(!is(coco,'coco')){
+  if(!methods::is(coco,'coco')){
     stop("not a coco object")
   }
 }

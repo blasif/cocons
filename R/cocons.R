@@ -8,12 +8,12 @@
 #' the \code{"std. dev"} for the marginal standard deviation, \code{"scale"}, \code{"aniso"} and \code{"tilt"}, each of them shaping specific aspects of the local spatial geometrically anisotropy structure,
 #' \code{"smooth"} handling local smoothness, and \code{"nugget"} handling the local nugget effect.
 #' 
-#' Lastly, arguments for the info list argument involve: 
+#' Lastly, arguments for the \code{'info'} list argument involve: 
 #' - \code{'lambda'}: a positive scalar specifying the regularization parameter.
 #' - \code{'smooth.limits'}: specifying the allowed range of variation for the spatially varying smoothness.
 #' - \code{'taper'}: specifying the desired taper function from the spam package (only for 'sparse' coco objects).
 #' - \code{'delta'}: specifying the taper range/scale (only for 'sparse' coco objects).
-#' - \code{'cat.vars'}: index of those variables in the data object which are categorical or should not be scaled during the optimization.
+#' - \code{'cat.vars'}: index of those variables in \code{data} that should not be scaled during the optimization (e.g., categorical).
 #' 
 #' @usage coco(type, data, locs, z, model.list, info, output = list())
 #' @param type One of two available types \code{'dense'} or \code{'sparse'}. See description.
@@ -22,7 +22,7 @@
 #' @param z A matrix of n x r response realizations, one realization per column. When considering only one realization, a vector can also be provided.
 #' @param model.list A list specifying a model for each aspect of the spatial structure.
 #' @param info A list specifying characteristics of the coco object.
-#' @param output Empty or an output from optimparallel output, including as well boundaries.
+#' @param output Empty or an output from optimParallel output, including as well boundaries.
 #' 
 #' @returns Creates a coco object.
 #' 

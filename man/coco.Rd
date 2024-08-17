@@ -19,7 +19,7 @@ coco(type, data, locs, z, model.list, info, output = list())
 
 \item{info}{A list specifying characteristics of the coco object.}
 
-\item{output}{Empty or an output from optimparallel output, including as well boundaries.}
+\item{output}{Empty or an output from optimParallel output, including as well boundaries.}
 }
 \value{
 Creates a coco object.
@@ -35,13 +35,13 @@ An important component of the coco S4 class is the \code{model.list} specificati
 the \code{"std. dev"} for the marginal standard deviation, \code{"scale"}, \code{"aniso"} and \code{"tilt"}, each of them shaping specific aspects of the local spatial geometrically anisotropy structure,
 \code{"smooth"} handling local smoothness, and \code{"nugget"} handling the local nugget effect.
 
-Lastly, arguments for the info list argument involve:
+Lastly, arguments for the \code{'info'} list argument involve:
 \itemize{
 \item \code{'lambda'}: a positive scalar specifying the regularization parameter.
 \item \code{'smooth.limits'}: specifying the allowed range of variation for the spatially varying smoothness.
 \item \code{'taper'}: specifying the desired taper function from the spam package (only for 'sparse' coco objects).
 \item \code{'delta'}: specifying the taper range/scale (only for 'sparse' coco objects).
-\item \code{'cat.vars'}: index of those variables in the data object which are categorical or should not be scaled during the optimization.
+\item \code{'cat.vars'}: index of those variables in \code{data} that should not be scaled during the optimization (e.g., categorical).
 }
 }
 \seealso{

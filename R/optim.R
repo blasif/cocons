@@ -2,7 +2,7 @@
 #' Optimizer for object class coco
 #' @description Optimizer based on multi-thread Optimparallel L-BFGS-B routine.
 #' @details
-#'  Current implementations only allow single realizations for \code{'pmle'} \code{optim.type}. 
+#'  Current implementations only allow a single realization for \code{'pmle'} \code{optim.type}. 
 #' @usage cocoOptim(coco.object, boundaries = list(), 
 #' ncores = parallel::detectCores(), optim.control, optim.type)
 #' @param coco.object a [coco()] object.
