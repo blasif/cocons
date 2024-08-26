@@ -1,23 +1,49 @@
 
 #' Marginal and conditional simulation of nonstationary Gaussian process
-#' @description draw realizations of nonstationary Gaussian processes based on a \code{coco} object.
-#' @details \code{'cond'} sim.type requires specifying in \code{'cond.info'} a list with \code{'newdataset'} a data.frame containing covariates present in model.list at prediction locations, 
-#' and \code{'newlocs'} a matrix with locations related to prediction locations, matching indexing of \code{'newdataset'}.
+#' @description draw realizations of nonstationary Gaussian processes with covariate-based covariance functions.
+#' @details \code{'cond'} sim.type requires specifying in \code{'cond.info'} a list with \code{'newdataset'} a data.frame containing covariates present in model.list at simulation locations, 
+#' and \code{'newlocs'} a matrix with locations related to the simulation locations, matching indexing of \code{'newdataset'}.
 #' @usage cocoSim(coco.object, pars, n, seed, standardize, 
 #' type = 'classic', sim.type = NULL, cond.info = NULL)
-#' @param coco.object a [coco()] object.
-#' @param pars a vector of parameters values related to \code{model.list}.
-#' @param n number of realizations to simulate.
-#' @param seed seed number. default set to NULL.
-#' @param standardize logical argument describing whether provided covariates 
+#' @param coco.object (\code{S4}) a \link{coco} object.
+#' @param pars (\code{numeric vector}) a vector of parameters values related to \code{model.list}.
+#' @param n (\code{integer}) number of realizations to simulate.
+#' @param seed (\code{integer or NULL}) seed number. default set to NULL.
+#' @param standardize (\code{TRUE/FALSE}) logical argument describing whether provided covariates 
 #' should be standardize (TRUE) or not (FALSE). By default set to TRUE.
-#' @param type whether parameters are related to a classical parameterization ('classic') or
+#' @param type (\code{character}) whether parameters are related to a classical parameterization ('classic') or
 #' a difference parameterization \code{'diff'}. Default set to \code{'classic'}. For \code{'sparse'} coco objects, only \code{'diff'} is available.
-#' @param sim.type if set \code{'cond'} then a conditional simulation takes place.
-#' @param cond.info a list containing added information to perform conditional simulation.
+#' @param sim.type (\code{character}) if set \code{'cond'} then a conditional simulation takes place.
+#' @param cond.info (\code{list}) a list containing added information to perform conditional simulation.
 #' @returns a matrix n x dim(data)\[1\].
 #' @author Federico Blasi
 #' @seealso [coco()]
+#' @examples
+#' \dontrun{
+#' 
+#' model.list <- list('mean' = 0,
+#'                    'std.dev' = formula( ~ 1 + cov_x + cov_y),
+#'                    'scale' = formula( ~ 1 + cov_x + cov_y),
+#'                    'aniso' = 0,
+#'                    'tilt' = 0,
+#'                    'smooth' = 0.5,
+#'                    'nugget' = -Inf)
+#'                    
+#' coco_object <- coco(type = 'dense',
+#'                     data = holes[[1]][1:1000,],
+#'                     locs = as.matrix(holes[[1]][1:1000,1:2]),
+#'                     z = holes[[1]][1:1000,]$z,
+#'                     model.list = model.list)
+#'                     
+#' coco_sim <- cocoSim(coco.object = coco_object,
+#'             pars = c(0,0.25,0.25,  # pars related to std.dev
+#'             log(0.25),1,-1),       # pars related to scale
+#'             n = 1, 
+#'             standardize = TRUE) 
+#'
+#' fields::quilt.plot(coco_object@locs,coco_sim)             
+#' }
+#' 
 cocoSim <- function(coco.object, 
                      pars,
                      n = 1,

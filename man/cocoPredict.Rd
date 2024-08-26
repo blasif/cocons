@@ -2,26 +2,58 @@
 % Please edit documentation in R/predict.R
 \name{cocoPredict}
 \alias{cocoPredict}
-\title{Prediction for object class coco}
+\title{Prediction routines for nonstationary spatial models}
 \usage{
 cocoPredict(coco.object, newdataset, newlocs, type = 'mean', ...)
 }
 \arguments{
-\item{coco.object}{a fitted \code{\link[=coco]{coco()}} object.}
+\item{coco.object}{(\code{S4}) a fitted \link{coco} object.}
 
-\item{newdataset}{a data.frame containing covariates present in model.list at prediction locations.}
+\item{newdataset}{(\code{data.frame}) a data.frame containing covariates present in model.list at prediction locations.}
 
-\item{newlocs}{a matrix with locations related to prediction locations, matching indexing of newdataset.}
+\item{newlocs}{(\code{matrix}) a matrix with locations related to prediction locations, matching indexing of \code{newdataset}.}
 
-\item{type}{whether \code{'mean'} or \code{'pred'}, which gives a point prediction for the former, as well as a combination of point prediction as well as prediction uncertainty for the latter.}
+\item{type}{(\code{character}) whether \code{"mean"} or \code{"pred"}, which gives a point prediction for the former,
+as well as of point prediction and standard errors for the latter.}
 
-\item{...}{when coco.object has multiple realizations, specifying \code{'index.pred'} specifying which column of coco.object\@z should be used to perform predictions.}
+\item{...}{when coco.object has multiple realizations, specifying \code{"index.pred"} specifying which column of
+\code{coco.object@z} should be used to perform predictions.}
 }
 \value{
-a list with trend, and mean predictions and uncertainty quantification, if \code{'pred'} is specified.
+a list with the conditional mean, splitted in the systematic large-scale variability \code{trend},
+and due to stochastic \code{mean}, as well as standard errors \code{"sd.pred"} if \code{"pred"} is specified.
 }
 \description{
-Prediction for a fitted coco object.
+Computes the point predictions and standard errors based on conditional Gaussian distributions.
+}
+\examples{
+\dontrun{
+ 
+model.list <- list('mean' = 0,
+'std.dev' = formula( ~ 1 + cov_x + cov_y),
+'scale' = formula( ~ 1 + cov_x + cov_y),
+'aniso' = 0,
+'tilt' = 0,
+'smooth' = 0.5,
+'nugget' = -Inf)
+
+coco_object <- coco(type = 'dense',
+data = holes[[1]][1:50, ],
+locs = as.matrix(holes[[1]][1:50, 1:2]),
+z = holes[[1]][1:50, ]$z,
+model.list = model.list)
+
+optim_coco <- cocoOptim(coco_object,
+boundaries = getBoundaries(coco_object,
+lower.value = -3, 3))
+
+coco_preds <- cocoPredict(optim_coco,newdataset = holes[[2]][1:50, ],
+newlocs = as.matrix(holes[[2]][1:50, 1:2]),
+type = "pred")
+
+coco_preds
+}
+
 }
 \author{
 Federico Blasi

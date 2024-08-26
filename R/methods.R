@@ -545,6 +545,7 @@ setMethod("show",
           function(object){
             
             if(object@type == "dense"){
+              
               cat(sprintf("%-30s %30s\n", "coco object", object@type))
               cat(sprintf("%-30s %30s\n", "fitted", ifelse(identical(object@output, list()), yes = "no", 
                                                            no = "yes")))
@@ -554,7 +555,7 @@ setMethod("show",
               
               # number of parameters
               
-              coco_info_light <- getDesignMatrix(model.list = object@model.list,data = object@data[1:2, ])
+              coco_info_light <- getDesignMatrix(model.list = object@model.list, data = object@data[1, , drop = FALSE])
               
               tmp_index <- lapply(coco_info_light$par.pos, FUN = is.logical)
               
@@ -569,17 +570,17 @@ setMethod("show",
             }
             
             if(object@type == "sparse"){
+              
               cat(sprintf("%-30s %30s\n", "coco object", object@type))
               cat(sprintf("%-30s %30s\n", "fitted", ifelse(identical(object@output, list()), yes = "no", 
                                                            no = "yes")))
-              # cat(sprintf("%-30s %30s\n", "taper function", paste(object@info$taper)))
-              
+
               cat(rep("-", 40), "\n")
               cat(sprintf("%-30s %30s\n", "dataset dim", paste0(dim(object@data), collapse = ", ")))
               
               # number of parameters
               
-              coco_info_light <- getDesignMatrix(model.list = object@model.list,data = object@data[1:2, ])
+              coco_info_light <- getDesignMatrix(model.list = object@model.list,data = object@data[1, , drop = FALSE])
               
               tmp_index <- lapply(coco_info_light$par.pos, FUN = is.logical)
               

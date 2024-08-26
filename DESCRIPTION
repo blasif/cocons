@@ -12,9 +12,9 @@ Maintainer: Federico Blasi <federico.blasi@math.uzh.ch>
 Description: Estimation and prediction of nonstationary Gaussian process with modular covariate-based covariance functions. Routines for handling large datasets are also provided.
 Encoding: UTF-8
 LazyData: true
-License:  GPL (>= 3)
-Depends:  R (>= 3.5.0)
-Imports:  Rcpp (>= 1.0.10),
+License: GPL (>= 3)
+Depends: R (>= 3.5.0)
+Imports: Rcpp (>= 1.0.10),
           spam (>= 2.9.1),
           fields,
           optimParallel,
@@ -23,5 +23,5 @@ Imports:  Rcpp (>= 1.0.10),
 LinkingTo: Rcpp, BH
 BugReports: https://github.com/blasif/cocons/issues
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.2
 VignetteBuilder: knitr

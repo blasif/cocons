@@ -2,47 +2,80 @@
 % Please edit documentation in R/cocons.R
 \name{coco}
 \alias{coco}
-\title{coco Class}
+\title{Creates a coco S4 object}
 \usage{
 coco(type, data, locs, z, model.list, info, output = list())
 }
 \arguments{
-\item{type}{One of two available types \code{'dense'} or \code{'sparse'}. See description.}
+\item{type}{(\code{character}) One of two available types \code{"dense"} or \code{"sparse"}. See description.}
 
-\item{data}{A data.frame with covariates information, where colnames(data) matches model.list specification.}
+\item{data}{(\code{data.frame}) A data.frame with covariates information, where \code{colnames(data)} matches model.list specification.}
 
-\item{locs}{A matrix with locs matching data.}
+\item{locs}{(\code{matrix}) A matrix with spatial locations.}
 
-\item{z}{A matrix of n x r response realizations, one realization per column. When considering only one realization, a vector can also be provided.}
+\item{z}{(\code{vector} or \code{matrix}) A matrix of \eqn{n \times r} response realizations, one realization per column. When considering only one realization, a vector can also be provided.}
 
-\item{model.list}{A list specifying a model for each aspect of the spatial structure.}
+\item{model.list}{(\code{list}) A list specifying a model for each aspect of the spatial structure.}
 
-\item{info}{A list specifying characteristics of the coco object.}
+\item{info}{(\code{list} or \code{NULL}) A list specifying characteristics of the coco object.}
 
-\item{output}{Empty or an output from optimParallel output, including as well boundaries.}
+\item{output}{(\code{list} or \code{NULL}) Empty or the resulting object from running \link[optimParallel]{optimParallel}, adding to this list boundaries information.}
 }
 \value{
-Creates a coco object.
+An S4 object of class \code{coco}.
 }
 \description{
-Creates a coco S4 object.
+Creates an S4 object of class \code{coco}, which is the centerpiece of the \pkg{cocons} package. The function provides a set of consistency checks for ensuring the suitability of the different objects involved.
 }
 \details{
-This S4 class is the centerpiece of the \pkg{cocons} package. Two types of coco objects can be created. One is a \code{'dense'} type, meaning that the associated nonstationary covariance functions are dense, or
-a \code{'sparse'} object, which, in combination with the Tapering approach, induce zeroes in the covariance matrix to make it sparse and to unlock a set of efficient algorithms to speed up estimation and prediction routines.
+Two types of \code{coco} objects are available, each assuming a different kind of covariance matrix for the Gaussian process.
+Type \code{"dense"} builds dense covariance matrices (non zero elements), while type \code{"sparse"} builds sparse covariance
+matrices by tapering the dense covariance matrix with a compact isotropic compact-supported correlation matrix \strong{[1]}.
+Type \code{"sparse"} allows a set of efficient algorithms, thus making it more suitable for large sample sizes.
 
-An important component of the coco S4 class is the \code{model.list} specification, involving different formulas provided as a list, where each of them specifies a covariate-based parametric model for a specific source of nonstationarity. It involves \code{"trend"} for the spatial trend,
-the \code{"std. dev"} for the marginal standard deviation, \code{"scale"}, \code{"aniso"} and \code{"tilt"}, each of them shaping specific aspects of the local spatial geometrically anisotropy structure,
+An important component of the \code{coco} S4 class is the \code{model.list} specification, involving individual formulas provided as a list, where each of them specifies a covariate-based parametric model for a specific source of nonstationarity.
+It involves \code{"trend"} for the spatial trend, the \code{"std.dev"} for the marginal standard deviation,
+\code{"scale"}, \code{"aniso"} and \code{"tilt"}, each of them shaping specific aspects of the local spatial geometrically anisotropy structure,
 \code{"smooth"} handling local smoothness, and \code{"nugget"} handling the local nugget effect.
 
-Lastly, arguments for the \code{'info'} list argument involve:
-\itemize{
-\item \code{'lambda'}: a positive scalar specifying the regularization parameter.
-\item \code{'smooth.limits'}: specifying the allowed range of variation for the spatially varying smoothness.
-\item \code{'taper'}: specifying the desired taper function from the spam package (only for 'sparse' coco objects).
-\item \code{'delta'}: specifying the taper range/scale (only for 'sparse' coco objects).
-\item \code{'cat.vars'}: index of those variables in \code{data} that should not be scaled during the optimization (e.g., categorical).
+Lastly, arguments for the \code{"info"} list argument involve: \itemize{
+\item \code{"lambda"}: (\code{numeric}) a positive scalar specifying the regularization parameter.
+\item \code{"smooth.limits"}: (\code{numeric vector}) specifying the allowed range of variation for the spatially varying smoothness.
+\item \code{"taper"}: (\code{numeric}) specifying the desired taper function from the spam package (only for "sparse" coco objects).
+\item \code{"delta"}: (\code{numeric}) specifying the taper range/scale (only for "sparse" coco objects).
+\item \code{"cat.vars"}: (\code{integer vector}) index of those variables in \code{data} that should not be scaled during the optimization (e.g., categorical).
 }
+}
+\examples{
+ 
+locs <- expand.grid(seq(0,1,length.out = 10),
+seq(0,1,length.out = 10))
+
+toydata <- data.frame('x' = locs[,1])
+
+set.seed(1)
+z <- rnorm(100)
+
+model.list <- list('mean' = 0,
+                   'std.dev' = formula( ~ 1),
+                   'scale' = formula( ~ 1 + x),
+                   'aniso' = 0,
+                   'tilt' = 0,
+                   'smooth' = 0.5,
+                   'nugget' = -Inf)
+                   
+coco_object <- coco(type = 'dense',
+                    data = toydata,
+                    locs = as.matrix(locs),
+                    z = z,
+                    model.list = model.list)
+
+
+}
+\references{
+\strong{[1]} Furrer, Reinhard, Marc G. Genton, and Douglas Nychka.
+\emph{"Covariance tapering for interpolation of large spatial datasets."}
+Journal of Computational and Graphical Statistics 15.3 (2006): 502-523.
 }
 \seealso{
 \code{\link[spam:covmat]{spam::cov.wend1()}}
