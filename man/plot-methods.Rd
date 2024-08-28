@@ -13,9 +13,9 @@
 
 \item{y}{Not used.}
 
-\item{...}{Additional arguments passed to the plot function.}
+\item{...}{Additional arguments passed to the plot function. when type "ellipse" , delta of nearest.dist must be specified.}
 
-\item{type}{The type of plot.}
+\item{type}{The type of plot. NULL or "ellipse" for drawing ellipse of the convolution kernels.}
 
 \item{index}{For plotting local correlation plots.}
 

@@ -35,8 +35,8 @@ setClass("coco", slots = list(
 #'
 #' @param x An object of class \code{coco}.
 #' @param y Not used.
-#' @param ... Additional arguments passed to the plot function.
-#' @param type The type of plot.
+#' @param ... Additional arguments passed to the plot function. when type "ellipse" , delta of nearest.dist must be specified.
+#' @param type The type of plot. NULL or "ellipse" for drawing ellipse of the convolution kernels.
 #' @param index For plotting local correlation plots.
 #' @param factr Factor rate for size of ellipses.
 #' @param plot.control Additional plot control parameters.
@@ -58,26 +58,9 @@ setMethod("plot",
               on.exit(graphics::par(opar))
               
               if (any(x@type == "dense")) {
-                tmp_info <- cocons::getDesignMatrix(model.list = x@model.list, 
-                                                   data = x@data)
-                
-                theta_list <- cocons::getModelLists(
-                  theta = x@output$par, par.pos = tmp_info$par.pos,
-                  type = "diff"
-                )
-                
-                X_std <- cocons::getScale(tmp_info$model.matrix,
-                                         mean.vector = x@info$mean.vector,
-                                         sd.vector = x@info$sd.vector
-                )
-                
-                tp_se <- exp(0.5 * X_std$std.covs %*% theta_list$std.dev)
-                tp_ga <- exp(X_std$std.covs %*% theta_list$aniso)
-                tp_tl <- pi / (1 + exp(-X_std$std.covs %*% theta_list$tilt))
-                tp_smooth <- (x@info$smooth.limits[2] - x@info$smooth.limits[1]) / (1 + exp(-X_std$std.covs %*% theta_list$smooth)) + x@info$smooth.limits[1]
-                tp_ng <- exp(X_std$std.covs %*% theta_list$nugget)
-                tp_mr <- sin(tp_tl) * exp(X_std$std.covs %*% theta_list$scale) # *  exp(X_std$std.covs %*% theta_list$aniso)
-                
+
+                spat_effects <- getSpatEffects(x)
+
                 if(is.null(type)){
                   
                   graphics::par(mfrow = c(1, 2))
@@ -86,7 +69,7 @@ setMethod("plot",
                     "x" = x@locs[, 1],
                     "y" = x@locs[, 2],
                     "main" = "trend",
-                    "z" = X_std$std.covs %*% theta_list$mean
+                    "z" = getTrend(x)
                   ), ...)
                   
                   if(T){
@@ -94,33 +77,33 @@ setMethod("plot",
                       "x" = x@locs[, 1],
                       "y" = x@locs[, 2],
                       "main" = "residuals",
-                      "z" = x@z[,1] - X_std$std.covs %*% theta_list$mean
+                      "z" = x@z[,1] - getTrend(x)
                     ), ...)                    
                   }
 
                   graphics::par(mfrow = c(2, 3))
                   
-                  fields::quilt.plot(x@locs, tp_se, main = "se", ...)
+                  fields::quilt.plot(x@locs, spat_effects$sd, main = "se", ...)
                   
                   #plot(x@locs[,1], x@locs[,2], pch=20, main = "se",
                   #     col = tim.colors(64)[cut(tp_se, breaks = quantile(x = tp_se, probs = seq(0, 1, length.out = 64)), 
                   #                              labels = FALSE, include.lowest = T)], xlab = colnames(x@locs)[1],ylab=colnames(x@locs)[2])
                   
-                  fields::quilt.plot(x@locs, tp_mr, main = "approx eff.scale", ...)
+                  fields::quilt.plot(x@locs, spat_effects$scale_x, main = "approx. eff. scale", ...)
                   
                   #plot(x@locs[,1], x@locs[,2], pch=20, main = "approx eff.scale",
                   #     col = tim.colors(64)[cut(tp_mr, breaks = quantile(x = tp_mr, probs = seq(0, 1, length.out = 64)), 
                   #                              labels = FALSE, include.lowest = T)], xlab = colnames(x@locs)[1],ylab=colnames(x@locs)[2])
                   
-                  fields::quilt.plot(x@locs, tp_ga, main = "ga", ...)
+                  fields::quilt.plot(x@locs, spat_effects$aniso, main = "anisotropy", ...)
                   
                   #plot(x@locs[,1], x@locs[,2], pch=20, main = "ga",
                   #     col = tim.colors(64)[cut(tp_ga, breaks = quantile(x = tp_ga, probs = seq(0, 1, length.out = 64)), 
                   #                              labels = FALSE, include.lowest = T)], xlab = colnames(x@locs)[1],ylab=colnames(x@locs)[2])
                   
-                  fields::quilt.plot(x@locs, cos(tp_tl), main = "tl", zlim = c(-pi / 4 - 0.1, pi / 4 + 0.1), ...)
-                  fields::quilt.plot(x@locs, tp_smooth, main = "smooth", ...)
-                  fields::quilt.plot(x@locs, tp_ng, main = "ng", ...)
+                  fields::quilt.plot(x@locs, cos(spat_effects$tilt), main = "tilt", zlim = c(-pi / 4 - 0.1, pi / 4 + 0.1), ...)
+                  fields::quilt.plot(x@locs, spat_effects$smooth, main = "smooth", ...)
+                  fields::quilt.plot(x@locs, spat_effects$nugget, main = "nugget", ...)
                   
                 }
                 
@@ -147,7 +130,7 @@ setMethod("plot",
                       for (jj in 1:number_x) {
                         center_locs <- c(vals_x[ii], range_y[1] + jj / number_x * (range_y[2] - range_y[1]))
                         
-                        sss <- spam::nearest.dist(x = matrix(center_locs, ncol = 2), y = x@locs, delta = 2) # fix delta to automatic
+                        sss <- spam::nearest.dist(x = matrix(center_locs, ncol = 2), y = x@locs, delta = ...) # fix delta to automatic
                         
                         to_compute_sd <- sss@colindices[which.min(sss@entries)]
                         
@@ -166,23 +149,30 @@ setMethod("plot",
                 
                 # !!!!!!! is it ok && ??
                 if (x@type == "dense" && type == "correlations") {
-
-                  tmp_cov <- stats::cov2cor(cocons::cov_rns(theta_list, x@locs, X_std$std.covs,
-                                                           smooth_limits = x@info$smooth.limits
-                  ))
                   
-                  theta_list <- cocons::getModelLists(
-                    theta = x@output$par, par.pos = tmp_info$par.pos,
-                    type = "classic"
+                  tmp_info <- cocons::getDesignMatrix(model.list = x@model.list, data = x@data)
+                  
+                  theta_list <- cocons::getModelLists(theta = x@output$par, 
+                                                      par.pos = tmp_info$par.pos, type = "diff")
+                  
+                  X_std <- cocons::getScale(tmp_info$model.matrix,
+                                            mean.vector = x@info$mean.vector,
+                                            sd.vector = x@info$sd.vector
                   )
                   
-                  # ifelse(length(index) <= 5, yes = graphics::par(mfrow = c(length(index), 2)), no = graphics::par(mfrow = c(5, 2)))
-
+                  tmp_cov <- stats::cov2cor(cocons::cov_rns(theta_list, 
+                                                            locs = x@locs, 
+                                                            x_covariates = X_std$std.covs,
+                                                            smooth_limits = x@info$smooth.limits
+                  ))
+                  
                   graphics::par(mfrow = c(1, 2))
                   
                   for (ww in index) {
                     
-                    fields::quilt.plot(x@locs, tmp_cov[ww,], zlim = c(0, 1))
+                    fields::quilt.plot(x@locs, tmp_cov[ww,], zlim = c(0, 1), main = 'global corr.')
+                    points(x@locs[ww,1], x@locs[ww,2], pch = "X", bg='red', col = 'violet', cex = 2)
+                    
                     local_var <- X_std$std.covs[ww, ] %*% theta_list$std.dev
                     local_mr <- X_std$std.covs[ww, ] %*% theta_list$scale
                     local_ga <- X_std$std.covs[ww, ] %*% theta_list$aniso
@@ -226,7 +216,8 @@ setMethod("plot",
                       smooth_limits = x@info$smooth.limits
                     ))
                     
-                    fields::quilt.plot(x@locs, tmp_cov_two[ww, ])
+                    fields::quilt.plot(x@locs, tmp_cov_two[ww, ], main = 'local corr.')
+                    points(x@locs[ww,1], x@locs[ww,2], pch = "X", bg='red', col = 'violet', cex = 2)
                   }
                 }
               }
@@ -243,19 +234,12 @@ setMethod("plot",
                                          sd.vector = x@info$sd.vector
                 )
                 
-                tp_smooth <- (x@info$smooth.limits[2] - x@info$smooth.limits[1]) / (1 + exp(-X_std$std.covs %*% theta_list$smooth)) + x@info$smooth.limits[1]
-                
-                # tp_eff_range <- sqrt(8 * tp_smooth) * exp(X_std$std.covs %*% theta_list$scale)
-                tp_eff_range <- exp(X_std$std.covs %*% theta_list$scale)
-                
-                tp_se <- exp(0.5 * X_std$std.covs %*% theta_list$std.dev)
-                
-                tp_nugget_se <- sqrt(exp(X_std$std.covs %*% theta_list$nugget))
+                spat_effects <- getSpatEffects(x)
                 
                 tmp_list <- list("x" = x@locs[, 1],
                                  "y" = x@locs[, 2],
                                  "main" = "trend",
-                                 "z" = X_std$std.covs %*% theta_list$mean)
+                                 "z" = getTrend(x))
                 
                 graphics::par(mfrow = c(1, 2))
                 do.call(fields::quilt.plot, args = tmp_list)
@@ -263,16 +247,16 @@ setMethod("plot",
                 tmp_list <- list("x" = x@locs[, 1],
                                  "y" = x@locs[, 2],
                                  "main" = "residuals",
-                                 "z" = x@z - X_std$std.covs %*% theta_list$mean)
+                                 "z" = x@z - getTrend(x))
                 
                 do.call(fields::quilt.plot, args = tmp_list)
                 
                 graphics::par(mfrow = c(2, 2))
                 
-                fields::quilt.plot(x@locs, tp_smooth, ..., main = "smooth")
-                fields::quilt.plot(x@locs, tp_eff_range, ..., main = "approx eff.scale")
-                fields::quilt.plot(x@locs, tp_se, ..., main = "se")
-                fields::quilt.plot(x@locs, tp_nugget_se, ..., main = "nugget se")
+                fields::quilt.plot(x@locs, spat_effects$smooth, ..., main = "smooth")
+                fields::quilt.plot(x@locs, spat_effects$scale_x, ..., main = "approx. eff. scale")
+                fields::quilt.plot(x@locs, spat_effects$sd, ..., main = "se")
+                fields::quilt.plot(x@locs, spat_effects$nugget, ..., main = "nugget")
               }
               
               if (!is.null(type)) {
@@ -394,12 +378,8 @@ setMethod("print", signature(x = "coco"),
                 adjusted_effects[6, ] <- adjusted_eff_values$smooth
                 adjusted_effects[7, ] <- adjusted_eff_values$nugget
                 
-
-                #cat(sprintf("%-15s %-15s %-15s %-15s\n", "Variable:", " "," "," "))
-                
                 if(!is.null(inv.hess)){
                   
-                  # Create a table-like output using cat() and sprintf()
                   cat(sprintf("%-15s %15s %15s %15s\n", "Output:", " ", " ", " "))
                   cat(rep("-", 65), "\n")
                   
@@ -409,28 +389,39 @@ setMethod("print", signature(x = "coco"),
                   for (ii in 1:dim(adjusted_effects)[2]) {
                     cat(sprintf("%-15s %15s %15s %15s %15s %15s %15s %15s\n", 
                                 colnames(adjusted_effects)[ii], 
-                                ifelse(tmp_matrix$par.pos$mean[ii], 
+                                ifelse(ifelse(is.logical(tmp_matrix$par.pos$mean[ii]),
+                                              yes = tmp_matrix$par.pos$mean[ii], 
+                                              no = ifelse(ii == 1, yes = TRUE, no = FALSE)), 
                                        paste0(round(adjusted_effects[1,ii], 3)," (",round(adjusted_se[1,ii],3),")"), "-"),
-                                ifelse(tmp_matrix$par.pos$std.dev[ii], yes = paste0(round(adjusted_effects[2,ii], 3)," (",round(adjusted_se[2,ii], 3),")"), 
+                                ifelse(ifelse(is.logical(tmp_matrix$par.pos$std.dev[ii]),
+                                              yes = tmp_matrix$par.pos$std.dev[ii], 
+                                              no = ifelse(ii == 1, yes = TRUE, no = FALSE)), yes = paste0(round(adjusted_effects[2,ii], 3)," (",round(adjusted_se[2,ii], 3),")"), 
                                        no = "-"),
-                                ifelse(tmp_matrix$par.pos$scale[ii], yes = paste0(round(adjusted_effects[3,ii],3)," (",round(adjusted_se[3,ii], 3),")"), 
+                                ifelse(ifelse(is.logical(tmp_matrix$par.pos$scale[ii]),
+                                              yes = tmp_matrix$par.pos$scale[ii], 
+                                              no = ifelse(ii == 1, yes = TRUE, no = FALSE)), yes = paste0(round(adjusted_effects[3,ii],3)," (",round(adjusted_se[3,ii], 3),")"), 
                                        no = "-"),
-                                ifelse(tmp_matrix$par.pos$aniso[ii], yes = paste0(round(adjusted_effects[4,ii],3)," (",round(adjusted_se[4,ii], 3),")"), 
+                                ifelse(ifelse(is.logical(tmp_matrix$par.pos$aniso[ii]),
+                                              yes = tmp_matrix$par.pos$aniso[ii], 
+                                              no = ifelse(ii == 1, yes = TRUE, no = FALSE)), yes = paste0(round(adjusted_effects[4,ii],3)," (",round(adjusted_se[4,ii], 3),")"), 
                                        no = "-"),
-                                ifelse(tmp_matrix$par.pos$tilt[ii], yes = paste0(round(adjusted_effects[5,ii],3)," (",round(adjusted_se[5,ii], 3),")"), 
+                                ifelse(ifelse(is.logical(tmp_matrix$par.pos$tilt[ii]),
+                                              yes = tmp_matrix$par.pos$tilt[ii], 
+                                              no = ifelse(ii == 1, yes = TRUE, no = FALSE)), yes = paste0(round(adjusted_effects[5,ii],3)," (",round(adjusted_se[5,ii], 3),")"), 
                                        no = "-"),
-                                ifelse(tmp_matrix$par.pos$smooth[ii], yes = paste0(round(adjusted_effects[6, ii],3)," (",round(adjusted_se[6,ii], 3),")"), 
+                                ifelse(ifelse(is.logical(tmp_matrix$par.pos$smooth[ii]),
+                                              yes = tmp_matrix$par.pos$smooth[ii], 
+                                              no = ifelse(ii == 1, yes = TRUE, no = FALSE)), yes = paste0(round(adjusted_effects[6, ii],3)," (",round(adjusted_se[6,ii], 3),")"), 
                                        no = "-"),
-                                ifelse(!is.na(tmp_matrix$par.pos$nugget[ii]), ifelse(tmp_matrix$par.pos$nugget[ii], paste0(round(adjusted_effects[7,ii], 3)," (",
-                                                                                                                           round(adjusted_se[7,ii], 3),")"), "-"),
-                                                                                     no = "-")
-                    )
+                                ifelse(ifelse(is.logical(tmp_matrix$par.pos$nugget[ii]),
+                                              yes = tmp_matrix$par.pos$nugget[ii], 
+                                              no = ifelse(ii == 1, yes = TRUE, no = FALSE)), yes = paste0(round(adjusted_effects[7, ii],3)," (",round(adjusted_se[7,ii], 3),")"), 
+                                       no = "-"),                    )
                     )
                   }
                   
                 } else {
                   
-                  # Create a table-like output using cat() and sprintf()
                   cat(sprintf("%-15s %15s %15s %15s\n", "Output:", " ", " ", " "))
                   cat(rep("-", 60), "\n")
                   
@@ -440,13 +431,27 @@ setMethod("print", signature(x = "coco"),
                   for (ii in 1:dim(adjusted_effects)[2]) {
                     cat(sprintf("%-15s %10s %10s %10s %10s %10s %10s %10s\n", 
                                 colnames(adjusted_effects)[ii], 
-                                ifelse(tmp_matrix$par.pos$mean[ii], round(adjusted_effects[1,ii], 3), "-"),
-                                ifelse(tmp_matrix$par.pos$std.dev[ii], round(adjusted_effects[2,ii], 3), "-"),
-                                ifelse(tmp_matrix$par.pos$scale[ii], round(adjusted_effects[3,ii],3), "-"),
-                                ifelse(tmp_matrix$par.pos$aniso[ii], round(adjusted_effects[4,ii],3), "-"),
-                                ifelse(tmp_matrix$par.pos$tilt[ii], round(adjusted_effects[5,ii],3), "-"),
-                                ifelse(tmp_matrix$par.pos$smooth[ii], round(adjusted_effects[6, ii],3), "-"),
-                                ifelse(!is.na(tmp_matrix$par.pos$nugget[ii]), ifelse(tmp_matrix$par.pos$nugget[ii], round(adjusted_effects[7,ii],3),"-"),"-")
+                                ifelse(ifelse(is.logical(tmp_matrix$par.pos$mean[ii]),
+                                              yes = tmp_matrix$par.pos$mean[ii], 
+                                              no = ifelse(ii == 1, yes = TRUE, no = FALSE)), round(adjusted_effects[1,ii], 3), "-"),
+                                ifelse(ifelse(is.logical(tmp_matrix$par.pos$std.dev[ii]),
+                                              yes = tmp_matrix$par.pos$std.dev[ii], 
+                                              no = ifelse(ii == 1, yes = TRUE, no = FALSE)), round(adjusted_effects[2,ii], 3), "-"),
+                                ifelse(ifelse(is.logical(tmp_matrix$par.pos$scale[ii]),
+                                              yes = tmp_matrix$par.pos$scale[ii], 
+                                              no = ifelse(ii == 1, yes = TRUE, no = FALSE)), round(adjusted_effects[3,ii],3), "-"),
+                                ifelse(ifelse(is.logical(tmp_matrix$par.pos$aniso[ii]),
+                                              yes = tmp_matrix$par.pos$aniso[ii], 
+                                              no = ifelse(ii == 1, yes = TRUE, no = FALSE)), round(adjusted_effects[4,ii],3), "-"),
+                                ifelse(ifelse(is.logical(tmp_matrix$par.pos$tilt[ii]),
+                                              yes = tmp_matrix$par.pos$tilt[ii], 
+                                              no = ifelse(ii == 1, yes = TRUE, no = FALSE)), round(adjusted_effects[5,ii],3), "-"),
+                                ifelse(ifelse(is.logical(tmp_matrix$par.pos$smooth[ii]),
+                                              yes = tmp_matrix$par.pos$smooth[ii], 
+                                              no = ifelse(ii == 1, yes = TRUE, no = FALSE)), round(adjusted_effects[6, ii],3), "-"),
+                                ifelse(ifelse(is.logical(tmp_matrix$par.pos$nugget[ii]),
+                                              yes = tmp_matrix$par.pos$nugget[ii], 
+                                              no = ifelse(ii == 1, yes = TRUE, no = FALSE)), round(adjusted_effects[7, ii],3), "-")
                     )
                     )
                   }
@@ -467,40 +472,43 @@ setMethod("print", signature(x = "coco"),
                 adjusted_effects[6, ] <- adjusted_eff_values$smooth
                 adjusted_effects[7, ] <- adjusted_eff_values$nugget
                 
-                
-                #cat(sprintf("%-15s %-15s %-15s %-15s\n", "Variable:", " "," "," "))
-                
                 if(!is.null(inv.hess)){
                   
-                  # Create a table-like output using cat() and sprintf()
                   cat(sprintf("%-15s %15s %15s %15s\n", "Output:", " ", " ", " "))
                   cat(rep("-", 65), "\n")
                   
                   cat(sprintf("%-15s %15s %15s %15s %15s %15s\n", "(raw)", "Mean", "Std. Dev.", "Scale", "Smooth", "Nugget"))
                   cat(rep("-", 65), "\n")
                   
-                  
                   for (ii in 1:dim(adjusted_effects)[2]) {
                     cat(sprintf("%-15s %15s %15s %15s %15s %15s\n", 
                                 colnames(adjusted_effects)[ii], 
-                                ifelse(tmp_matrix$par.pos$mean[ii], 
+                                ifelse(ifelse(is.logical(tmp_matrix$par.pos$mean[ii]),
+                                              yes = tmp_matrix$par.pos$mean[ii], 
+                                              no = ifelse(ii == 1, yes = TRUE, no = FALSE)), 
                                        paste0(round(adjusted_effects[1,ii], 3)," (",round(adjusted_se[1,ii],3),")"), "-"),
-                                ifelse(tmp_matrix$par.pos$std.dev[ii], yes = paste0(round(adjusted_effects[2,ii], 3)," (",round(adjusted_se[2,ii], 3),")"), 
+                                ifelse(ifelse(is.logical(tmp_matrix$par.pos$std.dev[ii]),
+                                              yes = tmp_matrix$par.pos$std.dev[ii], 
+                                              no = ifelse(ii == 1, yes = TRUE, no = FALSE)), yes = paste0(round(adjusted_effects[2,ii], 3)," (",round(adjusted_se[2,ii], 3),")"), 
                                        no = "-"),
-                                ifelse(tmp_matrix$par.pos$scale[ii], yes = paste0(round(adjusted_effects[3,ii],3)," (",round(adjusted_se[3,ii], 3),")"), 
+                                ifelse(ifelse(is.logical(tmp_matrix$par.pos$scale[ii]),
+                                              yes = tmp_matrix$par.pos$scale[ii], 
+                                              no = ifelse(ii == 1, yes = TRUE, no = FALSE)), yes = paste0(round(adjusted_effects[3,ii],3)," (",round(adjusted_se[3,ii], 3),")"), 
                                        no = "-"),
-                                ifelse(tmp_matrix$par.pos$smooth[ii], yes = paste0(round(adjusted_effects[6, ii],3)," (",round(adjusted_se[6,ii], 3),")"), 
+                                ifelse(ifelse(is.logical(tmp_matrix$par.pos$smooth[ii]),
+                                              yes = tmp_matrix$par.pos$smooth[ii], 
+                                              no = ifelse(ii == 1, yes = TRUE, no = FALSE)), yes = paste0(round(adjusted_effects[6, ii],3)," (",round(adjusted_se[6,ii], 3),")"), 
                                        no = "-"),
-                                ifelse(!is.na(tmp_matrix$par.pos$nugget[ii]), ifelse(tmp_matrix$par.pos$nugget[ii], paste0(round(adjusted_effects[7,ii], 3)," (",
-                                                                                                                           round(adjusted_se[7,ii], 3),")"), "-"),
-                                       no = "-")
+                                ifelse(ifelse(is.logical(tmp_matrix$par.pos$nugget[ii]),
+                                              yes = tmp_matrix$par.pos$nugget[ii], 
+                                              no = ifelse(ii == 1, yes = TRUE, no = FALSE)), yes = paste0(round(adjusted_effects[7, ii],3)," (",round(adjusted_se[7,ii], 3),")"), 
+                                       no = "-"),
                     )
                     )
                   }
                   
                 } else {
                   
-                  # Create a table-like output using cat() and sprintf()
                   cat(sprintf("%-15s %15s %15s %15s\n", "Output:", " ", " ", " "))
                   cat(rep("-", 60), "\n")
                   
@@ -510,11 +518,21 @@ setMethod("print", signature(x = "coco"),
                   for (ii in 1:dim(adjusted_effects)[2]) {
                     cat(sprintf("%-15s %10s %10s %10s %10s %10s\n", 
                                 colnames(adjusted_effects)[ii], 
-                                ifelse(tmp_matrix$par.pos$mean[ii], round(adjusted_effects[1,ii], 3), "-"),
-                                ifelse(tmp_matrix$par.pos$std.dev[ii], round(adjusted_effects[2,ii], 3), "-"),
-                                ifelse(tmp_matrix$par.pos$scale[ii], round(adjusted_effects[3,ii],3), "-"),
-                                ifelse(tmp_matrix$par.pos$smooth[ii], round(adjusted_effects[6, ii],3), "-"),
-                                ifelse(!is.na(tmp_matrix$par.pos$nugget[ii]), ifelse(tmp_matrix$par.pos$nugget[ii], round(adjusted_effects[7,ii],3),"-"),"-")
+                                ifelse(ifelse(is.logical(tmp_matrix$par.pos$mean[ii]),
+                                              yes = tmp_matrix$par.pos$mean[ii], 
+                                              no = ifelse(ii == 1, yes = TRUE, no = FALSE)), round(adjusted_effects[1,ii], 3), "-"),
+                                ifelse(ifelse(is.logical(tmp_matrix$par.pos$std.dev[ii]),
+                                              yes = tmp_matrix$par.pos$std.dev[ii], 
+                                              no = ifelse(ii == 1, yes = TRUE, no = FALSE)), round(adjusted_effects[2,ii], 3), "-"),
+                                ifelse(ifelse(is.logical(tmp_matrix$par.pos$scale[ii]),
+                                              yes = tmp_matrix$par.pos$scale[ii], 
+                                              no = ifelse(ii == 1, yes = TRUE, no = FALSE)), round(adjusted_effects[3,ii],3), "-"),
+                                ifelse(ifelse(is.logical(tmp_matrix$par.pos$smooth[ii]),
+                                              yes = tmp_matrix$par.pos$smooth[ii], 
+                                              no = ifelse(ii == 1, yes = TRUE, no = FALSE)), round(adjusted_effects[6, ii],3), "-"),
+                                ifelse(ifelse(is.logical(tmp_matrix$par.pos$nugget[ii]),
+                                              yes = tmp_matrix$par.pos$nugget[ii], 
+                                              no = ifelse(ii == 1, yes = TRUE, no = FALSE)), round(adjusted_effects[7, ii],3), "-"),
                     )
                     )
                   }
