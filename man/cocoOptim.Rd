@@ -37,13 +37,13 @@ model.list <- list('mean' = 0,
                    'scale' = formula( ~ 1 + cov_x + cov_y),
                    'aniso' = 0,
                    'tilt' = 0,
-                   'smooth' = 0.5,
+                   'smooth' = 3/2,
                    'nugget' = -Inf)
                    
 coco_object <- coco(type = 'dense',
-                    data = holes[[1]][1:50,],
-                    locs = as.matrix(holes[[1]][1:50,1:2]),
-                    z = holes[[1]][1:50,]$z,
+                    data = holes[[1]][1:100,],
+                    locs = as.matrix(holes[[1]][1:100,1:2]),
+                    z = holes[[1]][1:100,]$z,
                     model.list = model.list)
                     
 optim_coco <- cocoOptim(coco_object,

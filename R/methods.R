@@ -92,16 +92,16 @@ setMethod("plot",
                   fields::quilt.plot(x@locs, spat_effects$scale_x, main = "approx. eff. scale", ...)
                   
                   #plot(x@locs[,1], x@locs[,2], pch=20, main = "approx eff.scale",
-                  #     col = tim.colors(64)[cut(tp_mr, breaks = quantile(x = tp_mr, probs = seq(0, 1, length.out = 64)), 
+                  #     col = tim.colors(64)[cut(spat_effects$scale_x, breaks = quantile(x = spat_effects$scale_x, probs = seq(0, 1, length.out = 64)), 
                   #                              labels = FALSE, include.lowest = T)], xlab = colnames(x@locs)[1],ylab=colnames(x@locs)[2])
                   
                   fields::quilt.plot(x@locs, spat_effects$aniso, main = "anisotropy", ...)
                   
                   #plot(x@locs[,1], x@locs[,2], pch=20, main = "ga",
-                  #     col = tim.colors(64)[cut(tp_ga, breaks = quantile(x = tp_ga, probs = seq(0, 1, length.out = 64)), 
+                  #     col = tim.colors(64)[cut(spat_effects$aniso, breaks = quantile(x = spat_effects$aniso, probs = seq(0, 1, length.out = 64)), 
                   #                              labels = FALSE, include.lowest = T)], xlab = colnames(x@locs)[1],ylab=colnames(x@locs)[2])
                   
-                  fields::quilt.plot(x@locs, cos(spat_effects$tilt), main = "tilt", zlim = c(-pi / 4 - 0.1, pi / 4 + 0.1), ...)
+                  fields::quilt.plot(x@locs, spat_effects$tilt, main = "tilt", zlim = c(-pi / 4 - 0.1, pi / 4 + 0.1), ...)
                   fields::quilt.plot(x@locs, spat_effects$smooth, main = "smooth", ...)
                   fields::quilt.plot(x@locs, spat_effects$nugget, main = "nugget", ...)
                   
@@ -135,7 +135,7 @@ setMethod("plot",
                         to_compute_sd <- sss@colindices[which.min(sss@entries)]
                         
                         .cocons.DrawEllipsoid(
-                          alpha_i = tp_tl[to_compute_sd], r = tp_ga[to_compute_sd], rho = tp_mr[to_compute_sd],
+                          alpha_i = spat_effects$tilt[to_compute_sd], r = spat_effects$aniso[to_compute_sd], rho = spat_effects$scale_x[to_compute_sd],
                           loc = x@locs[to_compute_sd, ], factr = factr
                         )
                       }
@@ -171,7 +171,7 @@ setMethod("plot",
                   for (ww in index) {
                     
                     fields::quilt.plot(x@locs, tmp_cov[ww,], zlim = c(0, 1), main = 'global corr.')
-                    points(x@locs[ww,1], x@locs[ww,2], pch = "X", bg='red', col = 'violet', cex = 2)
+                    graphics::points(x@locs[ww,1], x@locs[ww,2], pch = "X", bg='red', col = 'violet', cex = 2)
                     
                     local_var <- X_std$std.covs[ww, ] %*% theta_list$std.dev
                     local_mr <- X_std$std.covs[ww, ] %*% theta_list$scale
@@ -217,7 +217,7 @@ setMethod("plot",
                     ))
                     
                     fields::quilt.plot(x@locs, tmp_cov_two[ww, ], main = 'local corr.')
-                    points(x@locs[ww,1], x@locs[ww,2], pch = "X", bg='red', col = 'violet', cex = 2)
+                    graphics::points(x@locs[ww,1], x@locs[ww,2], pch = "X", bg='red', col = 'violet', cex = 2)
                   }
                 }
               }
@@ -389,35 +389,49 @@ setMethod("print", signature(x = "coco"),
                   for (ii in 1:dim(adjusted_effects)[2]) {
                     cat(sprintf("%-15s %15s %15s %15s %15s %15s %15s %15s\n", 
                                 colnames(adjusted_effects)[ii], 
-                                ifelse(ifelse(is.logical(tmp_matrix$par.pos$mean[ii]),
+                                ifelse(
+                                  ifelse(is.logical(tmp_matrix$par.pos$mean[ii]),
                                               yes = tmp_matrix$par.pos$mean[ii], 
                                               no = ifelse(ii == 1, yes = TRUE, no = FALSE)), 
-                                       paste0(round(adjusted_effects[1,ii], 3)," (",round(adjusted_se[1,ii],3),")"), "-"),
-                                ifelse(ifelse(is.logical(tmp_matrix$par.pos$std.dev[ii]),
-                                              yes = tmp_matrix$par.pos$std.dev[ii], 
-                                              no = ifelse(ii == 1, yes = TRUE, no = FALSE)), yes = paste0(round(adjusted_effects[2,ii], 3)," (",round(adjusted_se[2,ii], 3),")"), 
-                                       no = "-"),
-                                ifelse(ifelse(is.logical(tmp_matrix$par.pos$scale[ii]),
-                                              yes = tmp_matrix$par.pos$scale[ii], 
-                                              no = ifelse(ii == 1, yes = TRUE, no = FALSE)), yes = paste0(round(adjusted_effects[3,ii],3)," (",round(adjusted_se[3,ii], 3),")"), 
-                                       no = "-"),
-                                ifelse(ifelse(is.logical(tmp_matrix$par.pos$aniso[ii]),
-                                              yes = tmp_matrix$par.pos$aniso[ii], 
-                                              no = ifelse(ii == 1, yes = TRUE, no = FALSE)), yes = paste0(round(adjusted_effects[4,ii],3)," (",round(adjusted_se[4,ii], 3),")"), 
-                                       no = "-"),
-                                ifelse(ifelse(is.logical(tmp_matrix$par.pos$tilt[ii]),
-                                              yes = tmp_matrix$par.pos$tilt[ii], 
-                                              no = ifelse(ii == 1, yes = TRUE, no = FALSE)), yes = paste0(round(adjusted_effects[5,ii],3)," (",round(adjusted_se[5,ii], 3),")"), 
-                                       no = "-"),
-                                ifelse(ifelse(is.logical(tmp_matrix$par.pos$smooth[ii]),
-                                              yes = tmp_matrix$par.pos$smooth[ii], 
-                                              no = ifelse(ii == 1, yes = TRUE, no = FALSE)), yes = paste0(round(adjusted_effects[6, ii],3)," (",round(adjusted_se[6,ii], 3),")"), 
-                                       no = "-"),
-                                ifelse(ifelse(is.logical(tmp_matrix$par.pos$nugget[ii]),
-                                              yes = tmp_matrix$par.pos$nugget[ii], 
-                                              no = ifelse(ii == 1, yes = TRUE, no = FALSE)), yes = paste0(round(adjusted_effects[7, ii],3)," (",round(adjusted_se[7,ii], 3),")"), 
-                                       no = "-"),                    )
-                    )
+                                       paste0(round(adjusted_effects[1,ii], 3)," (",ifelse(is.logical(tmp_matrix$par.pos$mean[ii]), yes = round(adjusted_se[1, ii], 3),
+                                                                                           no = "f"),")"), no = "-"),
+                                ifelse(
+                                  ifelse(is.logical(tmp_matrix$par.pos$std.dev[ii]),
+                                         yes = tmp_matrix$par.pos$std.dev[ii], 
+                                         no = ifelse(ii == 1, yes = TRUE, no = FALSE)), 
+                                  paste0(round(adjusted_effects[2,ii], 3)," (",ifelse(is.logical(tmp_matrix$par.pos$std.dev[ii]), yes = round(adjusted_se[2, ii], 3),
+                                                                                      no = "f"),")"), no = "-"),
+                                ifelse(
+                                  ifelse(is.logical(tmp_matrix$par.pos$scale[ii]),
+                                         yes = tmp_matrix$par.pos$scale[ii], 
+                                         no = ifelse(ii == 1, yes = TRUE, no = FALSE)), 
+                                  paste0(round(adjusted_effects[3,ii], 3)," (",ifelse(is.logical(tmp_matrix$par.pos$scale[ii]), yes = round(adjusted_se[3, ii], 3),
+                                                                                      no = "f"),")"), no = "-"),
+                                ifelse(
+                                  ifelse(is.logical(tmp_matrix$par.pos$aniso[ii]),
+                                         yes = tmp_matrix$par.pos$aniso[ii], 
+                                         no = ifelse(ii == 1, yes = TRUE, no = FALSE)), 
+                                  paste0(round(adjusted_effects[4,ii], 3)," (",ifelse(is.logical(tmp_matrix$par.pos$aniso[ii]), yes = round(adjusted_se[4, ii], 3),
+                                                                                      no = "f"),")"), no = "-"),
+                                ifelse(
+                                  ifelse(is.logical(tmp_matrix$par.pos$tilt[ii]),
+                                         yes = tmp_matrix$par.pos$tilt[ii], 
+                                         no = ifelse(ii == 1, yes = TRUE, no = FALSE)), 
+                                  paste0(round(adjusted_effects[5,ii], 3)," (",ifelse(is.logical(tmp_matrix$par.pos$tilt[ii]), yes = round(adjusted_se[5, ii], 3),
+                                                                                      no = "f"),")"), no = "-"),
+                                ifelse(
+                                  ifelse(is.logical(tmp_matrix$par.pos$smooth[ii]),
+                                         yes = tmp_matrix$par.pos$smooth[ii], 
+                                         no = ifelse(ii == 1, yes = TRUE, no = FALSE)), 
+                                  paste0(round(adjusted_effects[6,ii], 3)," (",ifelse(is.logical(tmp_matrix$par.pos$smooth[ii]), yes = round(adjusted_se[6, ii], 3),
+                                                                                      no = "f"),")"), no = "-"),
+                                ifelse(
+                                  ifelse(is.logical(tmp_matrix$par.pos$nugget[ii]),
+                                         yes = tmp_matrix$par.pos$nugget[ii], 
+                                         no = ifelse(ii == 1, yes = TRUE, no = FALSE)), 
+                                  paste0(round(adjusted_effects[7,ii], 3)," (",ifelse(is.logical(tmp_matrix$par.pos$nugget[ii]), yes = round(adjusted_se[7, ii], 3),
+                                                                                      no = "f"),")"), no = "-")
+                    ))
                   }
                   
                 } else {
@@ -483,26 +497,36 @@ setMethod("print", signature(x = "coco"),
                   for (ii in 1:dim(adjusted_effects)[2]) {
                     cat(sprintf("%-15s %15s %15s %15s %15s %15s\n", 
                                 colnames(adjusted_effects)[ii], 
-                                ifelse(ifelse(is.logical(tmp_matrix$par.pos$mean[ii]),
-                                              yes = tmp_matrix$par.pos$mean[ii], 
-                                              no = ifelse(ii == 1, yes = TRUE, no = FALSE)), 
-                                       paste0(round(adjusted_effects[1,ii], 3)," (",round(adjusted_se[1,ii],3),")"), "-"),
-                                ifelse(ifelse(is.logical(tmp_matrix$par.pos$std.dev[ii]),
-                                              yes = tmp_matrix$par.pos$std.dev[ii], 
-                                              no = ifelse(ii == 1, yes = TRUE, no = FALSE)), yes = paste0(round(adjusted_effects[2,ii], 3)," (",round(adjusted_se[2,ii], 3),")"), 
-                                       no = "-"),
-                                ifelse(ifelse(is.logical(tmp_matrix$par.pos$scale[ii]),
-                                              yes = tmp_matrix$par.pos$scale[ii], 
-                                              no = ifelse(ii == 1, yes = TRUE, no = FALSE)), yes = paste0(round(adjusted_effects[3,ii],3)," (",round(adjusted_se[3,ii], 3),")"), 
-                                       no = "-"),
-                                ifelse(ifelse(is.logical(tmp_matrix$par.pos$smooth[ii]),
-                                              yes = tmp_matrix$par.pos$smooth[ii], 
-                                              no = ifelse(ii == 1, yes = TRUE, no = FALSE)), yes = paste0(round(adjusted_effects[6, ii],3)," (",round(adjusted_se[6,ii], 3),")"), 
-                                       no = "-"),
-                                ifelse(ifelse(is.logical(tmp_matrix$par.pos$nugget[ii]),
-                                              yes = tmp_matrix$par.pos$nugget[ii], 
-                                              no = ifelse(ii == 1, yes = TRUE, no = FALSE)), yes = paste0(round(adjusted_effects[7, ii],3)," (",round(adjusted_se[7,ii], 3),")"), 
-                                       no = "-"),
+                                ifelse(
+                                  ifelse(is.logical(tmp_matrix$par.pos$mean[ii]),
+                                         yes = tmp_matrix$par.pos$mean[ii], 
+                                         no = ifelse(ii == 1, yes = TRUE, no = FALSE)), 
+                                  paste0(round(adjusted_effects[1,ii], 3)," (",ifelse(is.logical(tmp_matrix$par.pos$mean[ii]), yes = round(adjusted_se[1, ii], 3),
+                                                                                      no = "f"),")"), no = "-"),
+                                ifelse(
+                                  ifelse(is.logical(tmp_matrix$par.pos$std.dev[ii]),
+                                         yes = tmp_matrix$par.pos$std.dev[ii], 
+                                         no = ifelse(ii == 1, yes = TRUE, no = FALSE)), 
+                                  paste0(round(adjusted_effects[2,ii], 3)," (",ifelse(is.logical(tmp_matrix$par.pos$std.dev[ii]), yes = round(adjusted_se[2, ii], 3),
+                                                                                      no = "f"),")"), no = "-"),
+                                ifelse(
+                                  ifelse(is.logical(tmp_matrix$par.pos$scale[ii]),
+                                         yes = tmp_matrix$par.pos$scale[ii], 
+                                         no = ifelse(ii == 1, yes = TRUE, no = FALSE)), 
+                                  paste0(round(adjusted_effects[3,ii], 3)," (",ifelse(is.logical(tmp_matrix$par.pos$scale[ii]), yes = round(adjusted_se[3, ii], 3),
+                                                                                      no = "f"),")"), no = "-"),
+                                ifelse(
+                                  ifelse(is.logical(tmp_matrix$par.pos$smooth[ii]),
+                                         yes = tmp_matrix$par.pos$smooth[ii], 
+                                         no = ifelse(ii == 1, yes = TRUE, no = FALSE)), 
+                                  paste0(round(adjusted_effects[6,ii], 3)," (",ifelse(is.logical(tmp_matrix$par.pos$smooth[ii]), yes = round(adjusted_se[6, ii], 3),
+                                                                                      no = "f"),")"), no = "-"),
+                                ifelse(
+                                  ifelse(is.logical(tmp_matrix$par.pos$nugget[ii]),
+                                         yes = tmp_matrix$par.pos$nugget[ii], 
+                                         no = ifelse(ii == 1, yes = TRUE, no = FALSE)), 
+                                  paste0(round(adjusted_effects[7,ii], 3)," (",ifelse(is.logical(tmp_matrix$par.pos$smooth[ii]), yes = round(adjusted_se[7, ii], 3),
+                                                                                      no = "f"),")"), no = "-")
                     )
                     )
                   }
@@ -526,13 +550,13 @@ setMethod("print", signature(x = "coco"),
                                               no = ifelse(ii == 1, yes = TRUE, no = FALSE)), round(adjusted_effects[2,ii], 3), "-"),
                                 ifelse(ifelse(is.logical(tmp_matrix$par.pos$scale[ii]),
                                               yes = tmp_matrix$par.pos$scale[ii], 
-                                              no = ifelse(ii == 1, yes = TRUE, no = FALSE)), round(adjusted_effects[3,ii],3), "-"),
+                                              no = ifelse(ii == 1, yes = TRUE, no = FALSE)), round(adjusted_effects[3,ii], 3), "-"),
                                 ifelse(ifelse(is.logical(tmp_matrix$par.pos$smooth[ii]),
                                               yes = tmp_matrix$par.pos$smooth[ii], 
-                                              no = ifelse(ii == 1, yes = TRUE, no = FALSE)), round(adjusted_effects[6, ii],3), "-"),
+                                              no = ifelse(ii == 1, yes = TRUE, no = FALSE)), round(adjusted_effects[6, ii], 3), "-"),
                                 ifelse(ifelse(is.logical(tmp_matrix$par.pos$nugget[ii]),
                                               yes = tmp_matrix$par.pos$nugget[ii], 
-                                              no = ifelse(ii == 1, yes = TRUE, no = FALSE)), round(adjusted_effects[7, ii],3), "-"),
+                                              no = ifelse(ii == 1, yes = TRUE, no = FALSE)), round(adjusted_effects[7, ii], 3), "-")
                     )
                     )
                   }

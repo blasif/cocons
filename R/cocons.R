@@ -45,7 +45,7 @@
 #'                    'scale' = formula( ~ 1 + x),
 #'                    'aniso' = 0,
 #'                    'tilt' = 0,
-#'                    'smooth' = 0.5,
+#'                    'smooth' = 3/2,
 #'                    'nugget' = -Inf)
 #'                    
 #' coco_object <- coco(type = 'dense',

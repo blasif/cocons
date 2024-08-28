@@ -29,13 +29,13 @@
 #'                    'scale' = formula( ~ 1 + cov_x + cov_y),
 #'                    'aniso' = 0,
 #'                    'tilt' = 0,
-#'                    'smooth' = 0.5,
+#'                    'smooth' = 3/2,
 #'                    'nugget' = -Inf)
 #'                    
 #' coco_object <- coco(type = 'dense',
-#'                     data = holes[[1]][1:50,],
-#'                     locs = as.matrix(holes[[1]][1:50,1:2]),
-#'                     z = holes[[1]][1:50,]$z,
+#'                     data = holes[[1]][1:100,],
+#'                     locs = as.matrix(holes[[1]][1:100,1:2]),
+#'                     z = holes[[1]][1:100,]$z,
 #'                     model.list = model.list)
 #'                     
 #' optim_coco <- cocoOptim(coco_object,
@@ -49,10 +49,6 @@ cocoOptim <- function(coco.object, boundaries = list(),
                        ncores = parallel::detectCores(), 
                        optim.control = NULL, optim.type = "mle"){
   
-  if(length(boundaries) > 0){
-    .cocons.check.boundaries(boundaries)
-  }
-  
   .cocons.check.ncores(ncores)
   
   # Init objects
@@ -63,12 +59,13 @@ cocoOptim <- function(coco.object, boundaries = list(),
       data = coco.object@data
     )
     
-    if (length(boundaries) == 0) {
+    if(length(boundaries) == 0){
       boundaries <- cocons::getBoundaries(
         x = coco.object, 
         lower.value = -2,
-        upper.value = 2
-      )
+        upper.value = 2)
+    } else{
+      .cocons.check.boundaries(coco.object, boundaries)
     }
     
     # Categorical variables
@@ -130,13 +127,7 @@ cocoOptim <- function(coco.object, boundaries = list(),
       
       parallel::stopCluster(cl)
       
-      if (any(boundaries$theta_upper == output_dense$par) ||
-          any(boundaries$theta_lower == output_dense$par)) {
-        warning("at least one of the estimates at the 
-              boundaries.")
-      }
-      
-      # Add some warning related to the convergence of the optim routine
+      .cocons.check.convergence(output_dense, boundaries)
       
       coco.object@output <- output_dense
       coco.object@info$boundaries <- boundaries
@@ -152,7 +143,7 @@ cocoOptim <- function(coco.object, boundaries = list(),
       
       if(dim(coco.object@z)[2] > 1){stop('profile ML routines only handle single realizations.')}
       
-      if(!is.logical(designMatrix$par.pos$mean)){stop("profile ML only available when considering covariates in the trend")}
+      if(!is.logical(designMatrix$par.pos$mean)){stop("profile ML only available when considering covariates in the mean.")}
 
       if(is.logical(designMatrix$par.pos$mean)){
         x_betas <- empty_matrix[, designMatrix$par.pos$mean]
@@ -227,13 +218,7 @@ cocoOptim <- function(coco.object, boundaries = list(),
       betass <- solve(t(args_optim$x_betas) %*% Sigma_X) %*% t(Sigma_X) %*% args_optim$z
       output_dense$par <- c(betass, output_dense$par)
       
-      if (any(tmp_boundaries$theta_upper == output_dense$par, na.rm = T) ||
-          any(tmp_boundaries$theta_lower == output_dense$par, na.rm = T)) {
-        warning("at least one of the estimates at the 
-              boundaries.")
-      }
-      
-      # Add some warning related to the convergence of the optim routine
+      .cocons.check.convergence(output_dense, tmp_boundaries)
       
       coco.object@output <- output_dense
       coco.object@info$boundaries <- tmp_boundaries
@@ -273,9 +258,7 @@ cocoOptim <- function(coco.object, boundaries = list(),
       parallel::clusterEvalQ(cl, library("spam"))
       parallel::clusterEvalQ(cl, library("spam64"))
       parallel::clusterEvalQ(cl, options(spam.cholupdatesingular = "error"))
-      parallel::clusterEvalQ(cl, options(spam.cholsymmetrycheck = FALSE)) # check whether i want to add this
-      
-      # options(spam.cholsymmetrycheck = FALSE)
+      parallel::clusterEvalQ(cl, options(spam.cholsymmetrycheck = FALSE))
       
       args_optim <- list(
         "fn" = cocons::GetNeg2loglikelihoodTaper,
@@ -312,19 +295,14 @@ cocoOptim <- function(coco.object, boundaries = list(),
       
       parallel::stopCluster(cl)
       
-      if (any(boundaries$theta_upper == output_taper$par) ||
-          any(boundaries$theta_lower == output_taper$par)) {
-        warning("at least one of the estimates at the 
-              boundaries.")
-      }
+      .cocons.check.convergence(output_taper, boundaries)
       
       coco.object@output <- output_taper
       coco.object@info$boundaries <- boundaries
       coco.object@info$mean.vector <- tmp_values$mean.vector
       coco.object@info$sd.vector <- tmp_values$sd.vector
       coco.object@info$optim.type <- "mle"
-      # Add some warning related to the convergence of the optim routine
-      
+
       return(coco.object)
     }
     
@@ -354,7 +332,7 @@ cocoOptim <- function(coco.object, boundaries = list(),
       parallel::clusterEvalQ(cl, library("spam"))
       parallel::clusterEvalQ(cl, library("spam64"))
       parallel::clusterEvalQ(cl, options(spam.cholupdatesingular = "error"))
-      parallel::clusterEvalQ(cl, options(spam.cholsymmetrycheck = FALSE)) # check whether i want to add this
+      parallel::clusterEvalQ(cl, options(spam.cholsymmetrycheck = FALSE))
       
       # options(spam.cholsymmetrycheck = FALSE)
       
@@ -462,20 +440,15 @@ cocoOptim <- function(coco.object, boundaries = list(),
       output_taper$par <- new_pars
       
       # fix names output_taper
-      
-      if (any(boundaries_temp$theta_upper == output_taper$par, na.rm = T) ||
-          any(boundaries_temp$theta_lower == output_taper$par, na.rm = T)) {
-        warning("at least one of the estimates at the 
-              boundaries.")
-      }
+
+      .cocons.check.convergence(output_taper, boundaries_temp)
       
       coco.object@output <- output_taper
       coco.object@info$boundaries <- boundaries_temp
       coco.object@info$mean.vector <- tmp_values$mean.vector
       coco.object@info$sd.vector <- tmp_values$sd.vector
       coco.object@info$optim.type <- "pmle"
-      # Add some warning related to the convergence of the optim routine
-      
+
       return(coco.object)
     }
     

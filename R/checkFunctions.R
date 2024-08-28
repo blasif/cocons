@@ -51,7 +51,7 @@
   }
   
   if (alpha_i == pi / 2) {
-    print("linear independent eigenvectors")
+    # print("linear independent eigenvectors")
     A_stuff <- sqrt((r + 1)^2 - 4 * r * sin(alpha_i)^2)
     
     e_1 <- ((r + 1) + sqrt((r + 1)^2 - 4 * r * sin(alpha_i)^2))
@@ -135,7 +135,7 @@
 }
 
 .cocons.check.coco <- function(coco){
-  if(!methods::is(coco,'coco')){
+  if(!methods::is(coco, 'coco')){
     stop("not a coco object")
   }
 }
@@ -190,8 +190,8 @@
 # ADDED model.list here to check
 .cocons.check.info <- function(type, info, model.list){
   
-  if (is.null(info$smooth.limits)) {
-    warning("smooth limits not specified. Maybe considering fixed smoothness?")
+  if (is.null(info$smooth.limits) & is.logical(model.list[6])) {
+    stop("smooth limits not specified.")
   }
   
   if (!is.null(info$lambda)) {
@@ -255,19 +255,77 @@
   if(ncores < 1){stop("ncores must be >=1")}
 }
 
-.cocons.check.boundaries <- function(boundaries){
+.cocons.check.boundaries <- function(coco.object, boundaries){
   
+  tmp_boundaries <- cocons::getBoundaries(
+    x = coco.object, 
+    lower.value = -2,
+    upper.value = 2)
+  
+  if(length(tmp_boundaries) != length(boundaries)){
+    stop("check boundaries.")
+  }
+  
+  if(any(unlist(lapply(tmp_boundaries,length)) != unlist(lapply(boundaries, length)))){
+    stop("check boundaries.")
+  }
+  
+  if(any(unlist(lapply(tmp_boundaries,is.na)))){
+    print("NAs in the boundaries not allowed.")
+  }
+
 }
 
-.cocons.check.newdataset <- function(newdataset){
+.cocons.check.newdataset <- function(newdataset, coco.object){
+  
+  if(!is.data.frame(newdataset)){
+    stop("newdataset must be a data.frame object.")
+  }
+  
+  colnames_nd <- colnames(getDesignMatrix(model.list = coco.object@model.list, data = newdataset)$model.matrix)
+  colnames_co <- colnames(getDesignMatrix(model.list = coco.object@model.list, data = coco.object@data)$model.matrix)
+  
+  if(any(colnames_nd != colnames_co)){
+    stop("check colnames of newdataset.")
+  }
+  
+  if(any(is.na(newdataset))){
+    stop("NAs in newdataset not allowed.")
+  }
   
 }
 
 .cocons.check.newlocs <- function(newlocs){
   
+  if(!is.matrix(newlocs)){
+    stop("newlocs is not a matrix.")
+  }
+  
+  if(dim(newlocs)[2] != 2){
+    stop("check dimension of newlocs.")
+  }
+  
+  if(any(is.na(newlocs))){
+    stop("newlocs with NAs.")
+  }
+  
 }
 
 .cocons.check.object <- function(object){
+  
+}
+
+.cocons.check.convergence <- function(output, boundaries){
+  
+  if(any(boundaries$theta_upper == output$par, na.rm = T) ||
+      any(boundaries$theta_lower == output$par, na.rm = T)) {
+    warning("at least one of the estimates at the 
+              boundaries.")
+  }
+  
+  if(output$convergence != 0){
+    return(print(output$message))
+  }
   
 }
 

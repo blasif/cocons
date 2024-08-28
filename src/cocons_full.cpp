@@ -31,7 +31,7 @@ NumericMatrix cov_rns(List& theta, NumericMatrix& locs, NumericMatrix& x_covaria
   double sigma11_ij, sigma22_ij, sigma12_ij, det_ij, smooth_s_Q_ij, smtns;
   // const double fix_gamma = std::tgamma(smtns);
   // const double some_cte = std::pow(2.0 , -(smtns - 1));
-
+  
   double global_range = 1 / std::exp(- 2 * scale[0]);
   
   scale_je[0] = 0.0;
@@ -78,7 +78,7 @@ NumericMatrix cov_rns(List& theta, NumericMatrix& locs, NumericMatrix& x_covaria
         sigma12_ij = kahan(range_det_vector[ii] * aniso_det_vector[ii],
                            std::cos(tilt_vector[ii]),
                            - 1 * range_det_vector[jj] * aniso_det_vector[jj], 
-                                                                            std::cos(tilt_vector[jj])
+                                                                        std::cos(tilt_vector[jj])
         ) * 0.5;
         
         det_ij = kahan(sigma11_ij, sigma22_ij, sigma12_ij, sigma12_ij);

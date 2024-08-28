@@ -180,10 +180,6 @@ getSpatEffects <- function(coco.object){
   
 }
 
-# getLogliktest <- function(coco.full, coco.reduced, alpha){
-#  coco.reduced@output$value - coco.full@output$value
-#}
-
 #' Computes the condition number of the associated correlation matrix of the fitted coco object
 #' @description Compute the trend of the (fitted) coco object
 #'
