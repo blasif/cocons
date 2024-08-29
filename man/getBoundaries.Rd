@@ -7,11 +7,11 @@
 getBoundaries(x, lower.value, upper.value)
 }
 \arguments{
-\item{x}{a coco.object or a par.pos list (as output from getDesignMatrix)}
+\item{x}{\code{(S4) or (list)} a coco.object or a par.pos list (as output from \link{getDesignMatrix})}
 
-\item{lower.value}{if provided, provides a vector filled with values lower.value.}
+\item{lower.value}{\code{(numeric vector)} if provided, provides a vector filled with values lower.value.}
 
-\item{upper.value}{if provided, provides a vector filled with values upper.value.}
+\item{upper.value}{\code{(numeric vector)} if provided, provides a vector filled with values upper.value.}
 }
 \value{
 a list with boundaries and simple init values for the optim L-BFGS-B routine

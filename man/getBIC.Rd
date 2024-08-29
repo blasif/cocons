@@ -7,7 +7,7 @@
 getBIC(coco.object)
 }
 \arguments{
-\item{coco.object}{a fitted coco object.}
+\item{coco.object}{\code{(S4)} a fitted coco S4 object.}
 }
 \value{
 a list with the associated BIC value

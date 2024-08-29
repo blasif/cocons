@@ -8,25 +8,25 @@ GetNeg2loglikelihoodTaper(theta, par.pos, ref_taper, locs,
 x_covariates, smooth.limits, cholS, z, n, lambda)
 }
 \arguments{
-\item{theta}{a vector with parameters values}
+\item{theta}{\code{(numeric vector)} a vector with parameters values.}
 
-\item{par.pos}{par.pos list}
+\item{par.pos}{\code{(list)} par.pos list from \link{getDesignMatrix}.}
 
-\item{ref_taper}{spam object based on a taper based covariance function}
+\item{ref_taper}{\code{(S4)} spam object based on a compact-supported covariance function.}
 
-\item{locs}{spatial location matrix}
+\item{locs}{\code{(matrix)} spatial location matrix.}
 
-\item{x_covariates}{design matrix}
+\item{x_covariates}{\code{(data.frame)} design matrix.}
 
-\item{smooth.limits}{smooth.limits}
+\item{smooth.limits}{\code{(numeric vector)} smooth.limits.}
 
-\item{cholS}{Cholesky object from spam}
+\item{cholS}{\code{(S4)} Cholesky object from spam.}
 
-\item{z}{a vector of observed values}
+\item{z}{\code{(numeric vector)} a vector of observed values.}
 
-\item{n}{dim(z)[1]}
+\item{n}{\code{(numeric)} dim(z)[1].}
 
-\item{lambda}{regularization parameter}
+\item{lambda}{\code{(numeric)} regularization parameter.}
 }
 \value{
 value

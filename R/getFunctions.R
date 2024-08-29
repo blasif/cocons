@@ -2,10 +2,10 @@
 #' @description Retrieves the associated covariance matrix from a fitted coco object
 #'
 #' @usage getCovMatrix(coco.object, type = 'global', index = NULL)
-#' @param coco.object a fitted [coco()] object.
-#' @param type whether \code{'global'} to retrieve the regular covariance matrix, or \code{'local'} to retrieve global covariance 
-#' based on the local aspects of a specific location (not implemented yet)
-#' @param index index to perform local covariance matrix (not implemented yet)
+#' @param coco.object \code{(S4)} a fitted [coco()] object.
+#' @param type \code{(character)} whether \code{'global'} to retrieve the regular covariance matrix, or \code{'local'} to retrieve global covariance.
+#' based on the local aspects of a specific location (not implemented yet).
+#' @param index \code{(integer)} index to perform local covariance matrix (not implemented yet).
 #' @returns a covariance matrix
 #' @author Federico Blasi
 getCovMatrix <- function(coco.object, type = "global", index = NULL){
@@ -68,9 +68,9 @@ getCovMatrix <- function(coco.object, type = "global", index = NULL){
 #' @description Retrieves the estimated spatial effects of the spatial structure
 #'
 #' @usage getLogScore(z.pred, mean.pred, sd.pred)
-#' @param z.pred ...
-#' @param mean.pred ...
-#' @param sd.pred ...
+#' @param z.pred \code{(numeric vector)}.
+#' @param mean.pred \code{(numeric vector)}.
+#' @param sd.pred \code{(numeric vector)}.
 #' @returns retrieves LogScore
 #' @author Federico Blasi
 getLogScore <- function(z.pred, mean.pred, sd.pred){
@@ -83,10 +83,10 @@ getLogScore <- function(z.pred, mean.pred, sd.pred){
 #' @description Returns the penalization term
 #'
 #' @usage getPen(n, lambda, theta_list, smooth.limits)
-#' @param n ...
-#' @param lambda ...
-#' @param theta_list ...
-#' @param smooth.limits ...
+#' @param n \code{(integer)}.
+#' @param lambda \code{(numeric)}.
+#' @param theta_list \code{(list)}.
+#' @param smooth.limits \code{(numeric vector)}.
 #' @returns retrieves penalization term
 #' @author Federico Blasi
 getPen <- function(n, lambda, theta_list, smooth.limits){
@@ -103,9 +103,9 @@ getPen <- function(n, lambda, theta_list, smooth.limits){
 #' @description Retrieves the estimated spatial effects of the spatial structure
 #'
 #' @usage getCRPS(z.pred, mean.pred, sd.pred)
-#' @param z.pred ...
-#' @param mean.pred ...
-#' @param sd.pred ...
+#' @param z.pred \code{(numeric vector)}.
+#' @param mean.pred \code{(numeric vector)}.
+#' @param sd.pred \code{(numeric vector)}.
 #' @returns retrieves CRPS
 #' @author Federico Blasi
 getCRPS <- function(z.pred, mean.pred, sd.pred){
@@ -121,8 +121,8 @@ getCRPS <- function(z.pred, mean.pred, sd.pred){
 #' @description Retrieves the estimated surfaces for different sources of nonstationarity
 #'
 #' @usage getSpatEffects(coco.object)
-#' @param coco.object an coco class (fitted) object
-#' @returns a list with the different estimated surfaces
+#' @param coco.object \code{(S4)} a fitted coco S4 object.
+#' @returns a list with the different estimated surfaces.
 #' @author Federico Blasi
 getSpatEffects <- function(coco.object){
   
@@ -175,17 +175,15 @@ getSpatEffects <- function(coco.object){
                 "nugget" = tp_ng))
     
   }
-  
 
-  
 }
 
 #' Computes the condition number of the associated correlation matrix of the fitted coco object
 #' @description Compute the trend of the (fitted) coco object
 #'
 #' @usage getCondNumber(coco.object)
-#' @param coco.object a coco class (fitted) object
-#' @returns the condition number
+#' @param coco.object \code{(S4)} a fitted coco S4 object.
+#' @returns the condition number.
 #' @author Federico Blasi
 getCondNumber <- function(coco.object){
   corr_mat <- stats::cov2cor(getCovMatrix(coco.object))
@@ -196,7 +194,7 @@ getCondNumber <- function(coco.object){
 #' @description Compute the trend of the (fitted) coco object
 #'
 #' @usage getTrend(coco.object)
-#' @param coco.object a fitted [coco()] object.
+#' @param coco.object \code{(S4)} a fitted coco S4 object.
 #' @returns a vector with the adjusted trend.
 #' @author Federico Blasi
 getTrend <- function(coco.object){
@@ -208,9 +206,9 @@ getTrend <- function(coco.object){
 #' @description Compute confidence intervals for a (fitted) coco object
 #'
 #' @usage getCIs(coco.object, inv.hess, alpha = 0.05)
-#' @param coco.object a coco class (fitted) object
-#' @param inv.hess Inverse of the Hessian 
-#' @param alpha confidence level
+#' @param coco.object \code{(S4)} a fitted coco S4 object.
+#' @param inv.hess \code{(matrix)} Inverse of the Hessian.
+#' @param alpha \code{(numeric)} confidence level.
 #' @returns a matrix with confidence intervals for each parameter in the model
 #' @author Federico Blasi
 getCIs <- function(coco.object, inv.hess, alpha = 0.05){
@@ -235,8 +233,8 @@ getCIs <- function(coco.object, inv.hess, alpha = 0.05){
 #' @description Compute confidence intervals for a (fitted) coco object
 #'
 #' @usage getModHess(coco.object, inv.hess)
-#' @param coco.object a coco class (fitted) object
-#' @param inv.hess Inverse of the Hessian 
+#' @param coco.object \code{(S4)} a fitted coco S4 object.
+#' @param inv.hess \code{(matrix)} Inverse of the Hessian.
 #' @returns the modified inverse of the hessian matrix
 #' @author Federico Blasi
 getModHess <- function(coco.object, inv.hess){
@@ -284,7 +282,7 @@ getModHess <- function(coco.object, inv.hess){
 #' @description Retrieve the loglikelihood value from a fitted coco object.
 #'
 #' @usage getLoglik(coco.object)
-#' @param coco.object a coco class (fitted) object
+#' @param coco.object \code{(S4)} a fitted coco S4 object.
 #' @returns wrap for value from a OptimParallel object 
 #' @author Federico Blasi
 getLoglik <- function(coco.object){
@@ -295,7 +293,7 @@ getLoglik <- function(coco.object){
 #' @description Retrieve BIC from a fitted coco object
 #' 
 #' @usage getBIC(coco.object)
-#' @param coco.object a fitted coco object.
+#' @param coco.object \code{(S4)} a fitted coco S4 object.
 #' @returns a list with the associated BIC value
 #' @author Federico Blasi
 #' 
@@ -315,7 +313,7 @@ getBIC <- function(coco.object){
 #' @description Retrieve the Akaike information criterion from a fitted coco object
 #' 
 #' @usage getAIC(coco.object)
-#' @param coco.object a fitted coco object.
+#' @param coco.object \code{(S4)} a fitted coco S4 object.
 #' @returns a list with the associated AIC value
 #' @author Federico Blasi
 #' 
@@ -335,7 +333,7 @@ getAIC <- function(coco.object){
 #' @description Retrieve estimates from a fitted coco object
 #' 
 #' @usage getEstims(coco.object)
-#' @param coco.object a fitted coco object.
+#' @param coco.object \code{(S4)} a fitted coco S4 object.
 #' @returns a list with the estimates parameters for the different aspects
 #' @author Federico Blasi
 #' 
@@ -350,10 +348,10 @@ getEstims <- function(coco.object){
 #' Fast and simple standardization for the design matrix
 #' @description Centers and scale the design matrix
 #' @usage getScale(x, mean.vector = NULL, sd.vector = NULL)
-#' @param x a coco object, or a n x p matrix with covariate information to introduce, 
+#' @param x \code{(S4) or (matrix)} a coco object, or a n x p matrix with covariate information to introduce, 
 #' where the first column is a column of ones.
-#' @param mean.vector if provided, it centers covariates based on this information
-#' @param sd.vector if provided, it scales covariates based on this information
+#' @param mean.vector \code{(numeric vector)} if provided, it centers covariates based on this information.
+#' @param sd.vector \code{(numeric vector)} if provided, it scales covariates based on this information.
 #' @returns a list with a scaled design matrix of dimension n x (p+1), and a set of mean and sd vectors 
 #' employed to scale the matrix
 #' @author Federico Blasi
@@ -423,9 +421,9 @@ getScale <- function(x, mean.vector = NULL, sd.vector = NULL){
 #' each of the different potentially spatially varying aspects. 
 #'
 #' @usage getDesignMatrix(model.list, data)
-#' @param model.list a list of formulas, one for each source of nonstationarity, specifying the
+#' @param model.list \code{(list)} a list of formulas, one for each source of nonstationarity, specifying the
 #'                   models.
-#' @param data a data.frame
+#' @param data \code{(data.frame)} a data.frame.
 #' @return a list() with two elements: a design matrix of dimension 
 #' (n x p), and a par.pos object, indexing columns of the design matrix refered
 #' to each aspect models.
@@ -552,11 +550,11 @@ getDesignMatrix <- function(model.list, data){
 #' @description Returns a list of parameter vectors for each of the aspects.
 #'
 #' @usage getModelLists(theta, par.pos, type = 'diff')
-#' @param theta a vector of length p, where p is the number of parameters for
-#' each of the models
-#' @param par.pos a list detailing in which position of each aspect the elements
-#' of theta should be placed. Expected to be output of getDesignMatrix
-#' @param type whether parameters are related to a classical parameterization ('classic') or
+#' @param theta \code{(numeric vector)} a vector of length p, where p is the number of parameters for
+#' each of the models.
+#' @param par.pos \code{(list)} a list detailing in which position of each aspect the elements
+#' of theta should be placed. Expected to be par.pos output of \link{getDesignMatrix}.
+#' @param type \code{(character)} whether parameters are related to a classical parameterization ('classic') or
 #' a difference parameterization 'diff' . Default set to 'diff'.
 #' @returns a list() of different spatial aspects and mean required for the cov.rns functions
 #' @author Federico Blasi
@@ -613,9 +611,9 @@ getModelLists <- function(theta, par.pos, type = "diff"){
 #' @description provides a generic set of upper and lower bounds for the L-BFGS-B routine
 #' 
 #' @usage getBoundaries(x, lower.value, upper.value)
-#' @param x a coco.object or a par.pos list (as output from getDesignMatrix)
-#' @param lower.value if provided, provides a vector filled with values lower.value. 
-#' @param upper.value if provided, provides a vector filled with values upper.value.
+#' @param x \code{(S4) or (list)} a coco.object or a par.pos list (as output from \link{getDesignMatrix})
+#' @param lower.value \code{(numeric vector)} if provided, provides a vector filled with values lower.value. 
+#' @param upper.value \code{(numeric vector)} if provided, provides a vector filled with values upper.value.
 #' @returns a list with boundaries and simple init values for the optim L-BFGS-B routine
 #' @author Federico Blasi
 #' 
@@ -648,14 +646,14 @@ getBoundaries <- function(x, lower.value, upper.value){
 #'
 #' @usage getBoundariesV2(coco.object, mean.limits, std.dev.limits, 
 #' scale.limits, aniso.limits, tilt.limits, smooth.limits, nugget.limits)
-#' @param coco.object a coco object
-#' @param mean.limits a vector of c(lower,init,upper) values for the associated param.
-#' @param std.dev.limits a vector of c(lower,init,upper) values for the associated param.
-#' @param scale.limits a vector of c(lower,init,upper) values for the associated param.
-#' @param aniso.limits a vector of c(lower,init,upper) values for the associated param.
-#' @param tilt.limits a vector of c(lower,init,upper) values for the associated param.
-#' @param smooth.limits a vector of c(lower,init,upper) values for the associated param.
-#' @param nugget.limits a vector of c(lower,init,upper) values for the associated param.
+#' @param coco.object \code{(S4)} a coco object.
+#' @param mean.limits \code{(numeric vector)} a vector of c(lower,init,upper) values for the associated param.
+#' @param std.dev.limits \code{(numeric vector)} a vector of c(lower,init,upper) values for the associated param.
+#' @param scale.limits \code{(numeric vector)} a vector of c(lower,init,upper) values for the associated param.
+#' @param aniso.limits \code{(numeric vector)} a vector of c(lower,init,upper) values for the associated param.
+#' @param tilt.limits \code{(numeric vector)} a vector of c(lower,init,upper) values for the associated param.
+#' @param smooth.limits \code{(numeric vector)} a vector of c(lower,init,upper) values for the associated param.
+#' @param nugget.limits \code{(numeric vector)} a vector of c(lower,init,upper) values for the associated param.
 #' @returns a list with boundaries for the optim L-BFGS-B routine
 #' @author Federico Blasi
 #' 
@@ -712,15 +710,15 @@ getBoundariesV2 <- function(coco.object,
 #' std.dev.max.effects, 
 #' scale.max.effects, aniso.max.effects, tilt.max.effects, 
 #' smooth.max.effects, nugget.max.effects)
-#' @param coco.object a coco object
-#' @param mean.limits a vector of c(lower,init,upper) values for the associated param.
-#' @param global.lower a vector of c(lower,init,upper) values for the associated param.
-#' @param std.dev.max.effects a vector of c(lower,init,upper) values for the associated param.
-#' @param scale.max.effects a vector of c(lower,init,upper) values for the associated param.
-#' @param aniso.max.effects a vector of c(lower,init,upper) values for the associated param.
-#' @param tilt.max.effects a vector of c(lower,init,upper) values for the associated param.
-#' @param smooth.max.effects a vector of c(lower,init,upper) values for the associated param.
-#' @param nugget.max.effects a vector of c(lower,init,upper) values for the associated param.
+#' @param coco.object \code{(S4)} a coco object.
+#' @param mean.limits \code{(numeric vector)} a vector of c(lower,init,upper) values for the associated param.
+#' @param global.lower \code{(numeric vector)} a vector of c(lower,init,upper) values for the associated param.
+#' @param std.dev.max.effects \code{(numeric vector)} a vector of c(lower,init,upper) values for the associated param.
+#' @param scale.max.effects \code{(numeric vector)} a vector of c(lower,init,upper) values for the associated param.
+#' @param aniso.max.effects \code{(numeric vector)} a vector of c(lower,init,upper) values for the associated param.
+#' @param tilt.max.effects \code{(numeric vector)} a vector of c(lower,init,upper) values for the associated param.
+#' @param smooth.max.effects \code{(numeric vector)} a vector of c(lower,init,upper) values for the associated param.
+#' @param nugget.max.effects \code{(numeric vector)} a vector of c(lower,init,upper) values for the associated param.
 #' @returns a list with boundaries for the optim L-BFGS-B routine
 #' @author Federico Blasi
 #' 
@@ -840,9 +838,9 @@ getBoundariesV3 <- function(coco.object,
 #' @description returns the approximate (observed) Hesian (inverse of Fisher Information Matrix)
 #' @usage getHessian(coco.object, ncores = parallel::detectCores() - 1, 
 #' eps = .Machine$double.eps^(1/4))
-#' @param coco.object a fitted coco object
-#' @param ncores number of cores used for the computation
-#' @param eps ...
+#' @param coco.object \code{(S4)} a fitted coco object.
+#' @param ncores \code{(integer)} number of cores used for the computation.
+#' @param eps \code{(numeric)} ...
 #' @returns a symmetric matrix pxp of the approximated (observed) Hessian
 #' @author Federico Blasi
 getHessian <- function(coco.object, ncores = parallel::detectCores() - 1, 

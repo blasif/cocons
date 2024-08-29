@@ -7,9 +7,9 @@
 getModHess(coco.object, inv.hess)
 }
 \arguments{
-\item{coco.object}{a coco class (fitted) object}
+\item{coco.object}{\code{(S4)} a fitted coco S4 object.}
 
-\item{inv.hess}{Inverse of the Hessian}
+\item{inv.hess}{\code{(matrix)} Inverse of the Hessian.}
 }
 \value{
 the modified inverse of the hessian matrix

@@ -7,13 +7,13 @@
 getModelLists(theta, par.pos, type = 'diff')
 }
 \arguments{
-\item{theta}{a vector of length p, where p is the number of parameters for
-each of the models}
+\item{theta}{\code{(numeric vector)} a vector of length p, where p is the number of parameters for
+each of the models.}
 
-\item{par.pos}{a list detailing in which position of each aspect the elements
-of theta should be placed. Expected to be output of getDesignMatrix}
+\item{par.pos}{\code{(list)} a list detailing in which position of each aspect the elements
+of theta should be placed. Expected to be par.pos output of \link{getDesignMatrix}.}
 
-\item{type}{whether parameters are related to a classical parameterization ('classic') or
+\item{type}{\code{(character)} whether parameters are related to a classical parameterization ('classic') or
 a difference parameterization 'diff' . Default set to 'diff'.}
 }
 \value{

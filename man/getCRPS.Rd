@@ -7,11 +7,11 @@
 getCRPS(z.pred, mean.pred, sd.pred)
 }
 \arguments{
-\item{z.pred}{...}
+\item{z.pred}{\code{(numeric vector)}.}
 
-\item{mean.pred}{...}
+\item{mean.pred}{\code{(numeric vector)}.}
 
-\item{sd.pred}{...}
+\item{sd.pred}{\code{(numeric vector)}.}
 }
 \value{
 retrieves CRPS

@@ -7,7 +7,7 @@
 getLoglik(coco.object)
 }
 \arguments{
-\item{coco.object}{a coco class (fitted) object}
+\item{coco.object}{\code{(S4)} a fitted coco S4 object.}
 }
 \value{
 wrap for value from a OptimParallel object

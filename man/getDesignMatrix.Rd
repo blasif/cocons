@@ -7,10 +7,10 @@
 getDesignMatrix(model.list, data)
 }
 \arguments{
-\item{model.list}{a list of formulas, one for each source of nonstationarity, specifying the
+\item{model.list}{\code{(list)} a list of formulas, one for each source of nonstationarity, specifying the
 models.}
 
-\item{data}{a data.frame}
+\item{data}{\code{(data.frame)} a data.frame.}
 }
 \value{
 a list() with two elements: a design matrix of dimension

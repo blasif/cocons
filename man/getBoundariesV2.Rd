@@ -8,21 +8,21 @@ getBoundariesV2(coco.object, mean.limits, std.dev.limits,
 scale.limits, aniso.limits, tilt.limits, smooth.limits, nugget.limits)
 }
 \arguments{
-\item{coco.object}{a coco object}
+\item{coco.object}{\code{(S4)} a coco object.}
 
-\item{mean.limits}{a vector of c(lower,init,upper) values for the associated param.}
+\item{mean.limits}{\code{(numeric vector)} a vector of c(lower,init,upper) values for the associated param.}
 
-\item{std.dev.limits}{a vector of c(lower,init,upper) values for the associated param.}
+\item{std.dev.limits}{\code{(numeric vector)} a vector of c(lower,init,upper) values for the associated param.}
 
-\item{scale.limits}{a vector of c(lower,init,upper) values for the associated param.}
+\item{scale.limits}{\code{(numeric vector)} a vector of c(lower,init,upper) values for the associated param.}
 
-\item{aniso.limits}{a vector of c(lower,init,upper) values for the associated param.}
+\item{aniso.limits}{\code{(numeric vector)} a vector of c(lower,init,upper) values for the associated param.}
 
-\item{tilt.limits}{a vector of c(lower,init,upper) values for the associated param.}
+\item{tilt.limits}{\code{(numeric vector)} a vector of c(lower,init,upper) values for the associated param.}
 
-\item{smooth.limits}{a vector of c(lower,init,upper) values for the associated param.}
+\item{smooth.limits}{\code{(numeric vector)} a vector of c(lower,init,upper) values for the associated param.}
 
-\item{nugget.limits}{a vector of c(lower,init,upper) values for the associated param.}
+\item{nugget.limits}{\code{(numeric vector)} a vector of c(lower,init,upper) values for the associated param.}
 }
 \value{
 a list with boundaries for the optim L-BFGS-B routine

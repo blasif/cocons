@@ -7,12 +7,12 @@
 getCovMatrix(coco.object, type = 'global', index = NULL)
 }
 \arguments{
-\item{coco.object}{a fitted \code{\link[=coco]{coco()}} object.}
+\item{coco.object}{\code{(S4)} a fitted \code{\link[=coco]{coco()}} object.}
 
-\item{type}{whether \code{'global'} to retrieve the regular covariance matrix, or \code{'local'} to retrieve global covariance
-based on the local aspects of a specific location (not implemented yet)}
+\item{type}{\code{(character)} whether \code{'global'} to retrieve the regular covariance matrix, or \code{'local'} to retrieve global covariance.
+based on the local aspects of a specific location (not implemented yet).}
 
-\item{index}{index to perform local covariance matrix (not implemented yet)}
+\item{index}{\code{(integer)} index to perform local covariance matrix (not implemented yet).}
 }
 \value{
 a covariance matrix

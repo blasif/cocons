@@ -7,10 +7,10 @@
 getSpatEffects(coco.object)
 }
 \arguments{
-\item{coco.object}{an coco class (fitted) object}
+\item{coco.object}{\code{(S4)} a fitted coco S4 object.}
 }
 \value{
-a list with the different estimated surfaces
+a list with the different estimated surfaces.
 }
 \description{
 Retrieves the estimated surfaces for different sources of nonstationarity

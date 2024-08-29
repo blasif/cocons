@@ -8,21 +8,21 @@ GetNeg2loglikelihood(theta, par.pos, locs, x_covariates,
 smooth.limits, z, n, lambda)
 }
 \arguments{
-\item{theta}{a vector with parameters values}
+\item{theta}{\code{(numeric vector)} a vector with parameters values.}
 
-\item{par.pos}{par.pos list}
+\item{par.pos}{\code{(list)} par.pos list.}
 
-\item{locs}{spatial location matrix}
+\item{locs}{\code{(matrix)} spatial location matrix.}
 
-\item{x_covariates}{design matrix}
+\item{x_covariates}{\code{(data.frame)} design matrix.}
 
-\item{smooth.limits}{smooth.limits}
+\item{smooth.limits}{\code{(numeric vector)} smooth.limits.}
 
-\item{z}{a vector of observed values}
+\item{z}{\code{(numeric vector)} a vector of observed values.}
 
-\item{n}{dim(z)[1]}
+\item{n}{\code{(integer)} dim(z)[1].}
 
-\item{lambda}{regularization parameter}
+\item{lambda}{\code{(numeric)} regularization parameter.}
 }
 \value{
 value

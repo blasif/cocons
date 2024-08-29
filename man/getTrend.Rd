@@ -7,7 +7,7 @@
 getTrend(coco.object)
 }
 \arguments{
-\item{coco.object}{a fitted \code{\link[=coco]{coco()}} object.}
+\item{coco.object}{\code{(S4)} a fitted coco S4 object.}
 }
 \value{
 a vector with the adjusted trend.

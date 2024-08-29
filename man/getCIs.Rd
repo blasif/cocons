@@ -7,11 +7,11 @@
 getCIs(coco.object, inv.hess, alpha = 0.05)
 }
 \arguments{
-\item{coco.object}{a coco class (fitted) object}
+\item{coco.object}{\code{(S4)} a fitted coco S4 object.}
 
-\item{inv.hess}{Inverse of the Hessian}
+\item{inv.hess}{\code{(matrix)} Inverse of the Hessian.}
 
-\item{alpha}{confidence level}
+\item{alpha}{\code{(numeric)} confidence level.}
 }
 \value{
 a matrix with confidence intervals for each parameter in the model

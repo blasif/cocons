@@ -8,11 +8,11 @@ getHessian(coco.object, ncores = parallel::detectCores() - 1,
 eps = .Machine$double.eps^(1/4))
 }
 \arguments{
-\item{coco.object}{a fitted coco object}
+\item{coco.object}{\code{(S4)} a fitted coco object.}
 
-\item{ncores}{number of cores used for the computation}
+\item{ncores}{\code{(integer)} number of cores used for the computation.}
 
-\item{eps}{...}
+\item{eps}{\code{(numeric)} ...}
 }
 \value{
 a symmetric matrix pxp of the approximated (observed) Hessian
