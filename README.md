@@ -9,4 +9,4 @@ For a brief introduction:
   vignette("cocons")
 ```
 
-![Downloads](https://cranlogs.r-pkg.org/badges/last-month/cocons)
+![Downloads](https://cranlogs.r-pkg.org/badges/last-month/cocons) ![Version](https://www.r-pkg.org/badges/version/cocons)
