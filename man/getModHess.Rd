@@ -12,10 +12,11 @@ getModHess(coco.object, inv.hess)
 \item{inv.hess}{\code{(matrix)} Inverse of the Hessian.}
 }
 \value{
-the modified inverse of the hessian matrix
+(\code{numeric matrix}) the modified inverse of the hessian matrix
 }
 \description{
-Compute confidence intervals for a (fitted) coco object
+Based on the inverse of the Hessian (based on the difference parameterization for the std.dev and scale parameters),
+retrieves the modified inverse of the hessian (i.e. std.dev and scale).
 }
 \author{
 Federico Blasi

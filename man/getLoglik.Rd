@@ -10,7 +10,7 @@ getLoglik(coco.object)
 \item{coco.object}{\code{(S4)} a fitted coco S4 object.}
 }
 \value{
-wrap for value from a OptimParallel object
+(\code{numeric}) wrap for value from a OptimParallel object
 }
 \description{
 Retrieve the loglikelihood value from a fitted coco object.

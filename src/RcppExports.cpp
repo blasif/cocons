@@ -54,9 +54,9 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// cov_rns_taper_optimized_predict_range
-NumericVector cov_rns_taper_optimized_predict_range(List& theta, NumericMatrix& locs, NumericMatrix& locs_pred, NumericMatrix& x_covariates, NumericMatrix& x_covariates_pred, NumericVector& colindices, NumericVector& rowpointers, NumericVector& smooth_limits);
-RcppExport SEXP _cocons_cov_rns_taper_optimized_predict_range(SEXP thetaSEXP, SEXP locsSEXP, SEXP locs_predSEXP, SEXP x_covariatesSEXP, SEXP x_covariates_predSEXP, SEXP colindicesSEXP, SEXP rowpointersSEXP, SEXP smooth_limitsSEXP) {
+// cov_rns_taper_pred
+NumericVector cov_rns_taper_pred(List& theta, NumericMatrix& locs, NumericMatrix& locs_pred, NumericMatrix& x_covariates, NumericMatrix& x_covariates_pred, NumericVector& colindices, NumericVector& rowpointers, NumericVector& smooth_limits);
+RcppExport SEXP _cocons_cov_rns_taper_pred(SEXP thetaSEXP, SEXP locsSEXP, SEXP locs_predSEXP, SEXP x_covariatesSEXP, SEXP x_covariates_predSEXP, SEXP colindicesSEXP, SEXP rowpointersSEXP, SEXP smooth_limitsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -68,13 +68,13 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< NumericVector& >::type colindices(colindicesSEXP);
     Rcpp::traits::input_parameter< NumericVector& >::type rowpointers(rowpointersSEXP);
     Rcpp::traits::input_parameter< NumericVector& >::type smooth_limits(smooth_limitsSEXP);
-    rcpp_result_gen = Rcpp::wrap(cov_rns_taper_optimized_predict_range(theta, locs, locs_pred, x_covariates, x_covariates_pred, colindices, rowpointers, smooth_limits));
+    rcpp_result_gen = Rcpp::wrap(cov_rns_taper_pred(theta, locs, locs_pred, x_covariates, x_covariates_pred, colindices, rowpointers, smooth_limits));
     return rcpp_result_gen;
 END_RCPP
 }
-// cov_rns_taper_optimized_range
-NumericVector cov_rns_taper_optimized_range(List& theta, NumericMatrix& locs, NumericMatrix& x_covariates, NumericVector& colindices, NumericVector& rowpointers, NumericVector& smooth_limits);
-RcppExport SEXP _cocons_cov_rns_taper_optimized_range(SEXP thetaSEXP, SEXP locsSEXP, SEXP x_covariatesSEXP, SEXP colindicesSEXP, SEXP rowpointersSEXP, SEXP smooth_limitsSEXP) {
+// cov_rns_taper
+NumericVector cov_rns_taper(List& theta, NumericMatrix& locs, NumericMatrix& x_covariates, NumericVector& colindices, NumericVector& rowpointers, NumericVector& smooth_limits);
+RcppExport SEXP _cocons_cov_rns_taper(SEXP thetaSEXP, SEXP locsSEXP, SEXP x_covariatesSEXP, SEXP colindicesSEXP, SEXP rowpointersSEXP, SEXP smooth_limitsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -84,7 +84,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< NumericVector& >::type colindices(colindicesSEXP);
     Rcpp::traits::input_parameter< NumericVector& >::type rowpointers(rowpointersSEXP);
     Rcpp::traits::input_parameter< NumericVector& >::type smooth_limits(smooth_limitsSEXP);
-    rcpp_result_gen = Rcpp::wrap(cov_rns_taper_optimized_range(theta, locs, x_covariates, colindices, rowpointers, smooth_limits));
+    rcpp_result_gen = Rcpp::wrap(cov_rns_taper(theta, locs, x_covariates, colindices, rowpointers, smooth_limits));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -93,8 +93,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_cocons_cov_rns", (DL_FUNC) &_cocons_cov_rns, 4},
     {"_cocons_cov_rns_pred", (DL_FUNC) &_cocons_cov_rns_pred, 6},
     {"_cocons_cov_rns_classic", (DL_FUNC) &_cocons_cov_rns_classic, 3},
-    {"_cocons_cov_rns_taper_optimized_predict_range", (DL_FUNC) &_cocons_cov_rns_taper_optimized_predict_range, 8},
-    {"_cocons_cov_rns_taper_optimized_range", (DL_FUNC) &_cocons_cov_rns_taper_optimized_range, 6},
+    {"_cocons_cov_rns_taper_pred", (DL_FUNC) &_cocons_cov_rns_taper_pred, 8},
+    {"_cocons_cov_rns_taper", (DL_FUNC) &_cocons_cov_rns_taper, 6},
     {NULL, NULL, 0}
 };
 

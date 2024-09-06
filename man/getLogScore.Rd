@@ -2,7 +2,7 @@
 % Please edit documentation in R/getFunctions.R
 \name{getLogScore}
 \alias{getLogScore}
-\title{Based on a set of predictions retrieves the LogScore}
+\title{Computes the Log-Score}
 \usage{
 getLogScore(z.pred, mean.pred, sd.pred)
 }
@@ -14,10 +14,13 @@ getLogScore(z.pred, mean.pred, sd.pred)
 \item{sd.pred}{\code{(numeric vector)}.}
 }
 \value{
-retrieves LogScore
+(\code{numeric vector}) retrieves Log-Score.
 }
 \description{
-Retrieves the estimated spatial effects of the spatial structure
+Retrieves the Log-Score [1].
+}
+\references{
+[1] Gneiting, Tilmann, and Adrian E. Raftery. \emph{"Strictly proper scoring rules, prediction, and estimation."} Journal of the American statistical Association 102.477 (2007): 359-378.
 }
 \author{
 Federico Blasi

@@ -16,11 +16,11 @@ cocoPredict(coco.object, newdataset, newlocs, type = 'mean', ...)
 \item{type}{(\code{character}) whether \code{"mean"} or \code{"pred"}, which gives a point prediction for the former,
 as well as of point prediction and standard errors for the latter.}
 
-\item{...}{when coco.object has multiple realizations, specifying \code{"index.pred"} specifying which column of
+\item{...}{(\code{character}) when coco.object has multiple realizations, specifying \code{"index.pred"} specifying which column of
 \code{coco.object@z} should be used to perform predictions.}
 }
 \value{
-a list with the conditional mean, splitted in the systematic large-scale variability \code{trend},
+(\code{list}) a list with the conditional mean, splitted into the systematic large-scale variability \code{trend},
 and due to stochastic \code{mean}, as well as standard errors \code{"sd.pred"} if \code{"pred"} is specified.
 }
 \description{
@@ -47,11 +47,21 @@ optim_coco <- cocoOptim(coco_object,
 boundaries = getBoundaries(coco_object,
 lower.value = -3, 3))
 
-coco_preds <- cocoPredict(optim_coco,newdataset = holes[[2]][1:100, ],
-newlocs = as.matrix(holes[[2]][1:100, 1:2]),
+coco_preds <- cocoPredict(optim_coco, newdataset = holes[[2]]
+newlocs = as.matrix(holes[[2]][, 1:2]),
 type = "pred")
 
 coco_preds
+
+par(mfrow = c(1, 2))
+
+fields::quilt.plot(main = "mean", holes[[2]][, 1:2], 
+coco_preds$mean, xlim = c(-1, 1), ylim = c(-1, 1))
+fields::quilt.plot(main = "se", holes[[2]][, 1:2], 
+coco_preds$sd.pred, xlim = c(-1, 1), ylim = c(-1, 1))
+
+# Re-do it without considering cov_x and cov_y in the std.dev and scale and compare. 
+
 }
 
 }

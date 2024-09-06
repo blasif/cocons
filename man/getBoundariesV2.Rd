@@ -25,7 +25,7 @@ scale.limits, aniso.limits, tilt.limits, smooth.limits, nugget.limits)
 \item{nugget.limits}{\code{(numeric vector)} a vector of c(lower,init,upper) values for the associated param.}
 }
 \value{
-a list with boundaries for the optim L-BFGS-B routine
+(\code{list}) a list with boundaries for the optim L-BFGS-B routine
 }
 \description{
 provides a generic set of upper and lower bounds for the L-BFGS-B routine

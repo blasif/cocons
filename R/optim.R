@@ -1,26 +1,26 @@
 
 #' Optimizer of nonstationary spatial models
-#' @description Estimation of the spatial model parameters based on the L-BFGS-B optimizer __\[1\]__. 
+#' @description Estimation of the spatial model parameters based on the L-BFGS-B optimizer \[1\]. 
 #' @details
-#' Current implementations only allow a single realization for \code{"pmle"} \code{optim.type}. 
+#' Current implementation only allows a single realization for \code{"pmle"} \code{optim.type}. 
 #' @usage cocoOptim(coco.object, boundaries = list(), 
 #' ncores = parallel::detectCores(), optim.control, optim.type)
 #' @param coco.object (\code{S4}) a \link{coco} object.
 #' @param boundaries (\code{list}) if provided, a list with lower, init, and upper values, as the one provided by \link{getBoundaries}. Otherwise,
 #' it is computed based on \link{getBoundaries} with global lower and upper values -2 and 2.
 #' @param ncores (\code{integer}) number of threads for the optimization routine.
-#' @param optim.control (\code{list}) list with settings to be passed to the optimParallel function __\[2\]__.
+#' @param optim.control (\code{list}) list with settings to be passed to the optimParallel function \[2\].
 #' @param optim.type (\code{character}) Optimization approach: whether \code{"mle"} for classical Maximum Likelihood approach, 
 #' or \code{"pmle"} to factor out the spatial trend (when handling \code{"dense"} coco objects), or
 #' to factor out the global marginal standard deviation parameter (when considering \code{"sparse"} coco objects).
-#' @returns An optimized S4 object of class \code{coco}.
+#' @returns (\code{S4}) An optimized S4 object of class \code{coco}.
 #' @author Federico Blasi
 #' @seealso [optimParallel()]
 #' @references 
-#' __\[1\]__ Byrd, Richard H., et al. \emph{"A limited memory algorithm for bound constrained optimization."} 
+#' \[1\] Byrd, Richard H., et al. \emph{"A limited memory algorithm for bound constrained optimization."} 
 #' SIAM Journal on scientific computing 16.5 (1995): 1190-1208.
 #' 
-#' __\[2\]__ Gerber, Florian, and Reinhard Furrer. \emph{"optimParallel: An R package providing a parallel version of the L-BFGS-B optimization method."} 
+#' \[2\] Gerber, Florian, and Reinhard Furrer. \emph{"optimParallel: An R package providing a parallel version of the L-BFGS-B optimization method."} 
 #' R Journal 11.1 (2019): 352-358.
 #' @examples
 #' \dontrun{
@@ -43,6 +43,10 @@
 #' lower.value = -3, 3))
 #' 
 #' plot(optim_coco)
+#' 
+#' print(optim_coco)
+#' 
+#' getEstims(optim_coco)
 #' }
 #' 
 cocoOptim <- function(coco.object, boundaries = list(), 
@@ -389,7 +393,7 @@ cocoOptim <- function(coco.object, boundaries = list(),
         
         theta_list <- getModelLists(theta = output_taper$par, par.pos = args_optim$par.pos, type = "diff")
         
-        args_optim$ref_taper@entries <- args_optim$ref_taper@entries * cov_rns_taper_optimized_range(theta = theta_list[-1], 
+        args_optim$ref_taper@entries <- args_optim$ref_taper@entries * cov_rns_taper(theta = theta_list[-1], 
                                                                                                      locs = args_optim$locs, 
                                                                                                      x_covariates =  args_optim$x_covariates, 
                                                                                                      colindices = args_optim$ref_taper@colindices, 

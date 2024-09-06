@@ -10,10 +10,10 @@ getEstims(coco.object)
 \item{coco.object}{\code{(S4)} a fitted coco S4 object.}
 }
 \value{
-a list with the estimates parameters for the different aspects
+(\code{list}) a list with the estimates parameters for the different aspects
 }
 \description{
-Retrieve estimates from a fitted coco object
+Retrieve estimates from a fitted coco object.
 }
 \author{
 Federico Blasi

@@ -15,20 +15,20 @@ it is computed based on \link{getBoundaries} with global lower and upper values 
 
 \item{ncores}{(\code{integer}) number of threads for the optimization routine.}
 
-\item{optim.control}{(\code{list}) list with settings to be passed to the optimParallel function \strong{[2]}.}
+\item{optim.control}{(\code{list}) list with settings to be passed to the optimParallel function [2].}
 
 \item{optim.type}{(\code{character}) Optimization approach: whether \code{"mle"} for classical Maximum Likelihood approach,
 or \code{"pmle"} to factor out the spatial trend (when handling \code{"dense"} coco objects), or
 to factor out the global marginal standard deviation parameter (when considering \code{"sparse"} coco objects).}
 }
 \value{
-An optimized S4 object of class \code{coco}.
+(\code{S4}) An optimized S4 object of class \code{coco}.
 }
 \description{
-Estimation of the spatial model parameters based on the L-BFGS-B optimizer \strong{[1]}.
+Estimation of the spatial model parameters based on the L-BFGS-B optimizer [1].
 }
 \details{
-Current implementations only allow a single realization for \code{"pmle"} \code{optim.type}.
+Current implementation only allows a single realization for \code{"pmle"} \code{optim.type}.
 }
 \examples{
 \dontrun{
@@ -51,14 +51,18 @@ boundaries = getBoundaries(coco_object,
 lower.value = -3, 3))
 
 plot(optim_coco)
+
+print(optim_coco)
+
+getEstims(optim_coco)
 }
 
 }
 \references{
-\strong{[1]} Byrd, Richard H., et al. \emph{"A limited memory algorithm for bound constrained optimization."}
+[1] Byrd, Richard H., et al. \emph{"A limited memory algorithm for bound constrained optimization."}
 SIAM Journal on scientific computing 16.5 (1995): 1190-1208.
 
-\strong{[2]} Gerber, Florian, and Reinhard Furrer. \emph{"optimParallel: An R package providing a parallel version of the L-BFGS-B optimization method."}
+[2] Gerber, Florian, and Reinhard Furrer. \emph{"optimParallel: An R package providing a parallel version of the L-BFGS-B optimization method."}
 R Journal 11.1 (2019): 352-358.
 }
 \seealso{

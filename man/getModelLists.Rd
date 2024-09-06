@@ -17,7 +17,7 @@ of theta should be placed. Expected to be par.pos output of \link{getDesignMatri
 a difference parameterization 'diff' . Default set to 'diff'.}
 }
 \value{
-a list() of different spatial aspects and mean required for the cov.rns functions
+(\code{list}) a list of different spatial aspects and mean required for the cov.rns functions
 }
 \description{
 Returns a list of parameter vectors for each of the aspects.

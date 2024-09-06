@@ -22,7 +22,7 @@ GetNeg2loglikelihoodTaper <- function(theta, par.pos, ref_taper, locs,
   
   theta_list <- getModelLists(theta = theta, par.pos = par.pos, type = "diff")
   
-  ref_taper@entries <- ref_taper@entries * cov_rns_taper_optimized_range(theta = theta_list[-1], 
+  ref_taper@entries <- ref_taper@entries * cov_rns_taper(theta = theta_list[-1], 
                                                                          locs = locs, 
                                                                          x_covariates =  x_covariates, 
                                                                          colindices = ref_taper@colindices, 
@@ -72,7 +72,7 @@ GetNeg2loglikelihoodTaperProfile <- function(theta, par.pos, ref_taper, locs,
   
   theta_list$std.dev[1] <- 0
   
-  ref_taper@entries <- ref_taper@entries * cov_rns_taper_optimized_range(theta = theta_list[-1], 
+  ref_taper@entries <- ref_taper@entries * cov_rns_taper(theta = theta_list[-1], 
                                                                          locs = locs, 
                                                                          x_covariates =  x_covariates, 
                                                                          colindices = ref_taper@colindices, 

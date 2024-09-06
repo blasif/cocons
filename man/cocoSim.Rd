@@ -27,7 +27,7 @@ a difference parameterization \code{'diff'}. Default set to \code{'classic'}. Fo
 \item{cond.info}{(\code{list}) a list containing added information to perform conditional simulation.}
 }
 \value{
-a matrix n x dim(data)[1].
+(\code{matrix}) a matrix n x dim(data)[1].
 }
 \description{
 draw realizations of nonstationary Gaussian processes with covariate-based covariance functions.
@@ -35,6 +35,8 @@ draw realizations of nonstationary Gaussian processes with covariate-based covar
 \details{
 \code{'cond'} sim.type requires specifying in \code{'cond.info'} a list with \code{'newdataset'} a data.frame containing covariates present in model.list at simulation locations,
 and \code{'newlocs'} a matrix with locations related to the simulation locations, matching indexing of \code{'newdataset'}.
+
+\code{type = 'classic'} assumes a simpler parameterization for the covariance function, assuming log-parameterizations for \code{'std.dev'}, \code{'scale'}, and \code{'smooth'}.
 }
 \examples{
 \dontrun{

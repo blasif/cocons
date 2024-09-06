@@ -13,23 +13,12 @@ models.}
 \item{data}{\code{(data.frame)} a data.frame.}
 }
 \value{
-a list() with two elements: a design matrix of dimension
-(n x p), and a par.pos object, indexing columns of the design matrix refered
-to each aspect models.
+(\code{list}) a list with two elements: a design matrix of dimension
+(n x p), and a par.pos object, indexing columns of the design matrix to each of the spatially-varying functions.
 }
 \description{
 Creates a unique design matrix based on model specification for
 each of the different potentially spatially varying aspects.
-}
-\examples{
-model.list <- list(   "mean" = 0,
-                      "std.dev" = as.formula(" ~ 1 + lati_s * long_s"),
-                      "scale" = as.formula(" ~ 1 + elev_s"),
-                      "aniso" = as.formula(" ~ 1 + elev_s"),
-                      "tilt" = as.formula(" ~ 1 + elev_s"),
-                      "smooth" = as.formula(" ~ 1"),
-                      "nugget" = -Inf)
-                      
 }
 \author{
 Federico Blasi

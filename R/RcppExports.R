@@ -46,8 +46,8 @@ cov_rns_classic <- function(theta, locs, x_covariates) {
 #' @param rowpointers from spam object
 #' @param smooth_limits smooth limits
 #' @return sparse covariance matrix at locs 
-cov_rns_taper_optimized_predict_range <- function(theta, locs, locs_pred, x_covariates, x_covariates_pred, colindices, rowpointers, smooth_limits) {
-    .Call(`_cocons_cov_rns_taper_optimized_predict_range`, theta, locs, locs_pred, x_covariates, x_covariates_pred, colindices, rowpointers, smooth_limits)
+cov_rns_taper_pred <- function(theta, locs, locs_pred, x_covariates, x_covariates_pred, colindices, rowpointers, smooth_limits) {
+    .Call(`_cocons_cov_rns_taper_pred`, theta, locs, locs_pred, x_covariates, x_covariates_pred, colindices, rowpointers, smooth_limits)
 }
 
 #' Sparse covariance function
@@ -59,7 +59,7 @@ cov_rns_taper_optimized_predict_range <- function(theta, locs, locs_pred, x_cova
 #' @param rowpointers from spam object
 #' @param smooth_limits smooth limits
 #' @return sparse covariance matrix between locs and pred_locs
-cov_rns_taper_optimized_range <- function(theta, locs, x_covariates, colindices, rowpointers, smooth_limits) {
-    .Call(`_cocons_cov_rns_taper_optimized_range`, theta, locs, x_covariates, colindices, rowpointers, smooth_limits)
+cov_rns_taper <- function(theta, locs, x_covariates, colindices, rowpointers, smooth_limits) {
+    .Call(`_cocons_cov_rns_taper`, theta, locs, x_covariates, colindices, rowpointers, smooth_limits)
 }
 

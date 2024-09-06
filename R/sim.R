@@ -2,7 +2,10 @@
 #' Marginal and conditional simulation of nonstationary Gaussian process
 #' @description draw realizations of nonstationary Gaussian processes with covariate-based covariance functions.
 #' @details \code{'cond'} sim.type requires specifying in \code{'cond.info'} a list with \code{'newdataset'} a data.frame containing covariates present in model.list at simulation locations, 
-#' and \code{'newlocs'} a matrix with locations related to the simulation locations, matching indexing of \code{'newdataset'}.
+#' and \code{'newlocs'} a matrix with locations related to the simulation locations, matching indexing of \code{'newdataset'}. 
+#' 
+#' \code{type = 'classic'} assumes a simpler parameterization for the covariance function, assuming log-parameterizations for \code{'std.dev'}, \code{'scale'}, and \code{'smooth'}.
+#' 
 #' @usage cocoSim(coco.object, pars, n, seed, standardize, 
 #' type = 'classic', sim.type = NULL, cond.info = NULL)
 #' @param coco.object (\code{S4}) a \link{coco} object.
@@ -15,7 +18,7 @@
 #' a difference parameterization \code{'diff'}. Default set to \code{'classic'}. For \code{'sparse'} coco objects, only \code{'diff'} is available.
 #' @param sim.type (\code{character}) if set \code{'cond'} then a conditional simulation takes place.
 #' @param cond.info (\code{list}) a list containing added information to perform conditional simulation.
-#' @returns a matrix n x dim(data)\[1\].
+#' @returns (\code{matrix}) a matrix n x dim(data)\[1\].
 #' @author Federico Blasi
 #' @seealso [coco()]
 #' @examples
@@ -184,7 +187,7 @@ cocoSim <- function(coco.object,
       theta = c(coco.object@info$delta, 1)
     )
     
-    ref_taper@entries <- ref_taper@entries * cov_rns_taper_optimized_range(theta = theta_to_fit[-1], 
+    ref_taper@entries <- ref_taper@entries * cov_rns_taper(theta = theta_to_fit[-1], 
                                                                            locs = coco.object@locs, 
                                                                            x_covariates =  std_coco$std.covs, 
                                                                            colindices = ref_taper@colindices, 

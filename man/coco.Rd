@@ -9,34 +9,47 @@ coco(type, data, locs, z, model.list, info, output = list())
 \arguments{
 \item{type}{(\code{character}) One of two available types \code{"dense"} or \code{"sparse"}. See description.}
 
-\item{data}{(\code{data.frame}) A data.frame with covariates information, where \code{colnames(data)} matches model.list specification.}
+\item{data}{(\code{data.frame}) A \code{data.frame} with covariates information, where \code{colnames(data)} matches model.list specification.}
 
-\item{locs}{(\code{matrix}) A matrix with spatial locations.}
+\item{locs}{(\code{matrix}) A \code{matrix} with spatial locations.}
 
 \item{z}{(\code{vector} or \code{matrix}) A matrix of \eqn{n \times r} response realizations, one realization per column. When considering only one realization, a vector can also be provided.}
 
-\item{model.list}{(\code{list}) A list specifying a model for each aspect of the spatial structure.}
+\item{model.list}{(\code{list}) A \code{list} specifying a model for each aspect of the spatial structure.}
 
-\item{info}{(\code{list} or \code{NULL}) A list specifying characteristics of the coco object.}
+\item{info}{(\code{list} or \code{NULL}) A \code{list} specifying characteristics of the coco object.}
 
-\item{output}{(\code{list} or \code{NULL}) Empty or the resulting object from running \link[optimParallel]{optimParallel}, adding to this list boundaries information.}
+\item{output}{(\code{list} or \code{NULL}) Empty or the resulting object from running \link[optimParallel]{optimParallel}, adding to this a list with boundary information (check \link{getBoundaries} to check the expected structure).}
 }
 \value{
-An S4 object of class \code{coco}.
+(\code{S4}) An S4 object of class \code{coco}.
 }
 \description{
 Creates an S4 object of class \code{coco}, which is the centerpiece of the \pkg{cocons} package. The function provides a set of consistency checks for ensuring the suitability of the different objects involved.
 }
 \details{
-Two types of \code{coco} objects are available, each assuming a different kind of covariance matrix for the Gaussian process.
+Two types of \code{coco} objects are available, each assuming a different type of covariance matrix for the Gaussian process.
 Type \code{"dense"} builds dense covariance matrices (non zero elements), while type \code{"sparse"} builds sparse covariance
-matrices by tapering the dense covariance matrix with a compact isotropic compact-supported correlation matrix \strong{[1]}.
+matrices by tapering the dense covariance matrix with a compact isotropic compact-supported correlation matrix [1].
 Type \code{"sparse"} allows a set of efficient algorithms, thus making it more suitable for large sample sizes.
 
 An important component of the \code{coco} S4 class is the \code{model.list} specification, involving individual formulas provided as a list, where each of them specifies a covariate-based parametric model for a specific source of nonstationarity.
 It involves \code{"trend"} for the spatial trend, the \code{"std.dev"} for the marginal standard deviation,
 \code{"scale"}, \code{"aniso"} and \code{"tilt"}, each of them shaping specific aspects of the local spatial geometrically anisotropy structure,
-\code{"smooth"} handling local smoothness, and \code{"nugget"} handling the local nugget effect.
+\code{"smooth"} handling local smoothness, and \code{"nugget"} handling the local nugget effect. The models are defined as:\tabular{llll}{
+   Source \tab Related to \tab Description \tab Model \cr
+   \emph{mean} \tab \eqn{\mu} \tab Mean function \tab \eqn{\boldsymbol{X}_1\boldsymbol{\beta}} \cr
+   \emph{std.dev} \tab \eqn{\sigma^{X}} \tab Marginal standard deviation \tab \eqn{\text{exp}(0.5 \boldsymbol{X}_2 \boldsymbol{\alpha})} \cr
+   \emph{scale} \tab \eqn{\boldsymbol{\Sigma}^{X}} \tab Local scale \tab \eqn{\text{exp}(\boldsymbol{X}_3 \boldsymbol{\theta}_1)} \cr
+   \emph{aniso} \tab \eqn{\boldsymbol{\Sigma}^{X}} \tab Local geometric anisotropy \tab \eqn{\text{exp}(\boldsymbol{X}_4 \boldsymbol{\theta}_2)} \cr
+   \emph{tilt} \tab \eqn{\boldsymbol{\Sigma}^{X}} \tab (Restricted) local tilt \tab \eqn{\cos(\text{logit}^{-1}(\boldsymbol{X}_5 \boldsymbol{\theta}_3))} \cr
+   \emph{smooth} \tab \eqn{\nu^{X}} \tab Local smoothness \tab \eqn{(\nu_{u} - \nu_{l})/(1+\text{exp}(-\boldsymbol{X}_6 \boldsymbol{\phi})) + \nu_{l}} \cr
+   \emph{nugget} \tab \eqn{\sigma^{X}_{\epsilon}} \tab Local micro-scale variability \tab \eqn{\text{exp}(\boldsymbol{X}_7 \boldsymbol{\zeta})} \cr
+}
+
+
+where \eqn{\boldsymbol{\beta}}, \eqn{\boldsymbol{\alpha}}, \eqn{\boldsymbol{\theta}_1}, \eqn{\boldsymbol{\theta}_2}, \eqn{\boldsymbol{\theta}_3}, \eqn{\boldsymbol{\phi}}, and \eqn{\boldsymbol{\zeta}} are the parameter vectors of each model,
+\eqn{\nu_{l}}, and \eqn{\nu_{u}} are the lower and upper bounds limiting the range of variation of the spatially-varying smoothness, and where \eqn{\boldsymbol{X}_{\ell}} relates to a specific design matrix defined by the specific models for each of the source of nonstationarity.
 
 Lastly, arguments for the \code{"info"} list argument involve: \itemize{
 \item \code{"lambda"}: (\code{numeric}) a positive scalar specifying the regularization parameter.
@@ -73,7 +86,7 @@ coco_object <- coco(type = 'dense',
 
 }
 \references{
-\strong{[1]} Furrer, Reinhard, Marc G. Genton, and Douglas Nychka.
+[1] Furrer, Reinhard, Marc G. Genton, and Douglas Nychka.
 \emph{"Covariance tapering for interpolation of large spatial datasets."}
 Journal of Computational and Graphical Statistics 15.3 (2006): 502-523.
 }

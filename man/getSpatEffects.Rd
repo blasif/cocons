@@ -2,7 +2,7 @@
 % Please edit documentation in R/getFunctions.R
 \name{getSpatEffects}
 \alias{getSpatEffects}
-\title{Retrieves the estimated spatial effects of the spatial structure}
+\title{Computes the spatially-varying functions from a coco object}
 \usage{
 getSpatEffects(coco.object)
 }
@@ -10,10 +10,10 @@ getSpatEffects(coco.object)
 \item{coco.object}{\code{(S4)} a fitted coco S4 object.}
 }
 \value{
-a list with the different estimated surfaces.
+(\code{list}) a list with the different estimated surfaces.
 }
 \description{
-Retrieves the estimated surfaces for different sources of nonstationarity
+Evaluates the spatially-varying functions of the nonstationary spatial structure.
 }
 \author{
 Federico Blasi

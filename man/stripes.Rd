@@ -5,10 +5,14 @@
 \alias{stripes}
 \title{Stripes Data Set}
 \format{
-A data frame with rows and variables:
+A list with training and test data.frame with rows and variables:
 \describe{
-\item{var1}{Description of var1}
-\item{var2}{Description of var2}
+\item{x}{first spatial coordinate}
+\item{y}{second spatial coordinate}
+\item{cox_x}{first spatial characteristic}
+\item{cov_y}{second spatial characteristic}
+\item{cov_xy}{third spatial characteristic}
+\item{z}{response variable}
 }
 }
 \source{
@@ -18,7 +22,8 @@ Source of the data
 stripes
 }
 \description{
-Description of the stripes data set.
+The synthetic "stripes" provides a set of training and test data.frame of a Gaussian process realization with a (inherently sparse) nonstationary covariance function.
+Several stripes are present in the training dataset, and the task is to predict them.
 }
 \examples{
 data(stripes)

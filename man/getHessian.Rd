@@ -15,7 +15,7 @@ eps = .Machine$double.eps^(1/4))
 \item{eps}{\code{(numeric)} ...}
 }
 \value{
-a symmetric matrix pxp of the approximated (observed) Hessian
+(\code{numeric matrix}) a symmetric matrix pxp of the approximated (observed) Hessian
 }
 \description{
 returns the approximate (observed) Hesian (inverse of Fisher Information Matrix)

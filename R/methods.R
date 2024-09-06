@@ -383,7 +383,7 @@ setMethod("print", signature(x = "coco"),
                   cat(sprintf("%-15s %15s %15s %15s\n", "Output:", " ", " ", " "))
                   cat(rep("-", 65), "\n")
                   
-                  cat(sprintf("%-15s %15s %15s %15s %15s %15s %15s %15s\n", "(raw)", "Mean", "Std. Dev.", "Scale", "Geom. Aniso.", "Tilt", "Smooth", "Nugget"))
+                  cat(sprintf("%-15s %15s %15s %15s %15s %15s %15s %15s\n", "(raw)", "Mean", "Std. Dev.", "Scale", "Aniso.", "Tilt", "Smooth", "Nugget"))
                   cat(rep("-", 65), "\n")
                   
                   for (ii in 1:dim(adjusted_effects)[2]) {
@@ -439,7 +439,7 @@ setMethod("print", signature(x = "coco"),
                   cat(sprintf("%-15s %15s %15s %15s\n", "Output:", " ", " ", " "))
                   cat(rep("-", 60), "\n")
                   
-                  cat(sprintf("%-15s %10s %10s %10s %10s %10s %10s %10s\n", "(raw)", "Mean", "Std. Dev.", "Scale", "Geom. Aniso.", "Tilt", "Smooth", "Nugget"))
+                  cat(sprintf("%-15s %10s %10s %10s %10s %10s %10s %10s\n", "(raw)", "Mean", "Std. Dev.", "Scale", "Aniso.", "Tilt", "Smooth", "Nugget"))
                   cat(rep("-", 60), "\n")
                   
                   for (ii in 1:dim(adjusted_effects)[2]) {

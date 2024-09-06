@@ -2,7 +2,7 @@
 % Please edit documentation in R/getFunctions.R
 \name{getCovMatrix}
 \alias{getCovMatrix}
-\title{Covariance matrix from a fitted coco object}
+\title{Covariance matrix for "coco" class}
 \usage{
 getCovMatrix(coco.object, type = 'global', index = NULL)
 }
@@ -15,10 +15,10 @@ based on the local aspects of a specific location (not implemented yet).}
 \item{index}{\code{(integer)} index to perform local covariance matrix (not implemented yet).}
 }
 \value{
-a covariance matrix
+(\code{matrix}) a n x n covariance matrix.
 }
 \description{
-Retrieves the associated covariance matrix from a fitted coco object
+Compute the covariance matrix of \code{coco.object}.
 }
 \author{
 Federico Blasi

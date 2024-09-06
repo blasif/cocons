@@ -1,15 +1,29 @@
 #' Creates a coco S4 object
 #' @description Creates an S4 object of class \code{coco}, which is the centerpiece of the \pkg{cocons} package. The function provides a set of consistency checks for ensuring the suitability of the different objects involved.
 #' @details 
-#' Two types of \code{coco} objects are available, each assuming a different kind of covariance matrix for the Gaussian process. 
+#' Two types of \code{coco} objects are available, each assuming a different type of covariance matrix for the Gaussian process. 
 #' Type \code{"dense"} builds dense covariance matrices (non zero elements), while type \code{"sparse"} builds sparse covariance 
-#' matrices by tapering the dense covariance matrix with a compact isotropic compact-supported correlation matrix __\[1\]__. 
+#' matrices by tapering the dense covariance matrix with a compact isotropic compact-supported correlation matrix \[1\]. 
 #' Type \code{"sparse"} allows a set of efficient algorithms, thus making it more suitable for large sample sizes.
 #' 
 #' An important component of the \code{coco} S4 class is the \code{model.list} specification, involving individual formulas provided as a list, where each of them specifies a covariate-based parametric model for a specific source of nonstationarity. 
 #' It involves \code{"trend"} for the spatial trend, the \code{"std.dev"} for the marginal standard deviation, 
 #' \code{"scale"}, \code{"aniso"} and \code{"tilt"}, each of them shaping specific aspects of the local spatial geometrically anisotropy structure,
-#' \code{"smooth"} handling local smoothness, and \code{"nugget"} handling the local nugget effect.
+#' \code{"smooth"} handling local smoothness, and \code{"nugget"} handling the local nugget effect. The models are defined as:
+#' 
+#' 
+#' | Source       | Related to    | Description                             | Model                                                                    |
+#' |--------------|---------------|-----------------------------------------|--------------------------------------------------------------------------|
+#' | \emph{mean}      | \eqn{\mu}       | Mean function                     | \eqn{\boldsymbol{X}_1\boldsymbol{\beta}}                                               |
+#' | \emph{std.dev}   | \eqn{\sigma^{X}}| Marginal standard deviation       | \eqn{\text{exp}(0.5 \boldsymbol{X}_2 \boldsymbol{\alpha})}                                    |
+#' | \emph{scale}     | \eqn{\boldsymbol{\Sigma}^{X}}| Local scale          | \eqn{\text{exp}(\boldsymbol{X}_3 \boldsymbol{\theta}_1)}                                      |
+#' | \emph{aniso}     | \eqn{\boldsymbol{\Sigma}^{X}}| Local geometric anisotropy        | \eqn{\text{exp}(\boldsymbol{X}_4 \boldsymbol{\theta}_2)}                         |
+#' | \emph{tilt}      | \eqn{\boldsymbol{\Sigma}^{X}}| (Restricted) local tilt           | \eqn{\cos(\text{logit}^{-1}(\boldsymbol{X}_5 \boldsymbol{\theta}_3))}          |
+#' | \emph{smooth}    | \eqn{\nu^{X}}    | Local smoothness                  | \eqn{(\nu_{u} - \nu_{l})/(1+\text{exp}(-\boldsymbol{X}_6 \boldsymbol{\phi})) + \nu_{l}}      |
+#' | \emph{nugget}    | \eqn{\sigma^{X}_{\epsilon}}| Local micro-scale variability   | \eqn{\text{exp}(\boldsymbol{X}_7 \boldsymbol{\zeta})}                                |
+#' 
+#' where \eqn{\boldsymbol{\beta}}, \eqn{\boldsymbol{\alpha}}, \eqn{\boldsymbol{\theta}_1}, \eqn{\boldsymbol{\theta}_2}, \eqn{\boldsymbol{\theta}_3}, \eqn{\boldsymbol{\phi}}, and \eqn{\boldsymbol{\zeta}} are the parameter vectors of each model,
+#' \eqn{\nu_{l}}, and \eqn{\nu_{u}} are the lower and upper bounds limiting the range of variation of the spatially-varying smoothness, and where \eqn{\boldsymbol{X}_{\ell}} relates to a specific design matrix defined by the specific models for each of the source of nonstationarity.
 #' 
 #' Lastly, arguments for the \code{"info"} list argument involve: \itemize{
 #' \item \code{"lambda"}: (\code{numeric}) a positive scalar specifying the regularization parameter.
@@ -21,14 +35,14 @@
 #' 
 #' @usage coco(type, data, locs, z, model.list, info, output = list())
 #' @param type (\code{character}) One of two available types \code{"dense"} or \code{"sparse"}. See description.
-#' @param data (\code{data.frame}) A data.frame with covariates information, where \code{colnames(data)} matches model.list specification.
-#' @param locs (\code{matrix}) A matrix with spatial locations. 
+#' @param data (\code{data.frame}) A \code{data.frame} with covariates information, where \code{colnames(data)} matches model.list specification.
+#' @param locs (\code{matrix}) A \code{matrix} with spatial locations. 
 #' @param z (\code{vector} or \code{matrix}) A matrix of \eqn{n \times r} response realizations, one realization per column. When considering only one realization, a vector can also be provided.
-#' @param model.list (\code{list}) A list specifying a model for each aspect of the spatial structure.
-#' @param info (\code{list} or \code{NULL}) A list specifying characteristics of the coco object.
-#' @param output (\code{list} or \code{NULL}) Empty or the resulting object from running \link[optimParallel]{optimParallel}, adding to this list boundaries information.
+#' @param model.list (\code{list}) A \code{list} specifying a model for each aspect of the spatial structure.
+#' @param info (\code{list} or \code{NULL}) A \code{list} specifying characteristics of the coco object.
+#' @param output (\code{list} or \code{NULL}) Empty or the resulting object from running \link[optimParallel]{optimParallel}, adding to this a list with boundary information (check \link{getBoundaries} to check the expected structure).
 #' 
-#' @returns An S4 object of class \code{coco}.
+#' @returns (\code{S4}) An S4 object of class \code{coco}.
 #' 
 #' @examples
 #'  
@@ -58,7 +72,7 @@
 #' @author Federico Blasi
 #' @seealso [spam::cov.wend1()]
 #' @references 
-#' __\[1\]__ Furrer, Reinhard, Marc G. Genton, and Douglas Nychka. 
+#' \[1\] Furrer, Reinhard, Marc G. Genton, and Douglas Nychka. 
 #' \emph{"Covariance tapering for interpolation of large spatial datasets."} 
 #' Journal of Computational and Graphical Statistics 15.3 (2006): 502-523.
 #' 

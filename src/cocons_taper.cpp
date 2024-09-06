@@ -14,7 +14,7 @@ using namespace Rcpp;
 //' @param smooth_limits smooth limits
 //' @return sparse covariance matrix at locs 
 // [[Rcpp::export]]
-NumericVector cov_rns_taper_optimized_predict_range(List& theta, 
+NumericVector cov_rns_taper_pred(List& theta, 
                                                     NumericMatrix& locs,
                                                     NumericMatrix& locs_pred,
                                                     NumericMatrix& x_covariates, 
@@ -143,7 +143,7 @@ NumericVector cov_rns_taper_optimized_predict_range(List& theta,
 //' @param smooth_limits smooth limits
 //' @return sparse covariance matrix between locs and pred_locs
 // [[Rcpp::export]]
-NumericVector cov_rns_taper_optimized_range(List& theta, 
+NumericVector cov_rns_taper(List& theta, 
                                             NumericMatrix& locs, 
                                             NumericMatrix& x_covariates, 
                                             NumericVector& colindices, 

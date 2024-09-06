@@ -14,7 +14,7 @@ getBoundaries(x, lower.value, upper.value)
 \item{upper.value}{\code{(numeric vector)} if provided, provides a vector filled with values upper.value.}
 }
 \value{
-a list with boundaries and simple init values for the optim L-BFGS-B routine
+(\code{list}) a list with boundaries and simple init values for the optim L-BFGS-B routine
 }
 \description{
 provides a generic set of upper and lower bounds for the L-BFGS-B routine

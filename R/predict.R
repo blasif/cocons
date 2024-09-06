@@ -7,9 +7,9 @@
 #' @param newlocs (\code{matrix}) a matrix with locations related to prediction locations, matching indexing of \code{newdataset}.
 #' @param type (\code{character}) whether \code{"mean"} or \code{"pred"}, which gives a point prediction for the former, 
 #' as well as of point prediction and standard errors for the latter.
-#' @param ... when coco.object has multiple realizations, specifying \code{"index.pred"} specifying which column of 
+#' @param ... (\code{character}) when coco.object has multiple realizations, specifying \code{"index.pred"} specifying which column of 
 #' \code{coco.object@z} should be used to perform predictions.
-#' @returns a list with the conditional mean, splitted in the systematic large-scale variability \code{trend}, 
+#' @returns (\code{list}) a list with the conditional mean, splitted into the systematic large-scale variability \code{trend}, 
 #' and due to stochastic \code{mean}, as well as standard errors \code{"sd.pred"} if \code{"pred"} is specified.
 #' @author Federico Blasi
 #' @examples
@@ -33,11 +33,21 @@
 #' boundaries = getBoundaries(coco_object,
 #' lower.value = -3, 3))
 #' 
-#' coco_preds <- cocoPredict(optim_coco,newdataset = holes[[2]][1:100, ],
-#' newlocs = as.matrix(holes[[2]][1:100, 1:2]),
+#' coco_preds <- cocoPredict(optim_coco, newdataset = holes[[2]]
+#' newlocs = as.matrix(holes[[2]][, 1:2]),
 #' type = "pred")
 #' 
 #' coco_preds
+#' 
+#' par(mfrow = c(1, 2))
+#' 
+#' fields::quilt.plot(main = "mean", holes[[2]][, 1:2], 
+#' coco_preds$mean, xlim = c(-1, 1), ylim = c(-1, 1))
+#' fields::quilt.plot(main = "se", holes[[2]][, 1:2], 
+#' coco_preds$sd.pred, xlim = c(-1, 1), ylim = c(-1, 1))
+#' 
+#' # Re-do it without considering cov_x and cov_y in the std.dev and scale and compare. 
+#' 
 #' }
 #' 
 cocoPredict <- function(coco.object, 
@@ -184,7 +194,7 @@ cocoPredict <- function(coco.object,
     taper_two <- coco.object@info$taper(distmat, theta = c(coco.object@info$delta, 1))
     
     # C(locs,locs)
-    taper_two@entries <- taper_two@entries * cocons::cov_rns_taper_optimized_range(
+    taper_two@entries <- taper_two@entries * cocons::cov_rns_taper(
       theta = adjusted_eff_values,
       locs = coco.object@locs,
       x_covariates = X_std$std.covs,
@@ -200,7 +210,7 @@ cocoPredict <- function(coco.object,
     rm(pred_locs)
     
     # C(preds, locs)
-    pred_taper@entries <- pred_taper@entries * cocons::cov_rns_taper_optimized_predict_range(
+    pred_taper@entries <- pred_taper@entries * cocons::cov_rns_taper_pred(
       theta = adjusted_eff_values,
       locs = coco.object@locs,
       locs_pred = as.matrix(newlocs),
