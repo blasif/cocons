@@ -45,7 +45,7 @@
 #' @returns (\code{S4}) An S4 object of class \code{coco}.
 #' 
 #' @examples
-#'  
+#' \dontrun{
 #' locs <- expand.grid(seq(0,1,length.out = 10),
 #' seq(0,1,length.out = 10))
 #' 
@@ -68,6 +68,8 @@
 #'                     z = z,
 #'                     model.list = model.list)
 #' 
+#' coco_object
+#' }
 #' 
 #' @author Federico Blasi
 #' @seealso [spam::cov.wend1()]

@@ -60,7 +60,7 @@ Lastly, arguments for the \code{"info"} list argument involve: \itemize{
 }
 }
 \examples{
- 
+\dontrun{
 locs <- expand.grid(seq(0,1,length.out = 10),
 seq(0,1,length.out = 10))
 
@@ -83,6 +83,8 @@ coco_object <- coco(type = 'dense',
                     z = z,
                     model.list = model.list)
 
+coco_object
+}
 
 }
 \references{

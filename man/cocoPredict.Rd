@@ -47,7 +47,7 @@ optim_coco <- cocoOptim(coco_object,
 boundaries = getBoundaries(coco_object,
 lower.value = -3, 3))
 
-coco_preds <- cocoPredict(optim_coco, newdataset = holes[[2]]
+coco_preds <- cocoPredict(optim_coco, newdataset = holes[[2]],
 newlocs = as.matrix(holes[[2]][, 1:2]),
 type = "pred")
 
