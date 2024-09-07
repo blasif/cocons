@@ -15,7 +15,7 @@
 #' to factor out the global marginal standard deviation parameter (when considering \code{"sparse"} coco objects).
 #' @returns (\code{S4}) An optimized S4 object of class \code{coco}.
 #' @author Federico Blasi
-#' @seealso [optimParallel()]
+#' @seealso [\link[optimParallel]{optimParallel}]
 #' @references 
 #' \[1\] Byrd, Richard H., et al. \emph{"A limited memory algorithm for bound constrained optimization."} 
 #' SIAM Journal on scientific computing 16.5 (1995): 1190-1208.

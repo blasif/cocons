@@ -66,7 +66,7 @@ SIAM Journal on scientific computing 16.5 (1995): 1190-1208.
 R Journal 11.1 (2019): 352-358.
 }
 \seealso{
-\code{\link[=optimParallel]{optimParallel()}}
+[\link[optimParallel]{optimParallel}]
 }
 \author{
 Federico Blasi
