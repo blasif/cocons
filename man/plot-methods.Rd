@@ -6,14 +6,23 @@
 \alias{plot,coco-method}
 \title{Plot Method for Coco Class}
 \usage{
-\S4method{plot}{coco,missing}(x, y, ..., type = NULL, index = NULL, factr = 0.1, plot.control = NULL)
+\S4method{plot}{coco,missing}(
+  x,
+  y,
+  ...,
+  type = NULL,
+  index = NULL,
+  factr = 0.1,
+  delta = NULL,
+  plot.control = NULL
+)
 }
 \arguments{
 \item{x}{An object of class \code{coco}.}
 
 \item{y}{Not used.}
 
-\item{...}{Additional arguments passed to the plot function. when type "ellipse" , delta of nearest.dist must be specified.}
+\item{...}{Additional arguments passed to the plot function. when type "ellipse" , "delta" of nearest.dist must be specified.}
 
 \item{type}{The type of plot. NULL or "ellipse" for drawing ellipse of the convolution kernels.}
 

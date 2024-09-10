@@ -50,39 +50,56 @@
     return(ellipse_points)
   }
   
-  if (alpha_i == pi / 2) {
-    # print("linear independent eigenvectors")
-    A_stuff <- sqrt((r + 1)^2 - 4 * r * sin(alpha_i)^2)
+  # alpha_i <- acos(alpha_i)
+  
+  if (abs(alpha_i - pi / 2) <= 1e-3) {
     
-    e_1 <- ((r + 1) + sqrt((r + 1)^2 - 4 * r * sin(alpha_i)^2))
-    e_2 <- ((r + 1) - sqrt((r + 1)^2 - 4 * r * sin(alpha_i)^2))
-    
-    magnitude_vector_one <- sqrt((0)^2 + 1^2)
-    y_length <- sqrt(max(e_2, e_1)) / magnitude_vector_one
+    if(r == 1){
+      
+      graphics::arrows(
+        x0 = loc[1], x1 = loc[1] + rho * factr,
+        y0 = loc[2], y1 = loc[2], lwd = 2, lty = 1,
+        cex = 0.5, angle = 5, length = 0.1
+      )
+      
+      graphics::arrows(
+        x0 = loc[1], x1 = loc[1],
+        y0 = loc[2], y1 = loc[2] + rho * factr, lwd = 2, lty = 1,
+        cex = 0.5, angle = 5, length = 0.1
+      )
+      
+      ellipse_points <- createEllipse(loc,
+                                      a = rho,
+                                      b = rho, 0, steps = 2000,
+                                      factr = factr
+      )
+      
+      graphics::lines(ellipse_points, lty = 3, col = "black")      
+      
+      return(0)
+    }
     
     graphics::arrows(
-      x0 = 0, x1 = ifelse(r > 1, 0, y_length),
-      y0 = 0, y1 = ifelse(r > 1, y_length, 0), lwd = 2, lty = 1,
+      x0 = loc[1], x1 = loc[1] + rho * factr,
+      y0 = loc[2], y1 = loc[2] , lwd = 2, lty = 1,
       cex = 0.5, angle = 5, length = 0.1
     )
     
-    magnitude_vector_two <- sqrt((1)^2 + (0)^2)
-    
-    y_length <- sqrt(min(e_1, e_2)) / magnitude_vector_two
-    
     graphics::arrows(
-      x0 = 0, x1 = ifelse(r > 1, y_length, 0),
-      y0 = 0, y1 = ifelse(r > 1, 0, y_length), lwd = 2, lty = 1,
+      x0 = loc[1], x1 = loc[1] ,
+      y0 = loc[2], y1 = loc[2] + rho * r * factr, lwd = 2, lty = 1,
       cex = 0.5, angle = 5, length = 0.1
     )
-    
+
     ellipse_points <- createEllipse(loc,
-                                    a = sqrt(ifelse(r > 1, (min(e_1, e_2)), max(e_1, e_2))),
-                                    b = sqrt(ifelse(r > 1, (max(e_1, e_2)), min(e_1, e_2))), 0, steps = 2000
+                                    a = max(rho,rho * r),
+                                    b = min(rho,rho * r), 0, steps = 2000,
+                                    factr = factr
     )
     
     graphics::lines(ellipse_points, lty = 3, col = "black")
     return(0)
+    
   }
   
   A_stuff <- sqrt((r + 1)^2 - 4 * r * sin(alpha_i)^2)

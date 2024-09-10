@@ -35,7 +35,7 @@ setClass("coco", slots = list(
 #'
 #' @param x An object of class \code{coco}.
 #' @param y Not used.
-#' @param ... Additional arguments passed to the plot function. when type "ellipse" , delta of nearest.dist must be specified.
+#' @param ... Additional arguments passed to the plot function. when type "ellipse" , "delta" of nearest.dist must be specified.
 #' @param type The type of plot. NULL or "ellipse" for drawing ellipse of the convolution kernels.
 #' @param index For plotting local correlation plots.
 #' @param factr Factor rate for size of ellipses.
@@ -48,7 +48,9 @@ setClass("coco", slots = list(
 setMethod("plot",
           signature(x = "coco", y = "missing"),
           definition =
-            function(x, y, ..., type = NULL, index = NULL, factr = 0.1, plot.control = NULL) {
+            function(x, y, ..., type = NULL, index = NULL, factr = 0.1, 
+                     delta = NULL, 
+                     plot.control = NULL) {
               
               if (length(x@output) == 0) {
                 stop("object has not yet been fitted.")
@@ -101,7 +103,7 @@ setMethod("plot",
                   #     col = tim.colors(64)[cut(spat_effects$aniso, breaks = quantile(x = spat_effects$aniso, probs = seq(0, 1, length.out = 64)), 
                   #                              labels = FALSE, include.lowest = T)], xlab = colnames(x@locs)[1],ylab=colnames(x@locs)[2])
                   
-                  fields::quilt.plot(x@locs, spat_effects$tilt, main = "tilt", zlim = c(-pi / 4 - 0.1, pi / 4 + 0.1), ...)
+                  fields::quilt.plot(x@locs, spat_effects$angle, main = "tilt", zlim = c(0, pi), ...)
                   fields::quilt.plot(x@locs, spat_effects$smooth, main = "smooth", ...)
                   fields::quilt.plot(x@locs, spat_effects$nugget, main = "nugget", ...)
                   
@@ -114,7 +116,7 @@ setMethod("plot",
                     
                     graphics::par(mfrow = c(1, 1))
                     
-                    plot(x@locs, col = fields::tim.colors(128)[cut(x@z, 128)], pch = 18, cex = 2, asp = 1)
+                    plot(x@locs, col = fields::tim.colors(128)[cut(x@z, 128)], pch = 20, cex = 1, asp = 1)
                     
                     number_x <- 10
                     range_x <- range(x@locs[, 1])
@@ -130,12 +132,14 @@ setMethod("plot",
                       for (jj in 1:number_x) {
                         center_locs <- c(vals_x[ii], range_y[1] + jj / number_x * (range_y[2] - range_y[1]))
                         
-                        sss <- spam::nearest.dist(x = matrix(center_locs, ncol = 2), y = x@locs, delta = ...) # fix delta to automatic
+                        sss <- spam::nearest.dist(x = matrix(center_locs, ncol = 2), y = x@locs, delta = delta) # fix delta to automatic
                         
                         to_compute_sd <- sss@colindices[which.min(sss@entries)]
                         
                         .cocons.DrawEllipsoid(
-                          alpha_i = spat_effects$tilt[to_compute_sd], r = spat_effects$aniso[to_compute_sd], rho = spat_effects$scale_x[to_compute_sd],
+                          alpha_i = spat_effects$tilt[to_compute_sd], 
+                          r = spat_effects$aniso[to_compute_sd], 
+                          rho = spat_effects$scale_x[to_compute_sd],
                           loc = x@locs[to_compute_sd, ], factr = factr
                         )
                       }
