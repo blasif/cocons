@@ -101,26 +101,6 @@ getCRPS <- function(z.pred, mean.pred, sd.pred){
   
 }
 
-#' Returns the penalization term
-#' @description Returns the penalization term.
-#'
-#' @usage getPen(n, lambda, theta_list, smooth.limits)
-#' @param n \code{(integer)}.
-#' @param lambda \code{(numeric)}.
-#' @param theta_list \code{(list)}.
-#' @param smooth.limits \code{(numeric vector)}.
-#' @returns (\code{numeric}) retrieves penalization term.
-#' @author Federico Blasi
-getPen <- function(n, lambda, theta_list, smooth.limits){
-  
-  return(2 * n * lambda * exp(theta_list$scale[1]) * 
-    sqrt(((smooth.limits[2]-smooth.limits[1])/ 
-            (1 + exp(-theta_list$smooth[1])) + 
-            smooth.limits[1]))
-    )
-  
-}
-
 #' Computes the spatially-varying functions from a coco object
 #' @description Evaluates the spatially-varying functions of the nonstationary spatial structure.
 #'
@@ -170,13 +150,10 @@ getSpatEffects <- function(coco.object){
   if(coco.object@type == "sparse"){
     
     tp_se <- exp(0.5 * X_std$std.covs %*% theta_list$std.dev)
-    #tp_ga <- exp(X_std$std.covs %*% theta_list$aniso)
-    #tp_tl <- pi / (1 + exp(-X_std$std.covs %*% theta_list$tilt))
     tp_smooth <- (coco.object@info$smooth.limits[2] - coco.object@info$smooth.limits[1]) / (1 + exp(-X_std$std.covs %*% theta_list$smooth)) + coco.object@info$smooth.limits[1]
     tp_ng <- exp(X_std$std.covs %*% theta_list$nugget)
     tp_mr <- exp(X_std$std.covs %*% theta_list$scale)
-    #tp_mr_y <- sin(tp_tl) * exp(X_std$std.covs %*% theta_list$scale) * exp(X_std$std.covs %*% theta_list$aniso)
-    
+
     return(list("sd" = tp_se,
                 "scale_x" = tp_mr,
                 "smooth" = tp_smooth,
@@ -850,8 +827,6 @@ getHessian <- function(coco.object, ncores = parallel::detectCores() - 1,
   
   if(coco.object@type == "dense"){
     
-    f00 <- coco.object@output$value
-    
     p <- base::length(coco.object@output$par)
     H <- base::matrix(NA, p, p)
     
@@ -874,27 +849,16 @@ getHessian <- function(coco.object, ncores = parallel::detectCores() - 1,
                                    mean.vector = coco.object@info$mean.vector,
                                    sd.vector = coco.object@info$sd.vector)
     
-    z <- coco.object@z
-    
     n <- dim(coco.object@z)[1]
     
     x_covariates <- coco_x_std$std.covs
-    
-    locs <- coco.object@locs
-    
-    lambda <- coco.object@info$lambda
-    
-    coco.info <- coco.object@info$smooth.limits
-    
-    pars <- coco.object@output$par
     
     cl <- parallel::makeCluster(ncores)
     parallel::setDefaultCluster(cl = cl)
     parallel::clusterEvalQ(cl, library("cocons"))
     
-    parallel::clusterExport(cl = cl, list("z", "x_covariates", "coco.info",
-                                          "locs", "n", "par.pos", "eps",
-                                          "pars", "f00","lambda"),
+    parallel::clusterExport(cl = cl, list("x_covariates", "coco.object",
+                                          "n", "par.pos", "eps"),
                             envir = environment())
     
     vector_responses <- parallel::parApply(cl = cl, 
@@ -902,40 +866,38 @@ getHessian <- function(coco.object, ncores = parallel::detectCores() - 1,
                                            MARGIN = 1, 
                                            FUN = function(x){
                                              
-                                             t01 <- pars
-                                             t10 <- pars
-                                             t11 <- pars
-                                             
+                                             t01 <- t10 <- t11 <- coco.object@output$par
+
                                              t01[x[1]] <- t01[x[1]] + eps
                                              t10[x[2]] <- t10[x[2]] + eps
                                              t11[x[1]] <- t11[x[1]] + eps
                                              t11[x[2]] <- t11[x[2]] + eps
                                              
                                              f01 <- cocons::GetNeg2loglikelihood(t01, par.pos = par.pos,
-                                                                                    locs = locs,
+                                                                                    locs = coco.object@locs,
                                                                                     x_covariates = x_covariates, 
-                                                                                    smooth.limits = coco.info, 
+                                                                                    smooth.limits = coco.object@info$smooth.limits, 
                                                                                     n = n, 
-                                                                                    z = z,
-                                                                                    lambda = lambda)
+                                                                                    z = coco.object@z,
+                                                                                    lambda = coco.object@info$lambda)
                                              
                                              f10 <- cocons::GetNeg2loglikelihood(t10, par.pos = par.pos,
-                                                                                    locs = locs,
+                                                                                    locs = coco.object@locs,
                                                                                     x_covariates = x_covariates, 
-                                                                                    smooth.limits = coco.info, 
+                                                                                    smooth.limits = coco.object@info$smooth.limits, 
                                                                                     n = n, 
-                                                                                    z = z,
-                                                                                    lambda = lambda)
+                                                                                    z = coco.object@z,
+                                                                                    lambda = coco.object@info$lambda)
                                              
                                              f11 <- cocons::GetNeg2loglikelihood(t11, par.pos = par.pos,
-                                                                                    locs = locs,
+                                                                                    locs = coco.object@locs,
                                                                                     x_covariates = x_covariates, 
-                                                                                    smooth.limits = coco.info, 
+                                                                                    smooth.limits = coco.object@info$smooth.limits, 
                                                                                     n = n, 
-                                                                                    z = z, 
-                                                                                    lambda = lambda)
+                                                                                    z = coco.object@z, 
+                                                                                    lambda = coco.object@info$lambda)
                                              
-                                             0.5 * ((f11 - f01 - f10 + f00) / (eps*eps))
+                                             0.5 * ((f11 - f01 - f10 + coco.object@output$value) / (eps*eps))
                                            }); parallel::stopCluster(cl)
     
     count_index <- 0
@@ -958,8 +920,6 @@ getHessian <- function(coco.object, ncores = parallel::detectCores() - 1,
   
   if(coco.object@type == "sparse"){
     
-    f00 <- coco.object@output$value
-    
     p <- base::length(coco.object@output$par)
     H <- base::matrix(NA, p, p)
     
@@ -982,17 +942,8 @@ getHessian <- function(coco.object, ncores = parallel::detectCores() - 1,
                                    mean.vector = coco.object@info$mean.vector,
                                    sd.vector = coco.object@info$sd.vector)
     
-    z <- coco.object@z
     n <- dim(coco.object@z)[1]
     x_covariates <- coco_x_std$std.covs
-    
-    locs <- coco.object@locs
-    
-    lambda <- coco.object@info$lambda
-    
-    coco.info <- coco.object@info$smooth.limits
-    
-    pars <- coco.object@output$par
     
     ref_taper <- coco.object@info$taper(
       spam::nearest.dist(coco.object@locs, delta = coco.object@info$delta, upper = NULL),
@@ -1005,9 +956,9 @@ getHessian <- function(coco.object, ncores = parallel::detectCores() - 1,
     parallel::setDefaultCluster(cl = cl)
     parallel::clusterEvalQ(cl, library("cocons"))
     
-    parallel::clusterExport(cl = cl, list("z", "x_covariates", "coco.info",
-                                          "locs", "n", "par.pos", "eps",
-                                          "pars", "f00","lambda","ref_taper","cholS"),
+    parallel::clusterExport(cl = cl, list("x_covariates", "coco.object",
+                                          "n", "par.pos", "eps",
+                                          "ref_taper","cholS"),
                             envir = environment())
     
     vector_responses <- parallel::parApply(cl = cl, 
@@ -1015,10 +966,8 @@ getHessian <- function(coco.object, ncores = parallel::detectCores() - 1,
                                            MARGIN = 1, 
                                            FUN = function(x){
                                              
-                                             t01 <- pars
-                                             t10 <- pars
-                                             t11 <- pars
-                                             
+                                             t11 <- t10 <- t01 <- coco.object@output$par
+
                                              t01[x[1]] <- t01[x[1]] + eps
                                              t10[x[2]] <- t10[x[2]] + eps
                                              t11[x[1]] <- t11[x[1]] + eps
@@ -1027,37 +976,37 @@ getHessian <- function(coco.object, ncores = parallel::detectCores() - 1,
                                              f01 <- cocons::GetNeg2loglikelihoodTaper(theta = t01,
                                                                                           par.pos = par.pos,
                                                                                           ref_taper = ref_taper,
-                                                                                          locs = locs,
+                                                                                          locs = coco.object@locs,
                                                                                           x_covariates = x_covariates,
-                                                                                          smooth.limits = coco.info,
+                                                                                          smooth.limits = coco.object@info$smooth.limits,
                                                                                           cholS = cholS,
-                                                                                          z = z,
+                                                                                          z = coco.object@z,
                                                                                           n = n,
-                                                                                          lambda = lambda)
+                                                                                          lambda = coco.object@info$lambda)
                                              
                                              f10 <- cocons::GetNeg2loglikelihoodTaper(theta = t10,
                                                                                           par.pos = par.pos,
                                                                                           ref_taper = ref_taper,
-                                                                                          locs = locs,
+                                                                                          locs = coco.object@locs,
                                                                                           x_covariates = x_covariates,
-                                                                                          smooth.limits = coco.info,
+                                                                                          smooth.limits = coco.object@info$smooth.limits,
                                                                                           cholS = cholS,
-                                                                                          z = z,
+                                                                                          z = coco.object@z,
                                                                                           n = n,
-                                                                                          lambda = lambda)
+                                                                                          lambda = coco.object@info$lambda)
                                              
                                              f11 <- cocons::GetNeg2loglikelihoodTaper(theta = t11,
                                                                                           par.pos = par.pos,
                                                                                           ref_taper = ref_taper,
-                                                                                          locs = locs,
+                                                                                          locs = coco.object@locs,
                                                                                           x_covariates = x_covariates,
-                                                                                          smooth.limits = coco.info,
+                                                                                          smooth.limits = coco.object@info$smooth.limits,
                                                                                           cholS = cholS,
-                                                                                          z = z,
+                                                                                          z = coco.object@z,
                                                                                           n = n,
-                                                                                          lambda = lambda)
+                                                                                          lambda = coco.object@info$lambda)
                                              
-                                             0.5 * ((f11 - f01 - f10 + f00) / (eps*eps))
+                                             0.5 * ((f11 - f01 - f10 + coco.object@output$value) / (eps*eps))
                                              
                                            }); parallel::stopCluster(cl)
     

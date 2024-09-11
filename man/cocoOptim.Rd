@@ -52,7 +52,7 @@ lower.value = -3, 3))
 
 plot(optim_coco)
 
-print(optim_coco)
+summary(optim_coco)
 
 getEstims(optim_coco)
 }

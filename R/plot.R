@@ -16,10 +16,7 @@ plotOptimInfo <- function(coco.object, ...){
   index_pars <- base::grepl('par', base::colnames(coco.object@output$loginfo))
   index_grad <- base::grepl('gr', base::colnames(coco.object@output$loginfo))
   x_grid <- 1:base::dim(coco.object@output$loginfo)[1]
-  
-  #graphics::par(mfrow = grDevices::n2mfrow(prod(dim(coco.object@output$loginfo))/256), 
-  #              oma = c(3, 2, 2, 2), mar = c(2.5,1,1,1))
-  
+
   graphics::par(mfrow=c(1,2), ...)
   
   tmp_dm <- cocons::getDesignMatrix(coco.object@model.list, data = coco.object@data)

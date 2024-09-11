@@ -43,7 +43,7 @@ GetNeg2loglikelihoodTaper <- function(theta, par.pos, ref_taper, locs,
     
   }
   
-  return(sumlogs + getPen(n * dim(z)[2], lambda, theta_list, smooth.limits))
+  return(sumlogs + .cocons.getPen(n * dim(z)[2], lambda, theta_list, smooth.limits))
 
 }
 
@@ -85,7 +85,7 @@ GetNeg2loglikelihoodTaperProfile <- function(theta, par.pos, ref_taper, locs,
   resid <- z - c(x_covariates %*% theta_list$mean)
   
   return(n * log(2 * pi / n) + n + 2 * logdet + 
-    n * log(sum(resid * spam::solve.spam(Sigma_cpp, resid))) + getPen(n, lambda, theta_list, smooth.limits))
+    n * log(sum(resid * spam::solve.spam(Sigma_cpp, resid))) + .cocons.getPen(n, lambda, theta_list, smooth.limits))
 
 }
 
@@ -129,7 +129,7 @@ GetNeg2loglikelihoodProfile <- function(theta, par.pos, locs, x_covariates,
     temp_thetas <- cocons::getModelLists(theta = theta, par.pos = par.pos, type = "classic")
     
     return(n * log(2 * pi) + 2 * logdet + quad_sum + 
-      getPen(n, lambda, theta_list, smooth.limits))
+      .cocons.getPen(n, lambda, theta_list, smooth.limits))
     
   }
 }
@@ -186,7 +186,7 @@ GetNeg2loglikelihood <- function(theta,
       
     }
     
-    return(sum_logliks +  getPen(n * dim(z)[2], lambda, theta_list, smooth.limits))
+    return(sum_logliks +  .cocons.getPen(n * dim(z)[2], lambda, theta_list, smooth.limits))
     
   }
 }

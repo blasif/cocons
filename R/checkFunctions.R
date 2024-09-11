@@ -175,9 +175,12 @@
     }
   }
   
+  n_total_t <- n_total
+  p <- 1
   while(T){
-    if(n_threads > n_total){return(n_total)}else{
-      n_total <- ceiling(n_total/2)
+    if(n_threads > n_total_t){return(n_total_t)}else{
+      p <- p + 1
+      n_total_t <- ceiling(n_total/p)
     }
   }
 }
@@ -245,7 +248,7 @@
 # ADDED model.list here to check
 .cocons.check.info <- function(type, info, model.list){
   
-  if (is.null(info$smooth.limits) & is.logical(model.list[6])) {
+  if (is.null(info$smooth.limits) & is.formula(model.list[6]$smooth)) {
     stop("smooth limits not specified.")
   }
   
@@ -408,4 +411,14 @@
   
   return(list('empty_matrix' = empty_matrix,
               'tmp_values' = tmp_values))
+}
+
+.cocons.getPen <- function(n, lambda, theta_list, smooth.limits){
+  
+  return(2 * n * lambda * exp(theta_list$scale[1]) * 
+           sqrt(((smooth.limits[2]-smooth.limits[1])/ 
+                   (1 + exp(-theta_list$smooth[1])) + 
+                   smooth.limits[1]))
+  )
+  
 }
