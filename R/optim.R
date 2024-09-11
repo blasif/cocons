@@ -4,11 +4,11 @@
 #' @details
 #' Current implementation only allows a single realization for \code{"pmle"} \code{optim.type}. 
 #' @usage cocoOptim(coco.object, boundaries = list(), 
-#' ncores = parallel::detectCores(), optim.control, optim.type)
+#' ncores = "auto", optim.control, optim.type)
 #' @param coco.object (\code{S4}) a \link{coco} object.
 #' @param boundaries (\code{list}) if provided, a list with lower, init, and upper values, as the one provided by \link{getBoundaries}. Otherwise,
 #' it is computed based on \link{getBoundaries} with global lower and upper values -2 and 2.
-#' @param ncores (\code{integer}) number of threads for the optimization routine.
+#' @param ncores (\code{character} or \code{integer}) number of threads for the optimization routine. If "auto" then it is set based on optimal number of threads (when available) or a fraction of it.
 #' @param optim.control (\code{list}) list with settings to be passed to the optimParallel function \[2\].
 #' @param optim.type (\code{character}) Optimization approach: whether \code{"mle"} for classical Maximum Likelihood approach, 
 #' or \code{"pmle"} to factor out the spatial trend (when handling \code{"dense"} coco objects), or
@@ -50,11 +50,17 @@
 #' }
 #' 
 cocoOptim <- function(coco.object, boundaries = list(), 
-                       ncores = parallel::detectCores(), 
+                       ncores = "auto", 
                        optim.control = NULL, optim.type = "mle"){
   
-  .cocons.check.ncores(ncores)
+  if(is.character(ncores)){
+    ncores <- .cocons.set.ncores(coco.object, optim.control)
+  } else{
+    .cocons.check.ncores(ncores)
+  }
   
+  cat("using ",ncores," threads.\n")
+
   # Init objects
   if(T){
     

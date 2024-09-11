@@ -5,7 +5,7 @@
 \title{Optimizer of nonstationary spatial models}
 \usage{
 cocoOptim(coco.object, boundaries = list(), 
-ncores = parallel::detectCores(), optim.control, optim.type)
+ncores = "auto", optim.control, optim.type)
 }
 \arguments{
 \item{coco.object}{(\code{S4}) a \link{coco} object.}
@@ -13,7 +13,7 @@ ncores = parallel::detectCores(), optim.control, optim.type)
 \item{boundaries}{(\code{list}) if provided, a list with lower, init, and upper values, as the one provided by \link{getBoundaries}. Otherwise,
 it is computed based on \link{getBoundaries} with global lower and upper values -2 and 2.}
 
-\item{ncores}{(\code{integer}) number of threads for the optimization routine.}
+\item{ncores}{(\code{character} or \code{integer}) number of threads for the optimization routine. If "auto" then it is set based on optimal number of threads (when available) or a fraction of it.}
 
 \item{optim.control}{(\code{list}) list with settings to be passed to the optimParallel function [2].}
 

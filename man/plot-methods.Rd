@@ -22,13 +22,15 @@
 
 \item{y}{Not used.}
 
-\item{...}{Additional arguments passed to the plot function. when type "ellipse" , "delta" of nearest.dist must be specified.}
+\item{...}{Additional arguments passed to the plot function.}
 
 \item{type}{The type of plot. NULL or "ellipse" for drawing ellipse of the convolution kernels.}
 
 \item{index}{For plotting local correlation plots.}
 
 \item{factr}{Factor rate for size of ellipses.}
+
+\item{delta}{when type "ellipse", "delta" of nearest.dist must be specified.}
 
 \item{plot.control}{Additional plot control parameters.}
 }

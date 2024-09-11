@@ -35,10 +35,11 @@ setClass("coco", slots = list(
 #'
 #' @param x An object of class \code{coco}.
 #' @param y Not used.
-#' @param ... Additional arguments passed to the plot function. when type "ellipse" , "delta" of nearest.dist must be specified.
+#' @param ... Additional arguments passed to the plot function. 
 #' @param type The type of plot. NULL or "ellipse" for drawing ellipse of the convolution kernels.
 #' @param index For plotting local correlation plots.
 #' @param factr Factor rate for size of ellipses.
+#' @param delta when type "ellipse", "delta" of nearest.dist must be specified.
 #' @param plot.control Additional plot control parameters.
 #' @return A plot is created.
 #' @exportMethod plot
@@ -88,19 +89,19 @@ setMethod("plot",
                   fields::quilt.plot(x@locs, spat_effects$sd, main = "se", ...)
                   
                   #plot(x@locs[,1], x@locs[,2], pch=20, main = "se",
-                  #     col = tim.colors(64)[cut(tp_se, breaks = quantile(x = tp_se, probs = seq(0, 1, length.out = 64)), 
+                  #     col = coco.pallete(64)[cut(spat_effects$sd, breaks = quantile(x = spat_effects$sd, probs = seq(0, 1, length.out = 64)), 
                   #                              labels = FALSE, include.lowest = T)], xlab = colnames(x@locs)[1],ylab=colnames(x@locs)[2])
                   
                   fields::quilt.plot(x@locs, spat_effects$scale_x, main = "approx. eff. scale", ...)
                   
                   #plot(x@locs[,1], x@locs[,2], pch=20, main = "approx eff.scale",
-                  #     col = tim.colors(64)[cut(spat_effects$scale_x, breaks = quantile(x = spat_effects$scale_x, probs = seq(0, 1, length.out = 64)), 
+                  #     col = coco.pallete(64)[cut(spat_effects$scale_x, breaks = quantile(x = spat_effects$scale_x, probs = seq(0, 1, length.out = 64)), 
                   #                              labels = FALSE, include.lowest = T)], xlab = colnames(x@locs)[1],ylab=colnames(x@locs)[2])
                   
                   fields::quilt.plot(x@locs, spat_effects$aniso, main = "anisotropy", ...)
                   
                   #plot(x@locs[,1], x@locs[,2], pch=20, main = "ga",
-                  #     col = tim.colors(64)[cut(spat_effects$aniso, breaks = quantile(x = spat_effects$aniso, probs = seq(0, 1, length.out = 64)), 
+                  #     col = coco.pallete(64)[cut(spat_effects$aniso, breaks = quantile(x = spat_effects$aniso, probs = seq(0, 1, length.out = 64)), 
                   #                              labels = FALSE, include.lowest = T)], xlab = colnames(x@locs)[1],ylab=colnames(x@locs)[2])
                   
                   fields::quilt.plot(x@locs, spat_effects$angle, main = "tilt", zlim = c(0, pi), ...)
@@ -147,12 +148,8 @@ setMethod("plot",
                   }
                 }
                 
-              }
-              
-              if (!is.null(type)) {
-                
-                # !!!!!!! is it ok && ??
-                if (x@type == "dense" && type == "correlations") {
+                if (!is.null(type)) {
+                if (type == "correlations") {
                   
                   tmp_info <- cocons::getDesignMatrix(model.list = x@model.list, data = x@data)
                   
@@ -203,7 +200,7 @@ setMethod("plot",
                       info = list("smooth.limits" = x@info$smooth.limits)
                     )
                     
-                    teteee <- getDesignMatrix(model.list = model.list, 
+                    DM_tmp <- getDesignMatrix(model.list = model.list, 
                                               data = local_object@data)
                     
                     here <- getModelLists(c(local_var, 
@@ -211,12 +208,12 @@ setMethod("plot",
                                             local_ga, 
                                             local_tt, 
                                             local_smtns),
-                                          par.pos = teteee$par.pos, type = "diff"
+                                          par.pos = DM_tmp$par.pos, type = "diff"
                     )
                     
                     tmp_cov_two <- stats::cov2cor(cocons::cov_rns(
                       theta = here, locs = x@locs,
-                      x_covariates = teteee$model.matrix,
+                      x_covariates = DM_tmp$model.matrix,
                       smooth_limits = x@info$smooth.limits
                     ))
                     
@@ -224,8 +221,10 @@ setMethod("plot",
                     graphics::points(x@locs[ww,1], x@locs[ww,2], pch = "X", bg='red', col = 'violet', cex = 2)
                   }
                 }
+                }
+                
               }
-              
+
               if (x@type == "sparse") {
                 
                 tmp_info <- cocons::getDesignMatrix(model.list = x@model.list, data = x@data)
@@ -261,69 +260,50 @@ setMethod("plot",
                 fields::quilt.plot(x@locs, spat_effects$scale_x, ..., main = "approx. eff. scale")
                 fields::quilt.plot(x@locs, spat_effects$sd, ..., main = "se")
                 fields::quilt.plot(x@locs, spat_effects$nugget, ..., main = "nugget")
-              }
-              
-              if (!is.null(type)) {
-                if (x@type == "sparse" & type == "correlations") {
-                  tmp_info <- cocons::getDesignMatrix(
-                    model.list = x@model.list,
-                    data = x@data
-                  )
-                  
-                  theta_list <- cocons::getModelLists(
-                    theta = x@output$par,
-                    par.pos = tmp_info$par.pos, type = "diff"
-                  )
-                  
-                  X_std <- cocons::getScale(tmp_info$model.matrix)
-                  
-                  tmp_cov <- stats::cov2cor(cocons::cov_rns_smooth_taper_vector(
-                    theta_list, x@locs,
-                    X_std$std.covs
-                  )) ## !!!!!!!!!!!!!!!!!!!!!!!!!! FIXXXXXXXX
-                  
-                  for (ww in 1:length(index)) {
-                    fields::quilt.plot(x@locs, tmp_cov[index[ww], ])
+                
+                if (!is.null(type)) {
+                  if (type == "correlations") {
                   }
-                }
+                }                
+                
               }
             }
 )
 
-#' Print Method for Coco Class
+#' Summary Method for Coco Class
 #'
 #' This method prints objects of class 'coco'.
-#' @name print
-#' @aliases print,coco-method
-#' @param x An object of class 'coco'.
+#' @name summary
+#' @aliases summary,coco-method
+#' @param object An object of class 'coco'.
 #' @param inv.hess inverse of the approximated hessian matrix (getHessian)
 #' @param ... Additional arguments to be passed to plot.
-#' @return print the coco object
+#' @return summary the coco object
 #' @docType methods
-#' @exportMethod print
+#' @exportMethod summary
 #' @docType methods
-#' @rdname print-methods
+#' @rdname summary-methods
 #' @author Federico Blasi
 #' 
-setMethod("print", signature(x = "coco"), 
+setMethod("summary", signature(object = "coco"), 
           definition = 
-            function(x, inv.hess = NULL, ...){
+            function(object, inv.hess = NULL, ...){
               
-              if(length(x@output) == 0){stop("object has not been fited yet.")}
+              if(length(object@output) == 0){stop("object has not been fited yet.")}
               
-              tmp_matrix <- cocons::getDesignMatrix(model.list = x@model.list, 
-                                                   data = x@data)
+              tmp_matrix <- cocons::getDesignMatrix(model.list = object@model.list, 
+                                                   data = object@data)
               
               adjusted_effects <- matrix(nrow = 7, ncol = dim(tmp_matrix$model.matrix)[2])
               colnames(adjusted_effects) <- colnames(tmp_matrix$model.matrix)
               
-              adjusted_eff_values <- cocons::getModelLists(x@output$par, 
+              adjusted_eff_values <- cocons::getModelLists(object@output$par, 
                                                           tmp_matrix$par.pos,
                                                           type = "diff") 
 
               if(!is.null(inv.hess)){
                 
-                Hess_mod <- getModHess(x, inv.hess = inv.hess)
+                Hess_mod <- getModHess(object, inv.hess = inv.hess)
                 
                 if(is.logical(tmp_matrix$par.pos$mean)){
                   number_mean <- sum(tmp_matrix$par.pos$mean)
@@ -372,7 +352,7 @@ setMethod("print", signature(x = "coco"),
                 
               }
               
-              if(x@type == "dense"){
+              if(object@type == "dense"){
                 
                 adjusted_effects[1, ] <- adjusted_eff_values$mean
                 adjusted_effects[2, ] <- adjusted_eff_values$std.dev
@@ -480,9 +460,7 @@ setMethod("print", signature(x = "coco"),
                 
               }
               
-              if(x@type == "sparse"){
-                
-                # warning("taper estimations are biased.")
+              if(object@type == "sparse"){
                 
                 adjusted_effects[1, ] <- adjusted_eff_values$mean
                 adjusted_effects[2, ] <- adjusted_eff_values$std.dev
@@ -601,15 +579,11 @@ setMethod("show",
               
               # number of parameters
               
-              coco_info_light <- getDesignMatrix(model.list = object@model.list, data = object@data[1, , drop = FALSE])
-              
-              tmp_index <- lapply(coco_info_light$par.pos, FUN = is.logical)
-              
-              n_par <- sum(unlist(lapply(coco_info_light$par.pos, sum))[which(tmp_index == TRUE)])
-              
-              cat(sprintf("%-30s %30s\n", "model parameters", n_par))
+              cat(sprintf("%-30s %30s\n", "model parameters", .cocons.get.npars(object)))
               
               # covariates names
+              
+              coco_info_light <- getDesignMatrix(model.list = object@model.list, data = object@data[1, , drop = FALSE])
               
               cat(sprintf("%-30s %10s", "covariates ", paste0(colnames(coco_info_light$model.matrix),collapse = ", ")))
               
@@ -625,16 +599,12 @@ setMethod("show",
               cat(sprintf("%-30s %30s\n", "dataset dim", paste0(dim(object@data), collapse = ", ")))
               
               # number of parameters
-              
-              coco_info_light <- getDesignMatrix(model.list = object@model.list,data = object@data[1, , drop = FALSE])
-              
-              tmp_index <- lapply(coco_info_light$par.pos, FUN = is.logical)
-              
-              n_par <- sum(unlist(lapply(coco_info_light$par.pos, sum))[which(tmp_index == TRUE)])
-              
-              cat(sprintf("%-30s %30s\n", "model parameters", n_par))
+
+              cat(sprintf("%-30s %30s\n", "model parameters", .cocons.get.npars(object)))
               
               # covariates names
+              
+              coco_info_light <- getDesignMatrix(model.list = object@model.list, data = object@data[1, , drop = FALSE])
               
               cat(sprintf("%-30s %10s", "covariates ", paste0(colnames(coco_info_light$model.matrix),collapse = ", ")))
               

@@ -144,6 +144,44 @@
 
 .cocons.check.type_pred <- function(type){}
 
+.cocons.get.npars <- function(coco.object){
+  
+  coco_info_light <- getDesignMatrix(model.list = coco.object@model.list, data = coco.object@data[1, , drop = FALSE])
+  
+  tmp_index <- lapply(coco_info_light$par.pos, FUN = is.logical)
+  
+  n_par <- sum(unlist(lapply(coco_info_light$par.pos, sum))[which(tmp_index == TRUE)])
+  
+  return(n_par)
+
+}
+
+.cocons.set.ncores <- function(coco.object, optim.control){
+  
+  n_pars <- .cocons.get.npars(coco.object)
+  n_threads <- parallel::detectCores()
+  
+  if(n_threads == 1){return(1)}
+  
+  if(is.null(optim.control)){
+    n_total <- 2 * n_pars + 1
+  } else{
+    if(exists(optim.control$parallel$forward)){
+      if(optim.control$parallel$forward){
+        n_total <- n_pars + 1
+      }else{
+      n_total <- 2 * n_pars + 1
+    }
+    }
+  }
+  
+  while(T){
+    if(n_threads > n_total){return(n_total)}else{
+      n_total <- ceiling(n_total/2)
+    }
+  }
+}
+
 .cocons.check.type <- function(type) {
   if (!(type %in% c("sparse", "dense"))) {
     stop("check type")
