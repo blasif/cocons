@@ -6,37 +6,29 @@
 \alias{plot,coco-method}
 \title{Plot Method for Coco Class}
 \usage{
-\S4method{plot}{coco,missing}(
-  x,
-  y,
-  ...,
-  type = NULL,
-  index = NULL,
-  factr = 0.1,
-  delta = NULL,
-  plot.control = NULL
-)
+\S4method{plot}{coco,missing}(x, y, ..., type = NULL, index = NULL, factr = 0.1, delta = NULL)
 }
 \arguments{
 \item{x}{An object of class \code{coco}.}
 
 \item{y}{Not used.}
 
-\item{...}{Additional arguments passed to the plot function.}
+\item{...}{Additional arguments passed to \link[fields]{quilt.plot}.}
 
-\item{type}{The type of plot. NULL or "ellipse" for drawing ellipse of the convolution kernels.}
+\item{type}{(\code{character}  or \code{NULL}) The type of plot. NULL or "ellipse" for drawing ellipse of the convolution kernels.}
 
-\item{index}{For plotting local correlation plots.}
+\item{index}{(\code{integer vector}) For plotting local correlation plots.}
 
-\item{factr}{Factor rate for size of ellipses.}
+\item{factr}{(\code{numeric}) Factor rate for size of ellipses.}
 
-\item{delta}{when type "ellipse", "delta" of nearest.dist must be specified.}
-
-\item{plot.control}{Additional plot control parameters.}
+\item{delta}{(\code{numeric}) when type "ellipse", "delta" of nearest.dist must be specified.}
 }
 \value{
-A plot is created.
+Several plots are created.
 }
 \description{
 This method plots objects of class \code{coco}.
+}
+\author{
+Federico Blasi
 }

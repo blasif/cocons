@@ -2,7 +2,7 @@
 % Please edit documentation in R/getFunctions.R
 \name{getSpatEffects}
 \alias{getSpatEffects}
-\title{Computes the spatially-varying functions from a coco object}
+\title{Evaluates the spatially-varying functions from a coco object at locs}
 \usage{
 getSpatEffects(coco.object)
 }

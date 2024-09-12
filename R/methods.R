@@ -32,26 +32,24 @@ setClass("coco", slots = list(
 #' Plot Method for Coco Class
 #'
 #' This method plots objects of class \code{coco}.
-#'
+#' @rdname plot-methods
+#' @docType methods
+#' @aliases plot,coco-method
 #' @param x An object of class \code{coco}.
 #' @param y Not used.
-#' @param ... Additional arguments passed to the plot function. 
-#' @param type The type of plot. NULL or "ellipse" for drawing ellipse of the convolution kernels.
-#' @param index For plotting local correlation plots.
-#' @param factr Factor rate for size of ellipses.
-#' @param delta when type "ellipse", "delta" of nearest.dist must be specified.
-#' @param plot.control Additional plot control parameters.
-#' @return A plot is created.
-#' @exportMethod plot
-#' @docType methods
-#' @rdname plot-methods
-#' @aliases plot,coco-method
+#' @param ... Additional arguments passed to \link[fields]{quilt.plot}. 
+#' @param type (\code{character}  or \code{NULL}) The type of plot. NULL or "ellipse" for drawing ellipse of the convolution kernels.
+#' @param index (\code{integer vector}) For plotting local correlation plots.
+#' @param factr (\code{numeric}) Factor rate for size of ellipses.
+#' @param delta (\code{numeric}) when type "ellipse", "delta" of nearest.dist must be specified.
+#' @return Several plots are created.
+#' @author Federico Blasi
+#' 
 setMethod("plot",
           signature(x = "coco", y = "missing"),
           definition =
             function(x, y, ..., type = NULL, index = NULL, factr = 0.1, 
-                     delta = NULL, 
-                     plot.control = NULL) {
+                     delta = NULL) {
               
               if (length(x@output) == 0) {
                 stop("object has not yet been fitted.")
@@ -272,22 +270,19 @@ setMethod("plot",
 
 #' Summary Method for Coco Class
 #'
-#' This method prints objects of class 'coco'.
+#' method summary for objects of class 'coco'.
 #' @name summary
 #' @aliases summary,coco-method
-#' @param object An object of class 'coco'.
-#' @param inv.hess inverse of the approximated hessian matrix (getHessian)
-#' @param ... Additional arguments to be passed to plot.
+#' @param object (\code{S4}) An object of class 'coco'.
+#' @param inv.hess (\code{numeric matrix} or \code{NULL}) inverse of the approximated hessian matrix (getHessian)
 #' @return summary the coco object
-#' @docType methods
-#' @exportMethod summary
 #' @docType methods
 #' @rdname summary-methods
 #' @author Federico Blasi
 #' 
 setMethod("summary", signature(object = "coco"), 
           definition = 
-            function(object, inv.hess = NULL, ...){
+            function(object, inv.hess = NULL){
               
               if(length(object@output) == 0){stop("object has not been fited yet.")}
               
@@ -561,7 +556,6 @@ setMethod("summary", signature(object = "coco"),
 #' @return A plot is created.
 #' @docType methods
 #' @rdname show-methods
-#' @exportMethod show
 #' @author Federico Blasi
 #' 
 setMethod("show",

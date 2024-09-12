@@ -6,20 +6,18 @@
 \alias{summary,coco-method}
 \title{Summary Method for Coco Class}
 \usage{
-\S4method{summary}{coco}(object, inv.hess = NULL, ...)
+\S4method{summary}{coco}(object, inv.hess = NULL)
 }
 \arguments{
-\item{object}{An object of class 'coco'.}
+\item{object}{(\code{S4}) An object of class 'coco'.}
 
-\item{inv.hess}{inverse of the approximated hessian matrix (getHessian)}
-
-\item{...}{Additional arguments to be passed to plot.}
+\item{inv.hess}{(\code{numeric matrix} or \code{NULL}) inverse of the approximated hessian matrix (getHessian)}
 }
 \value{
 summary the coco object
 }
 \description{
-This method prints objects of class 'coco'.
+method summary for objects of class 'coco'.
 }
 \author{
 Federico Blasi

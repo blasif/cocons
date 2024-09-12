@@ -2,7 +2,7 @@
 % Please edit documentation in R/getFunctions.R
 \name{getLogScore}
 \alias{getLogScore}
-\title{Computes the Log-Score}
+\title{Based on a set of predictions computes the Log-Score}
 \usage{
 getLogScore(z.pred, mean.pred, sd.pred)
 }
@@ -17,7 +17,7 @@ getLogScore(z.pred, mean.pred, sd.pred)
 (\code{numeric vector}) retrieves Log-Score.
 }
 \description{
-Retrieves the Log-Score [1].
+Computes the Log-Score [1].
 }
 \references{
 [1] Gneiting, Tilmann, and Adrian E. Raftery. \emph{"Strictly proper scoring rules, prediction, and estimation."} Journal of the American statistical Association 102.477 (2007): 359-378.

@@ -2,7 +2,7 @@
 % Please edit documentation in R/getFunctions.R
 \name{getCRPS}
 \alias{getCRPS}
-\title{Based on a set of predictions retrieves the Logrank}
+\title{Based on a set of predictions computes the Continuous Ranked Probability Score}
 \usage{
 getCRPS(z.pred, mean.pred, sd.pred)
 }

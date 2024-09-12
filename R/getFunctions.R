@@ -64,8 +64,8 @@ getCovMatrix <- function(coco.object, type = "global", index = NULL){
   }
 }
 
-#' Computes the Log-Score
-#' @description Retrieves the Log-Score \[1\].
+#' Based on a set of predictions computes the Log-Score
+#' @description Computes the Log-Score \[1\].
 #'
 #' @usage getLogScore(z.pred, mean.pred, sd.pred)
 #' @param z.pred \code{(numeric vector)}.
@@ -81,7 +81,7 @@ getLogScore <- function(z.pred, mean.pred, sd.pred){
   
 }
 
-#' Based on a set of predictions retrieves the Logrank
+#' Based on a set of predictions computes the Continuous Ranked Probability Score
 #' @description Retrieves the Continuous Ranked Probability Score (CRPS) \[1\].
 #'
 #' @usage getCRPS(z.pred, mean.pred, sd.pred)
@@ -101,7 +101,7 @@ getCRPS <- function(z.pred, mean.pred, sd.pred){
   
 }
 
-#' Computes the spatially-varying functions from a coco object
+#' Evaluates the spatially-varying functions from a coco object at locs
 #' @description Evaluates the spatially-varying functions of the nonstationary spatial structure.
 #'
 #' @usage getSpatEffects(coco.object)
