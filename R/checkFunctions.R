@@ -1,9 +1,6 @@
 
 # Internal functions
 
-# ADD checks for NA's!!!!
-# ADD checks for different sizes of locs, data, and z !!!!!!
-
 .cocons.update.optim.control <- function(optim.control){
   
   to_update <- getOption("cocons.Optim.Control")
@@ -50,23 +47,24 @@
     return(ellipse_points)
   }
   
-  # alpha_i <- acos(alpha_i)
-  
   if (abs(alpha_i - pi / 2) <= 1e-3) {
     
     if(r == 1){
       
-      graphics::arrows(
-        x0 = loc[1], x1 = loc[1] + rho * factr,
-        y0 = loc[2], y1 = loc[2], lwd = 2, lty = 1,
-        cex = 0.5, angle = 5, length = 0.1
-      )
-      
-      graphics::arrows(
-        x0 = loc[1], x1 = loc[1],
-        y0 = loc[2], y1 = loc[2] + rho * factr, lwd = 2, lty = 1,
-        cex = 0.5, angle = 5, length = 0.1
-      )
+      if(rho * factr > 0.05){
+        
+        graphics::arrows(
+          x0 = loc[1], x1 = loc[1] + rho * factr,
+          y0 = loc[2], y1 = loc[2], lwd = 2, lty = 1,
+          cex = 0.5, angle = 5, length = 0.1
+        )
+        
+        graphics::arrows(
+          x0 = loc[1], x1 = loc[1],
+          y0 = loc[2], y1 = loc[2] + rho * factr, lwd = 2, lty = 1,
+          cex = 0.5, angle = 5, length = 0.1
+        )
+      }
       
       ellipse_points <- createEllipse(loc,
                                       a = rho,
@@ -79,18 +77,22 @@
       return(0)
     }
     
-    graphics::arrows(
-      x0 = loc[1], x1 = loc[1] + rho * factr,
-      y0 = loc[2], y1 = loc[2] , lwd = 2, lty = 1,
-      cex = 0.5, angle = 5, length = 0.1
-    )
+    if(rho * factr > 0.05){
+     
+      graphics::arrows(
+        x0 = loc[1], x1 = loc[1] + rho * factr,
+        y0 = loc[2], y1 = loc[2] , lwd = 2, lty = 1,
+        cex = 0.5, angle = 5, length = 0.1
+      )
+      
+      graphics::arrows(
+        x0 = loc[1], x1 = loc[1] ,
+        y0 = loc[2], y1 = loc[2] + rho * r * factr, lwd = 2, lty = 1,
+        cex = 0.5, angle = 5, length = 0.1
+      )      
+       
+    }
     
-    graphics::arrows(
-      x0 = loc[1], x1 = loc[1] ,
-      y0 = loc[2], y1 = loc[2] + rho * r * factr, lwd = 2, lty = 1,
-      cex = 0.5, angle = 5, length = 0.1
-    )
-
     ellipse_points <- createEllipse(loc,
                                     a = max(rho,rho * r),
                                     b = min(rho,rho * r), 0, steps = 2000,
@@ -117,21 +119,25 @@
   
   y_length <- factr * sqrt(e_2) / magnitude_vector_one
   
-  graphics::arrows(
+  magnitude_vector_two <- sqrt((e_b_1)^2 + (e_b_2)^2)
+  
+  y_length_2 <- factr * sqrt(e_1) / magnitude_vector_two
+  
+  if( (y_length * a_a_1 > 0.05) & (y_length_2 * e_b_1 > 0.05)){
+
+      graphics::arrows(
     x0 = loc[1], x1 = loc[1] + y_length * a_a_1,
     y0 = loc[2], y1 = loc[2] + y_length * a_b_1, lwd = 2, lty = 1,
     cex = 0.5, angle = 15, length = 0.1, col = "black"
-  )
-  
-  magnitude_vector_two <- sqrt((e_b_1)^2 + (e_b_2)^2)
-  
-  y_length <- factr * sqrt(e_1) / magnitude_vector_two
-  
-  graphics::arrows(
-    x0 = loc[1], x1 = loc[1] + y_length * e_b_1,
-    y0 = loc[2], y1 = loc[2] + y_length * e_b_2, lwd = 2, lty = 1,
-    cex = 0.5, angle = 15, length = 0.1, col = "black"
-  )
+    )
+    
+    graphics::arrows(
+      x0 = loc[1], x1 = loc[1] + y_length_2 * e_b_1,
+      y0 = loc[2], y1 = loc[2] + y_length_2 * e_b_2, lwd = 2, lty = 1,
+      cex = 0.5, angle = 15, length = 0.1, col = "black"
+    )
+    
+  }
   
   ellipse_points <- createEllipse(
     center = loc, a = sqrt((max(e_1, e_2))),
@@ -238,7 +244,7 @@
   
   lapply(model.list, FUN = function(x) {
     if (any(!(all.vars(x)) %in% colnames(data))) {
-      stop("variable names in list_formula do not match data variable names.")
+      stop("variable names in model.list do not match data variable names.")
     }
   })
   

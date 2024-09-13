@@ -225,16 +225,6 @@ setMethod("plot",
 
               if (x@type == "sparse") {
                 
-                tmp_info <- cocons::getDesignMatrix(model.list = x@model.list, data = x@data)
-                
-                theta_list <- cocons::getModelLists(theta = x@output$par, 
-                                                   par.pos = tmp_info$par.pos, type = "diff")
-                
-                X_std <- cocons::getScale(tmp_info$model.matrix,
-                                         mean.vector = x@info$mean.vector,
-                                         sd.vector = x@info$sd.vector
-                )
-                
                 spat_effects <- getSpatEffects(x)
                 
                 tmp_list <- list("x" = x@locs[, 1],
@@ -248,7 +238,7 @@ setMethod("plot",
                 tmp_list <- list("x" = x@locs[, 1],
                                  "y" = x@locs[, 2],
                                  "main" = "residuals",
-                                 "z" = x@z - getTrend(x))
+                                 "z" = x@z[,1] - getTrend(x))
                 
                 do.call(fields::quilt.plot, args = tmp_list)
                 
@@ -258,6 +248,42 @@ setMethod("plot",
                 fields::quilt.plot(x@locs, spat_effects$scale_x, ..., main = "approx. eff. scale")
                 fields::quilt.plot(x@locs, spat_effects$sd, ..., main = "se")
                 fields::quilt.plot(x@locs, spat_effects$nugget, ..., main = "nugget")
+                
+                if (!is.null(type)) {
+                  if(type == "ellipse"){
+                    
+                    graphics::par(mfrow = c(1, 1))
+                    
+                    plot(x@locs, col = fields::tim.colors(128)[cut(x@z, 128)], pch = 20, cex = 1, asp = 1)
+                    
+                    number_x <- 10
+                    range_x <- range(x@locs[, 1])
+                    eps_x <- diff(range_x) / 3
+                    vals_x <- seq(from = range_x[1], to = range_x[2], length.out = number_x)
+                    
+                    for (ii in 1:length(vals_x)) {
+                      ref_y <- which(x@locs[, 1] < (vals_x[ii] + eps_x / 2) &
+                                       x@locs[, 1] > (vals_x[ii] - eps_x / 2))
+                      
+                      range_y <- range(x@locs[ref_y, 2])
+                      
+                      for (jj in 1:number_x) {
+                        center_locs <- c(vals_x[ii], range_y[1] + jj / number_x * (range_y[2] - range_y[1]))
+                        
+                        sss <- spam::nearest.dist(x = matrix(center_locs, ncol = 2), y = x@locs, delta = delta) # fix delta to automatic
+                        
+                        to_compute_sd <- sss@colindices[which.min(sss@entries)]
+                        
+                        .cocons.DrawEllipsoid(
+                          alpha_i = pi/2, 
+                          r = 1, 
+                          rho = spat_effects$scale_x[to_compute_sd],
+                          loc = x@locs[to_compute_sd, ], factr = factr
+                        )
+                      }
+                    }
+                  }
+                }
                 
                 if (!is.null(type)) {
                   if (type == "correlations") {

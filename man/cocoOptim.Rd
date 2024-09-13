@@ -5,7 +5,7 @@
 \title{Optimizer of nonstationary spatial models}
 \usage{
 cocoOptim(coco.object, boundaries = list(), 
-ncores = "auto", optim.control, optim.type)
+ncores = "auto", optim.type, optim.control)
 }
 \arguments{
 \item{coco.object}{(\code{S4}) a \link{coco} object.}
@@ -15,11 +15,11 @@ it is computed based on \link{getBoundaries} with global lower and upper values 
 
 \item{ncores}{(\code{character} or \code{integer}) number of threads for the optimization routine. If "auto" then it is set based on optimal number of threads (when available) or a fraction of it.}
 
-\item{optim.control}{(\code{list}) list with settings to be passed to the optimParallel function [2].}
-
 \item{optim.type}{(\code{character}) Optimization approach: whether \code{"mle"} for classical Maximum Likelihood approach,
 or \code{"pmle"} to factor out the spatial trend (when handling \code{"dense"} coco objects), or
 to factor out the global marginal standard deviation parameter (when considering \code{"sparse"} coco objects).}
+
+\item{optim.control}{(\code{list}) list with settings to be passed to the optimParallel function [2].}
 }
 \value{
 (\code{S4}) An optimized S4 object of class \code{coco}.

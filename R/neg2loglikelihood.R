@@ -32,17 +32,15 @@ GetNeg2loglikelihoodTaper <- function(theta, par.pos, ref_taper, locs,
   Sigma_cpp <- spam::update.spam.chol.NgPeyton(cholS, ref_taper)
   logdet <- c(spam::determinant.spam.chol.NgPeyton(Sigma_cpp)$modulus)
   
-  sumlogs <- 0
-  
-  for(ii in 1:dim(z)[2]){
+  sumlogs <- sum(apply(z,2,function(x){
+
+    resid <- x - c(x_covariates %*% theta_list$mean)
     
-    resid <- z[,ii] - c(x_covariates %*% theta_list$mean)
+    n * log(2 * pi) + 2 * c(spam::determinant.spam.chol.NgPeyton(Sigma_cpp)$modulus) + 
+      sum(resid * spam::solve.spam(Sigma_cpp, resid))    
     
-    sumlogs <- sumlogs + n * log(2 * pi) + 2 * c(spam::determinant.spam.chol.NgPeyton(Sigma_cpp)$modulus) + 
-      sum(resid * spam::solve.spam(Sigma_cpp, resid))
-    
-  }
-  
+  }))
+
   return(sumlogs + .cocons.getPen(n * dim(z)[2], lambda, theta_list, smooth.limits))
 
 }
@@ -173,19 +171,16 @@ GetNeg2loglikelihood <- function(theta,
     logdet <- sum(log(diag(cholS)))
     sum_logliks <- 0
     
-    for(ii in 1:dim(z)[2]){
-      
-      resid <- c(z[,ii]) - c(x_covariates %*% theta_list$mean)
-      
-      sum_logliks <- sum_logliks + n * log(2 * pi) + 2 * logdet + sum(resid * backsolve(cholS,
-                                                                                        forwardsolve(cholS, 
-                                                                                                     resid, 
-                                                                                                     transpose = TRUE, 
-                                                                                                     upper.tri = TRUE),
-                                                                                        n)) 
-      
-    }
-    
+    sum_logliks <- sum(apply(z, 2, function(x){
+        tmp_a <- x - c(x_covariates %*% theta_list$mean)
+        n * log(2 * pi) + 2 * logdet + sum(tmp_a * backsolve(cholS,
+                                                             forwardsolve(cholS, 
+                                                                          tmp_a, 
+                                                                          transpose = TRUE, 
+                                                                          upper.tri = TRUE),
+                                                             n))
+    }))
+
     return(sum_logliks +  .cocons.getPen(n * dim(z)[2], lambda, theta_list, smooth.limits))
     
   }

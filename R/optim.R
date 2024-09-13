@@ -4,15 +4,15 @@
 #' @details
 #' Current implementation only allows a single realization for \code{"pmle"} \code{optim.type}. 
 #' @usage cocoOptim(coco.object, boundaries = list(), 
-#' ncores = "auto", optim.control, optim.type)
+#' ncores = "auto", optim.type, optim.control)
 #' @param coco.object (\code{S4}) a \link{coco} object.
 #' @param boundaries (\code{list}) if provided, a list with lower, init, and upper values, as the one provided by \link{getBoundaries}. Otherwise,
 #' it is computed based on \link{getBoundaries} with global lower and upper values -2 and 2.
 #' @param ncores (\code{character} or \code{integer}) number of threads for the optimization routine. If "auto" then it is set based on optimal number of threads (when available) or a fraction of it.
-#' @param optim.control (\code{list}) list with settings to be passed to the optimParallel function \[2\].
 #' @param optim.type (\code{character}) Optimization approach: whether \code{"mle"} for classical Maximum Likelihood approach, 
 #' or \code{"pmle"} to factor out the spatial trend (when handling \code{"dense"} coco objects), or
 #' to factor out the global marginal standard deviation parameter (when considering \code{"sparse"} coco objects).
+#' @param optim.control (\code{list}) list with settings to be passed to the optimParallel function \[2\].
 #' @returns (\code{S4}) An optimized S4 object of class \code{coco}.
 #' @author Federico Blasi
 #' @seealso [\link[optimParallel]{optimParallel}]
@@ -50,19 +50,19 @@
 #' }
 #' 
 cocoOptim <- function(coco.object, boundaries = list(), 
-                       ncores = "auto", 
-                       optim.control = NULL, optim.type = "mle"){
+                      ncores = "auto", optim.type = "mle",
+                      optim.control = NULL){
   
-  if(is.character(ncores)){
-    ncores <- .cocons.set.ncores(coco.object, optim.control)
-  } else{
-    .cocons.check.ncores(ncores)
-  }
-  
-  cat("using ",ncores," threads.\n")
-
   # Init objects
   if(T){
+    
+    if(is.character(ncores)){
+      ncores <- .cocons.set.ncores(coco.object, optim.control)
+    } else{
+      .cocons.check.ncores(ncores)
+    }
+    
+    cat("using ",ncores," threads.\n")
     
     designMatrix <- cocons::getDesignMatrix(
       model.list = coco.object@model.list,
@@ -89,19 +89,26 @@ cocoOptim <- function(coco.object, boundaries = list(),
       empty_matrix <- tmp_values$std.covs
     }
     
+    # if optim.control not provided, then some general Optim.control is provided
+    optim.control <- if (is.null(optim.control)) {
+      getOption("cocons.Optim.Control")
+    } else {
+      .cocons.update.optim.control(optim.control)
+    }
+    
+    # Suggested by OptimParallel
+    if(tolower(.Platform$OS.type) != "windows"){
+      cl <- parallel::makeCluster(spec = ncores, type = "FORK", outfile = "")
+    } else{
+      cl <- parallel::makeCluster(spec = ncores, outfile = "")
+    }
+    
   }
   
   if (coco.object@type == "dense") {
     
     if(optim.type == "mle"){
-      
-      # Suggested by OptimParallel
-      if(tolower(.Platform$OS.type) != "windows"){
-        cl <- parallel::makeCluster(spec = ncores, type = "FORK", outfile = "")
-      } else{
-        cl <- parallel::makeCluster(spec = ncores, outfile = "")
-      }
-      
+
       parallel::setDefaultCluster(cl = cl)
       parallel::clusterEvalQ(cl, library("cocons"))
       
@@ -121,14 +128,7 @@ cocoOptim <- function(coco.object, boundaries = list(),
       )
       
       rm(designMatrix)
-      
-      # if optim.control not provided, then some general Optim.control is provided
-      if (is.null(optim.control)) {
-        optim.control <- getOption("cocons.Optim.Control")
-      } else{
-        optim.control <- .cocons.update.optim.control(optim.control)
-      }
-      
+
       # Call optim routine
       output_dense <- do.call(what = optimParallel::optimParallel, args = c(
         args_optim,
@@ -166,13 +166,6 @@ cocoOptim <- function(coco.object, boundaries = list(),
       boundaries$theta_upper <- boundaries$theta_upper[-c(1:(sum(designMatrix$par.pos$mean)))]
       boundaries$theta_lower <- boundaries$theta_lower[-c(1:(sum(designMatrix$par.pos$mean)))]
       
-      # Suggested by OptimParallel
-      if(tolower(.Platform$OS.type) != "windows"){
-        cl <- parallel::makeCluster(spec = ncores, type = "FORK", outfile = "")
-      } else{
-        cl <- parallel::makeCluster(spec = ncores, outfile = "")
-      }
-      
       parallel::setDefaultCluster(cl = cl)
       parallel::clusterEvalQ(cl, library("cocons"))
       
@@ -201,14 +194,7 @@ cocoOptim <- function(coco.object, boundaries = list(),
       )
       
       # rm(designMatrix)
-      
-      # if optim.control not provided, then some general Optim.control is provided
-      if (is.null(optim.control)) {
-        optim.control <- getOption("cocons.Optim.Control")
-      } else{
-        optim.control <- .cocons.update.optim.control(optim.control)
-      }
-      
+
       # Call optim routine
       output_dense <- do.call(what = optimParallel::optimParallel, args = c(
         args_optim,
@@ -253,16 +239,7 @@ cocoOptim <- function(coco.object, boundaries = list(),
       )
       
       print(summary(ref_taper))
-      
-      # Suggested by OptimParallel
-      if(tolower(.Platform$OS.type) != "windows"){
-        cl <- parallel::makeCluster(spec = ncores, type = "FORK", outfile = "",
-                                    useXDR = FALSE)
-      } else{
-        cl <- parallel::makeCluster(spec = ncores, outfile = "", 
-                                    useXDR = FALSE)
-      }
-      
+
       parallel::setDefaultCluster(cl = cl)
       parallel::clusterEvalQ(cl, library("cocons"))
       parallel::clusterEvalQ(cl, library("spam"))
@@ -289,14 +266,7 @@ cocoOptim <- function(coco.object, boundaries = list(),
       
       #rm(designMatrix)
       #rm(ref_taper)
-      
-      # if optim.control not provided, then some general Optim.control is provided
-      if (is.null(optim.control)) {
-        optim.control <- getOption("cocons.Optim.Control")
-      } else{
-        optim.control <- .cocons.update.optim.control(optim.control)
-      }
-      
+
       # Call optim routine
       output_taper <- do.call(what = optimParallel::optimParallel, args = c(
         args_optim,
@@ -327,24 +297,13 @@ cocoOptim <- function(coco.object, boundaries = list(),
       )
       
       print(summary(ref_taper))
-      
-      # Suggested by OptimParallel
-      if(tolower(.Platform$OS.type) != "windows"){
-        cl <- parallel::makeCluster(spec = ncores, type = "FORK", outfile = "",
-                                    useXDR = FALSE)
-      } else{
-        cl <- parallel::makeCluster(spec = ncores, outfile = "", 
-                                    useXDR = FALSE)
-      }
-      
+
       parallel::setDefaultCluster(cl = cl)
       parallel::clusterEvalQ(cl, library("cocons"))
       parallel::clusterEvalQ(cl, library("spam"))
       parallel::clusterEvalQ(cl, library("spam64"))
       parallel::clusterEvalQ(cl, options(spam.cholupdatesingular = "error"))
       parallel::clusterEvalQ(cl, options(spam.cholsymmetrycheck = FALSE))
-      
-      # options(spam.cholsymmetrycheck = FALSE)
       
       tmp_par.pos <- designMatrix$par.pos
       
@@ -376,16 +335,6 @@ cocoOptim <- function(coco.object, boundaries = list(),
         "n" = length(coco.object@z),
         "lambda" = coco.object@info$lambda
       )
-      
-      #rm(designMatrix)
-      #rm(ref_taper)
-      
-      # if optim.control not provided, then some general Optim.control is provided
-      if (is.null(optim.control)) {
-        optim.control <- getOption("cocons.Optim.Control")
-      } else{
-        optim.control <- .cocons.update.optim.control(optim.control)
-      }
       
       # Call optim routine
       output_taper <- do.call(what = optimParallel::optimParallel, args = c(
