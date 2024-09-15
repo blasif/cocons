@@ -1,5 +1,5 @@
 
-#' Optimizer of nonstationary spatial models
+#' Optimizer for nonstationary spatial models
 #' @description Estimation of the spatial model parameters based on the L-BFGS-B optimizer \[1\]. 
 #' @details
 #' Current implementation only allows a single realization for \code{"pmle"} \code{optim.type}. 

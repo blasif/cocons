@@ -2,7 +2,7 @@
 % Please edit documentation in R/optim.R
 \name{cocoOptim}
 \alias{cocoOptim}
-\title{Optimizer of nonstationary spatial models}
+\title{Optimizer for nonstationary spatial models}
 \usage{
 cocoOptim(coco.object, boundaries = list(), 
 ncores = "auto", optim.type, optim.control)

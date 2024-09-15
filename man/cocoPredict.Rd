@@ -60,7 +60,6 @@ coco_preds$mean, xlim = c(-1, 1), ylim = c(-1, 1))
 fields::quilt.plot(main = "se", holes[[2]][, 1:2], 
 coco_preds$sd.pred, xlim = c(-1, 1), ylim = c(-1, 1))
 
-# Re-do it without considering cov_x and cov_y in the std.dev and scale and compare. 
 
 }
 

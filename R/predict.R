@@ -46,7 +46,6 @@
 #' fields::quilt.plot(main = "se", holes[[2]][, 1:2], 
 #' coco_preds$sd.pred, xlim = c(-1, 1), ylim = c(-1, 1))
 #' 
-#' # Re-do it without considering cov_x and cov_y in the std.dev and scale and compare. 
 #' 
 #' }
 #' 
@@ -137,18 +136,17 @@ cocoPredict <- function(coco.object,
       ))
     }
     
-    uncertainty_some <- 1 / exp(-X_pred_std$std.covs %*% adjusted_eff_values$std.dev) +
-      exp(X_pred_std$std.covs %*% adjusted_eff_values$nugget)
-
     if (type == "pred") {
       
-      vector_tmp_z <- numeric(dim(newlocs)[1])
+      uncertainty_some <- 1 / exp(-X_pred_std$std.covs %*% adjusted_eff_values$std.dev) +
+        exp(X_pred_std$std.covs %*% adjusted_eff_values$nugget)
       
-      for (ii in 1:dim(newlocs)[1]) {
-        uncertainty_some[ii] <- uncertainty_some[ii] - cov_pred[ii, , drop = FALSE] %*% inv_cov[, ii, drop = FALSE]
-        if(abs(uncertainty_some[ii]) < 1e-10) uncertainty_some[ii] <- abs(uncertainty_some[ii]) # rounding errors
-      }
+      uncertainty_some <- uncertainty_some - rowSums(cov_pred * t(inv_cov))
       
+      idx_neg <- uncertainty_some < 1e-10
+      
+      uncertainty_some[idx_neg] <- abs(uncertainty_some[idx_neg])
+
       return(
         list(
           "trend" = trend_pred,
@@ -224,8 +222,8 @@ cocoPredict <- function(coco.object,
     inv_cov <- spam::solve(taper_two, spam::t(pred_taper)) # memory intensive
     
     # trend
-    trend_pred <- c(X_pred_std$std.covs %*% adjusted_eff_values$mean) # crossprod ?
-    trend_obs <- c(X_std$std.covs %*% adjusted_eff_values$mean) # crossprod?
+    trend_pred <- c(X_pred_std$std.covs %*% adjusted_eff_values$mean) 
+    trend_obs <- c(X_std$std.covs %*% adjusted_eff_values$mean) 
     coco.resid <- coco.object@z[,index.pred] - trend_obs
     
     # mean part
@@ -239,15 +237,17 @@ cocoPredict <- function(coco.object,
       ))
     }
     
-    uncertainty_some <- 1 / exp(-X_pred_std$std.covs %*% adjusted_eff_values$std.dev) + exp(X_pred_std$std.covs %*% adjusted_eff_values$nugget)
-    
     if (type == "pred") {
       
-      for (ii in 1:dim(newlocs)[1]) {
-        uncertainty_some[ii] <- uncertainty_some[ii] - pred_taper[ii, , drop = FALSE] %*% inv_cov[, ii, drop = FALSE]
-        if(abs(uncertainty_some[ii]) < 1e-10) uncertainty_some[ii] <- abs(uncertainty_some[ii]) # rounding errors
-      }
+      uncertainty_some <- 1 / exp(-X_pred_std$std.covs %*% adjusted_eff_values$std.dev) + 
+        exp(X_pred_std$std.covs %*% adjusted_eff_values$nugget)
       
+      uncertainty_some <- uncertainty_some - spam::rowSums(pred_taper * t(inv_cov))
+      
+      idx_neg <- uncertainty_some < 1e-10
+      
+      uncertainty_some[idx_neg] <- abs(uncertainty_some[idx_neg])
+
       return(list(
         "trend" = trend_pred,
         "mean" = mean_part,

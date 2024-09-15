@@ -171,8 +171,8 @@ getSpatEffects <- function(coco.object){
 #' @returns (\code{numeric}) the condition number.
 #' @author Federico Blasi
 getCondNumber <- function(coco.object){
-  corr_mat <- stats::cov2cor(getCovMatrix(coco.object))
-  eigen(corr_mat)$values[1] / eigen(corr_mat)$values[dim(corr_mat)[1]]
+  eigen_mat <- eigen(stats::cov2cor(getCovMatrix(coco.object)))
+  eigen_mat$values[1] / eigen_mat$values[dim(eigen_mat$vectors)[1]]
 }
 
 #' Computes the spatial trend of a (fitted) coco object
