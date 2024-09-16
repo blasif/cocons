@@ -56,7 +56,7 @@ cocoPredict <- function(coco.object,
                         ...) {
   
   .cocons.check.coco(coco.object)
-
+  
   if (length(coco.object@output) == 0) {
     stop("coco object has not yet been fitted.")
   }
@@ -222,7 +222,7 @@ cocoPredict <- function(coco.object,
     inv_cov <- spam::solve(taper_two, spam::t(pred_taper)) # memory intensive
     
     # trend
-    trend_pred <- c(X_pred_std$std.covs %*% adjusted_eff_values$mean) 
+    trend_pred <- c(X_pred_std$std.covs %*% adjusted_eff_values$mean)
     trend_obs <- c(X_std$std.covs %*% adjusted_eff_values$mean) 
     coco.resid <- coco.object@z[,index.pred] - trend_obs
     

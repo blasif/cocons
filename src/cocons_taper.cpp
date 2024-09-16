@@ -35,7 +35,7 @@ NumericVector cov_rns_taper_pred(List& theta,
   const NumericVector smooth = theta["smooth"];
   const NumericVector nugget = theta["nugget"];
   
-  NumericVector dif_s (2);
+  NumericVector dif_s(2);
   
   double smooth_s_Q_ij, smtns, prefactor, global_range;
   
@@ -89,7 +89,7 @@ NumericVector cov_rns_taper_pred(List& theta,
         
         dist_vector(acumulating) = sigma_vector_pred[ii] * sigma_vector_pred[ii] + Pexpfma_new(nugget, x_covariates_pred(ii,_));
         
-        acumulating = acumulating + 1;
+        acumulating++;
         continue;
         
       } else {
@@ -107,7 +107,7 @@ NumericVector cov_rns_taper_pred(List& theta,
         // smaller than eps?
         if(smooth_s_Q_ij <= epsilon){
           dist_vector(acumulating) = sigma_vector_pred[ii] * sigma_vector_pred[ii] + Pexpfma_new(nugget, x_covariates_pred(ii,_));
-          acumulating = acumulating + 1;
+          acumulating++;
           continue;
           
         } else{
@@ -125,7 +125,7 @@ NumericVector cov_rns_taper_pred(List& theta,
         
       }
       
-      acumulating = acumulating + 1;
+      acumulating++;
       
     }
   }
@@ -144,11 +144,11 @@ NumericVector cov_rns_taper_pred(List& theta,
 //' @return sparse covariance matrix between locs and pred_locs
 // [[Rcpp::export]]
 NumericVector cov_rns_taper(List& theta, 
-                                            NumericMatrix& locs, 
-                                            NumericMatrix& x_covariates, 
-                                            NumericVector& colindices, 
-                                            NumericVector& rowpointers, 
-                                            NumericVector& smooth_limits){
+                            NumericMatrix& locs, 
+                            NumericMatrix& x_covariates, 
+                            NumericVector& colindices, 
+                            NumericVector& rowpointers, 
+                            NumericVector& smooth_limits){
   
   const double epsilon = std::numeric_limits<double>::epsilon();
   const int m_dim = locs.nrow();

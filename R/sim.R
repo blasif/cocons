@@ -56,8 +56,7 @@ cocoSim <- function(coco.object,
                      sim.type = NULL,
                      cond.info = NULL){
   
-  # add a check to test whether length of pars match model specification
-  
+  .cocons.check.pars(coco.object,pars)
   .cocons.check.type(coco.object@type)
   
   if(coco.object@type == "dense"){
@@ -95,11 +94,11 @@ cocoSim <- function(coco.object,
                                        x_covariates = std_pred,
                                        smooth_limits = coco.object@info$smooth.limits)
         
-        part_b <- covmat_pred %*% solve(covmat) %*% t(covmat_pred)
+        L <- base::chol(covmat_unobs - covmat_pred %*% solve(covmat,t(covmat_pred)))
         
-        conditional_covariance <-  covmat_unobs - part_b
-        
-        L <- chol(conditional_covariance)
+        if(exists("seed")){
+          set.seed(seed)
+        }
         
         iiderrors <- replicate(n, expr = stats::rnorm(dim(cond.info$newlocs)[1], mean = 0, sd = 1))
         

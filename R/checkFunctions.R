@@ -148,7 +148,11 @@
   graphics::lines(ellipse_points, lty = 3, col = "black")
 }
 
-.cocons.check.type_pred <- function(type){}
+.cocons.check.type_pred <- function(type){
+  if(!(type %in% c("mean", "pred"))){
+    stop(" type must be `mean` or `pred`")
+  }
+}
 
 .cocons.get.npars <- function(coco.object){
   
@@ -160,6 +164,11 @@
   
   return(n_par)
 
+}
+
+.cocons.check.pars <- function(coco.object, pars){
+  stopifnot("length of pars does not match number of parameters to estimate in the coco object." =
+              .cocons.get.npars(coco.object) == length(pars))
 }
 
 .cocons.set.ncores <- function(coco.object, optim.control){
@@ -210,7 +219,7 @@
   }
   
   if (is.null(colnames(data))) {
-    stop("data does not has colnames, which are needed for building `par.pos` ")
+    stop("data does not have colnames, which are needed for building `par.pos` ")
   }
   return(0)
 }
