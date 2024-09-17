@@ -66,7 +66,7 @@ fields::quilt.plot(coco_object@locs,coco_sim)
 
 }
 \seealso{
-\code{\link[=coco]{coco()}}
+\link{coco}
 }
 \author{
 Federico Blasi

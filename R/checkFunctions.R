@@ -231,22 +231,21 @@
   return(0)
 }
 
-.cocons.check.z <- function(z) {
+.cocons.check.z <- function(z, data) {
   if (is.null(z)) {
     warning("z not provided. Expecting to simulate with this coco object.")
   } else {
-    if ( !is.matrix(z)) {
-      stop("z is not a matrix.")
-    }
+    stopifnot("z is not a matrix." =  is.matrix(z),
+              "dim(z)[1] != dim(data)[1]" = dim(z)[1] == dim(data)[1])
   }
+  
   return(0)
 }
 
 .cocons.check.model.list <- function(model.list, data) {
-  if (!is.list(model.list)) {
-    stop("model.list not a list")
-  }
   
+  stopifnot("model.list not a list" = is.list(model.list))
+
   if (any(names(model.list) != getOption("cocons.Dictionary"))) {
     stop("aspect names do not match reference ones. Please check getOption(\"cocons.Dictionary\")")
   }
@@ -307,6 +306,12 @@
   }
   if (type == "dense" && !is.null(info$delta) && !is.na(info$delta)) {
     stop("if type is dense do not specify delta")
+  }
+  
+  if (!is.null(info$skip.scale)) {
+    
+    
+    
   }
   
 }
@@ -404,7 +409,7 @@
 
 .cocons.setDesignMatrixCat <- function(coco.object, designMatrix){
   
-  to_not_std <- colnames(coco.object@data)[coco.object@info$cat.vars]
+  to_not_std <- colnames(coco.object@data)[coco.object@info$skip.scale]
   to_avoid_std <- colnames(designMatrix$model.matrix) %in% to_not_std
   
   tmp_values <- cocons::getScale(designMatrix$model.matrix[,!to_avoid_std])

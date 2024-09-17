@@ -30,7 +30,7 @@
 #' \item \code{"smooth.limits"}: (\code{numeric vector}) specifying the allowed range of variation for the spatially varying smoothness.
 #' \item \code{"taper"}: (\code{numeric}) specifying the desired taper function from the spam package (only for "sparse" coco objects).
 #' \item \code{"delta"}: (\code{numeric}) specifying the taper range/scale (only for "sparse" coco objects).
-#' \item \code{"cat.vars"}: (\code{integer vector}) index of those variables in \code{data} that should not be scaled during the optimization (e.g., categorical).
+#' \item \code{"skip.scale"}: (\code{integer vector}) index of those variables in \code{data} that should not be scaled during the optimization.
 #' }
 #' 
 #' @usage coco(type, data, locs, z, model.list, info, output = list())
@@ -94,7 +94,7 @@ coco <- function(type,
     z <- matrix(z, ncol = 1)
   }
   
-  .cocons.check.z(z)
+  .cocons.check.z(z, data)
   
   .cocons.check.model.list(model.list,
                           data)

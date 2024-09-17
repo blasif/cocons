@@ -291,10 +291,7 @@ getBIC <- function(coco.object){
     stop("object has not been fitted yet.")
   }
   
-  temp_par.pos <- cocons::getDesignMatrix(coco.object@model.list,coco.object@data)$par.pos
-  tmp_index <- lapply(temp_par.pos, FUN = is.logical)
-  n_par <- sum(unlist(lapply(temp_par.pos, sum))[which(tmp_index == TRUE)])
-  return( coco.object@output$value +  n_par * log(dim(coco.object@data)[1]))
+  return( coco.object@output$value +  .cocons.get.npars(coco.object) * log(dim(coco.object@data)[1]))
 }
 
 #' Retrieve AIC
@@ -311,9 +308,6 @@ getAIC <- function(coco.object){
     stop("object has not been fitted yet.")
   }
   
-  temp_par.pos <- cocons::getDesignMatrix(coco.object@model.list,coco.object@data)$par.pos
-  tmp_index <- lapply(temp_par.pos, FUN = is.logical)
-  n_par <- sum(unlist(lapply(temp_par.pos, sum))[which(tmp_index == TRUE)])
   return( coco.object@output$value +  2 * log(dim(coco.object@data)[1]))
 }
 
@@ -441,7 +435,6 @@ getDesignMatrix <- function(model.list, data){
   tmp_all_terms <- lapply(model.list[tmp_index_not_fixed], 
                           FUN = function(x) attr(stats::terms(x), which = "term.labels"))
   
-  # added on 03/01/24
   tmp_all_terms <- tmp_all_terms[unlist(lapply(tmp_all_terms,function(x) length(x) > 0))]
   
   # Just all non-fixed intercepts? ### here fix this

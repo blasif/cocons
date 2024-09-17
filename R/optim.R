@@ -80,7 +80,7 @@ cocoOptim <- function(coco.object, boundaries = list(),
     
     # Categorical variables
     # problem here: i can specify categorical values in data but then not use any in formula
-    if(!is.null(coco.object@info$cat.vars)){
+    if(!is.null(coco.object@info$skip.scale)){
       tmp_info <- .cocons.setDesignMatrixCat(coco.object, designMatrix = designMatrix)
       tmp_values <- tmp_info$tmp_values
       empty_matrix <- tmp_info$empty_matrix

@@ -20,7 +20,7 @@
 #' @param cond.info (\code{list}) a list containing added information to perform conditional simulation.
 #' @returns (\code{matrix}) a matrix n x dim(data)\[1\].
 #' @author Federico Blasi
-#' @seealso [coco()]
+#' @seealso \link{coco}
 #' @examples
 #' \dontrun{
 #' 
