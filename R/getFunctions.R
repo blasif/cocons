@@ -847,6 +847,7 @@ getHessian <- function(coco.object, ncores = parallel::detectCores() - 1,
     x_covariates <- coco_x_std$std.covs
     
     cl <- parallel::makeCluster(ncores)
+    on.exit(parallel::stopCluster(cl), add = TRUE)
     parallel::setDefaultCluster(cl = cl)
     parallel::clusterEvalQ(cl, library("cocons"))
     
@@ -891,7 +892,7 @@ getHessian <- function(coco.object, ncores = parallel::detectCores() - 1,
                                                                                     lambda = coco.object@info$lambda)
                                              
                                              0.5 * ((f11 - f01 - f10 + coco.object@output$value) / (eps*eps))
-                                           }); parallel::stopCluster(cl)
+                                           })
     
     count_index <- 0
     
@@ -946,6 +947,7 @@ getHessian <- function(coco.object, ncores = parallel::detectCores() - 1,
     cholS <- spam::chol.spam(ref_taper)
 
     cl <- parallel::makeCluster(ncores)
+    on.exit(parallel::stopCluster(cl), add = TRUE)
     parallel::setDefaultCluster(cl = cl)
     parallel::clusterEvalQ(cl, library("cocons"))
     
@@ -1001,7 +1003,7 @@ getHessian <- function(coco.object, ncores = parallel::detectCores() - 1,
                                              
                                              0.5 * ((f11 - f01 - f10 + coco.object@output$value) / (eps*eps))
                                              
-                                           }); parallel::stopCluster(cl)
+                                           })
     
     count_index <- 0
     

@@ -176,8 +176,10 @@
   n_pars <- .cocons.get.npars(coco.object)
   n_threads <- parallel::detectCores()
   
-  if(n_threads == 1){return(1)}
-  
+  if(n_threads < 3){
+    return( n_threads)
+  }
+
   if(is.null(optim.control)){
     n_total <- 2 * n_pars + 1
   } else{
@@ -208,26 +210,21 @@
 }
 
 .cocons.check.coco <- function(coco){
-  if(!methods::is(coco, 'coco')){
-    stop("not a coco object")
-  }
+  stopifnot("not a coco object" = methods::is(coco, 'coco'))
 }
 
 .cocons.check.data <- function(data) {
-  if (!is.data.frame(data)) {
-    stop("data must be provided as data.frame")
-  }
-  
-  if (is.null(colnames(data))) {
-    stop("data does not have colnames, which are needed for building `par.pos` ")
-  }
+
+  stopifnot("data must be provided as data.frame" = is.data.frame(data),
+            "data does not have colnames, which are needed for building `par.pos` " = !is.null(colnames(data)))
+
   return(0)
 }
 
 .cocons.check.locs <- function(locs) {
-  if (!is.matrix(locs)) {
-    stop("locs should be provided as matrix")
-  }
+  
+  stopifnot("locs should be provided as matrix" = is.matrix(locs))
+
   return(0)
 }
 
@@ -260,7 +257,7 @@
 }
 
 # ADDED model.list here to check
-.cocons.check.info <- function(type, info, model.list){
+.cocons.check.info <- function(type, info, model.list, data){
   
   if (is.null(info$smooth.limits) & is.formula(model.list[6]$smooth)) {
     stop("smooth limits not specified.")
@@ -281,7 +278,6 @@
       stop("lower bound smooth_limit is > upper bound . Should be the opposite.")
     }
   }
-  
   
   # sparse
   if (type == "sparse") {
@@ -310,7 +306,10 @@
   
   if (!is.null(info$skip.scale)) {
     
-    
+    if(!all(info$skip.scale > 0 & info$skip.scale <= dim(data)[2])){
+      stop("check skip.scale.")
+      
+    }
     
   }
   
@@ -429,7 +428,7 @@
   tmp_values$mean.vector <- mean_vector_empty
   tmp_values$sd.vector <- mean_sd_empty
   
-  return(list('empty_matrix' = empty_matrix,
+  return(list('mod_DM' = empty_matrix,
               'tmp_values' = tmp_values))
 }
 

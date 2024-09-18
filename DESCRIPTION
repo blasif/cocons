@@ -9,7 +9,7 @@ Authors@R: c(person("Federico", "Blasi", email = "federico.blasi@math.uzh.ch",
   role = c("ctb"), comment = c(ORCID = "0000-0002-6319-2332"))
   )
 Maintainer: Federico Blasi <federico.blasi@math.uzh.ch>
-Description: Estimation and prediction of nonstationary Gaussian process with modular covariate-based covariance functions. A sparse-induced version of the nonstationary covariance function is provided to speed up computations for large datasets.
+Description: Estimation and prediction of nonstationary Gaussian process with modular covariate-based covariance functions. An induced compact-supported nonstationary covariance function is provided to speed up computations when handling densly sampled domains.
 Encoding: UTF-8
 LazyData: true
 License: GPL (>= 3)

@@ -100,7 +100,8 @@ coco <- function(type,
                           data)
   .cocons.check.info(type = type, 
                     info = info,
-                    model.list = model.list)
+                    model.list = model.list,
+                    data = data)
   
   .cocons.check.output(output)
   

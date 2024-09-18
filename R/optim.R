@@ -45,7 +45,7 @@
 #' plot(optim_coco)
 #' 
 #' summary(optim_coco)
-#' 
+#'  
 #' getEstims(optim_coco)
 #' }
 #' 
@@ -69,6 +69,7 @@ cocoOptim <- function(coco.object, boundaries = list(),
       data = coco.object@data
     )
     
+    # Check boundaries
     if(length(boundaries) == 0){
       boundaries <- cocons::getBoundaries(
         x = coco.object, 
@@ -78,15 +79,15 @@ cocoOptim <- function(coco.object, boundaries = list(),
       .cocons.check.boundaries(coco.object, boundaries)
     }
     
-    # Categorical variables
-    # problem here: i can specify categorical values in data but then not use any in formula
-    if(!is.null(coco.object@info$skip.scale)){
+    # Skip scaling
+    if(any(colnames(coco.object@data[,coco.object@info$skip.scale]) %in% 
+           colnames(coco.object@data))){
       tmp_info <- .cocons.setDesignMatrixCat(coco.object, designMatrix = designMatrix)
       tmp_values <- tmp_info$tmp_values
-      empty_matrix <- tmp_info$empty_matrix
-    } else{
+      mod_DM <- tmp_info$mod_DM
+    } else {
       tmp_values <- cocons::getScale(designMatrix$model.matrix)
-      empty_matrix <- tmp_values$std.covs
+      mod_DM <- tmp_values$std.covs      
     }
     
     # if optim.control not provided, then some general Optim.control is provided
@@ -102,6 +103,8 @@ cocoOptim <- function(coco.object, boundaries = list(),
     } else{
       cl <- parallel::makeCluster(spec = ncores, outfile = "")
     }
+    
+    on.exit(parallel::stopCluster(cl), add = TRUE)
     
   }
   
@@ -121,7 +124,7 @@ cocoOptim <- function(coco.object, boundaries = list(),
         "n" = dim(coco.object@z)[1],
         "smooth.limits" = coco.object@info$smooth.limits,
         "z" = coco.object@z,
-        "x_covariates" = empty_matrix,
+        "x_covariates" = mod_DM,
         "par.pos" = designMatrix$par.pos,
         "lambda" = coco.object@info$lambda,
         "locs" = coco.object@locs
@@ -134,8 +137,6 @@ cocoOptim <- function(coco.object, boundaries = list(),
         args_optim,
         optim.control
       ))
-      
-      parallel::stopCluster(cl)
       
       .cocons.check.convergence(output_dense, boundaries)
       
@@ -156,7 +157,7 @@ cocoOptim <- function(coco.object, boundaries = list(),
       if(!is.logical(designMatrix$par.pos$mean)){stop("profile ML only available when considering covariates in the mean.")}
 
       if(is.logical(designMatrix$par.pos$mean)){
-        x_betas <- empty_matrix[, designMatrix$par.pos$mean]
+        x_betas <- mod_DM[, designMatrix$par.pos$mean]
       }
       
       tmp_boundaries <- boundaries
@@ -186,22 +187,18 @@ cocoOptim <- function(coco.object, boundaries = list(),
         "n" = length(coco.object@z),
         "smooth.limits" = coco.object@info$smooth.limits,
         "z" = coco.object@z,
-        "x_covariates" = empty_matrix,
+        "x_covariates" = mod_DM,
         "par.pos" = tmp_par_pos,
         "lambda" = coco.object@info$lambda,
         "locs" = coco.object@locs,
         "x_betas" = x_betas
       )
       
-      # rm(designMatrix)
-
       # Call optim routine
       output_dense <- do.call(what = optimParallel::optimParallel, args = c(
         args_optim,
         optim.control
       ))
-      
-      parallel::stopCluster(cl)
       
       theta_list <- cocons::getModelLists(theta = output_dense$par, 
                                          par.pos = args_optim$par.pos, type = "diff")
@@ -256,7 +253,7 @@ cocoOptim <- function(coco.object, boundaries = list(),
         "par.pos" = designMatrix$par.pos,
         "ref_taper" = ref_taper,
         "locs" = coco.object@locs,
-        "x_covariates" = empty_matrix,
+        "x_covariates" = mod_DM,
         "smooth.limits" = coco.object@info$smooth.limits,
         "cholS" = spam::chol.spam(ref_taper),
         "z" = coco.object@z,
@@ -264,16 +261,11 @@ cocoOptim <- function(coco.object, boundaries = list(),
         "lambda" = coco.object@info$lambda
       )
       
-      #rm(designMatrix)
-      #rm(ref_taper)
-
       # Call optim routine
       output_taper <- do.call(what = optimParallel::optimParallel, args = c(
         args_optim,
         optim.control
       ))
-      
-      parallel::stopCluster(cl)
       
       .cocons.check.convergence(output_taper, boundaries)
       
@@ -328,7 +320,7 @@ cocoOptim <- function(coco.object, boundaries = list(),
         "par.pos" = tmp_par.pos,
         "ref_taper" = ref_taper,
         "locs" = coco.object@locs,
-        "x_covariates" = empty_matrix,
+        "x_covariates" = mod_DM,
         "smooth.limits" = coco.object@info$smooth.limits,
         "cholS" = spam::chol.spam(ref_taper),
         "z" = coco.object@z,
@@ -341,8 +333,6 @@ cocoOptim <- function(coco.object, boundaries = list(),
         args_optim,
         optim.control
       ))
-      
-      parallel::stopCluster(cl)
       
       if(T){
         
