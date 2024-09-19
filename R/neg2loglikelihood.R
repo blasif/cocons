@@ -32,7 +32,7 @@ GetNeg2loglikelihoodTaper <- function(theta, par.pos, ref_taper, locs,
   Sigma_cpp <- spam::update.spam.chol.NgPeyton(cholS, ref_taper)
   logdet <- c(spam::determinant.spam.chol.NgPeyton(Sigma_cpp)$modulus)
   
-  sumlogs <- sum(apply(z,2,function(x){
+  sumlogs <- sum(apply(z, 2, function(x){
 
     resid <- x - c(x_covariates %*% theta_list$mean)
     
@@ -112,24 +112,28 @@ GetNeg2loglikelihoodProfile <- function(theta, par.pos, locs, x_covariates,
                               x_covariates =  x_covariates,
                               smooth_limits = smooth.limits)
   
-  # Compute P
-  SigmaX <- solve(Sigma_cpp, x_betas)
-  P_tete <- solve(Sigma_cpp) - SigmaX %*% solve(t(x_betas) %*% SigmaX) %*% t(SigmaX)
-  
-  check_pd <- tryCatch(cholS <- base::chol(Sigma_cpp), error = function(e) e)
+    check_pd <- tryCatch(cholS <- base::chol(Sigma_cpp), error = function(e) e)
   if (inherits(check_pd, "error")) {
     return(1e+06)
   } else{
     
-    logdet <- sum(log(diag(cholS)))
-    quad_sum <- t(z) %*% P_tete %*% z
+    if(T){
+      V <- backsolve(cholS, forwardsolve(cholS, x_betas,
+                                     transpose = TRUE, 
+                                     upper.tri = TRUE))
+      W <- crossprod(x_betas, V)
+      Sigma_inv <- chol2inv(cholS)
+      P_mat <- Sigma_inv - V %*% solve(W, t(V))
+    }
     
-    temp_thetas <- cocons::getModelLists(theta = theta, par.pos = par.pos, type = "classic")
+    logdet <- sum(log(diag(cholS)))
+    quad_sum <- c(crossprod(z, P_mat %*% z))
     
     return(n * log(2 * pi) + 2 * logdet + quad_sum + 
       .cocons.getPen(n, lambda, theta_list, smooth.limits))
     
   }
+  
 }
     
 #' GetNeg2loglikelihood
@@ -170,9 +174,10 @@ GetNeg2loglikelihood <- function(theta,
     
     logdet <- sum(log(diag(cholS)))
     sum_logliks <- 0
+    tmp_trend <- c(x_covariates %*% theta_list$mean)
     
     sum_logliks <- sum(apply(z, 2, function(x){
-        tmp_a <- x - c(x_covariates %*% theta_list$mean)
+        tmp_a <- x - tmp_trend
         n * log(2 * pi) + 2 * logdet + sum(tmp_a * backsolve(cholS,
                                                              forwardsolve(cholS, 
                                                                           tmp_a, 

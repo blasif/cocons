@@ -156,13 +156,11 @@ cocoOptim <- function(coco.object, boundaries = list(),
       
       if(!is.logical(designMatrix$par.pos$mean)){stop("profile ML only available when considering covariates in the mean.")}
 
-      if(is.logical(designMatrix$par.pos$mean)){
-        x_betas <- mod_DM[, designMatrix$par.pos$mean]
-      }
+      x_betas <- mod_DM[, designMatrix$par.pos$mean]
       
       tmp_boundaries <- boundaries
       
-      # profiling both betas
+      # profiling betas
       boundaries$theta_init <- boundaries$theta_init[-c(1:(sum(designMatrix$par.pos$mean)))]
       boundaries$theta_upper <- boundaries$theta_upper[-c(1:(sum(designMatrix$par.pos$mean)))]
       boundaries$theta_lower <- boundaries$theta_lower[-c(1:(sum(designMatrix$par.pos$mean)))]
@@ -171,12 +169,11 @@ cocoOptim <- function(coco.object, boundaries = list(),
       parallel::clusterEvalQ(cl, library("cocons"))
       
       # factoring out betas
-      tmp_par_pos <- designMatrix$par.pos
-      
-      if(is.logical(tmp_par_pos$mean)){
-        # factoring out all betas
-        tmp_par_pos$mean <- rep(FALSE, length(tmp_par_pos$mean))
+      if(T){
+        tmp_par_pos <- designMatrix$par.pos
+        tmp_par_pos$mean <- rep(FALSE, length(tmp_par_pos$mean))    
       }
+
       
       args_optim <- list(
         "fn" = cocons::GetNeg2loglikelihoodProfile,
@@ -207,10 +204,19 @@ cocoOptim <- function(coco.object, boundaries = list(),
                                   x_covariates  =  args_optim$x_covariates,
                                   smooth_limits = args_optim$smooth.limits)
       
-      Sigma_X <- solve(Sigma_cpp, args_optim$x_betas)
-      betass <- solve(t(args_optim$x_betas) %*% Sigma_X) %*% t(Sigma_X) %*% args_optim$z
-      output_dense$par <- c(betass, output_dense$par)
+      # Compute Betas
+      if(T){
+        L <- chol(Sigma_cpp)
+        V <- backsolve(L, forwardsolve(L, x_betas,
+                                       transpose = TRUE, 
+                                       upper.tri = TRUE))
+        W <- crossprod(x_betas, V)
+        betass <- c(solve(W, t(V)) %*% args_optim$z)
+        names(betass) <- colnames(x_betas)
+      }
       
+      output_dense$par <- c(betass, output_dense$par)
+
       .cocons.check.convergence(output_dense, tmp_boundaries)
       
       coco.object@output <- output_dense
