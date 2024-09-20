@@ -28,7 +28,7 @@ to factor out the global marginal standard deviation parameter (when considering
 Estimation of the spatial model parameters based on the L-BFGS-B optimizer [1].
 }
 \details{
-Current implementation only allows a single realization for \code{"pmle"} \code{optim.type}.
+Current implementation only allows a single realization for \code{"pmle"} \code{optim.type} when combined with \code{"sparse"} objects.
 }
 \examples{
 \dontrun{

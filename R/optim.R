@@ -2,7 +2,7 @@
 #' Optimizer for nonstationary spatial models
 #' @description Estimation of the spatial model parameters based on the L-BFGS-B optimizer \[1\]. 
 #' @details
-#' Current implementation only allows a single realization for \code{"pmle"} \code{optim.type}. 
+#' Current implementation only allows a single realization for \code{"pmle"} \code{optim.type} when combined with \code{"sparse"} objects. 
 #' @usage cocoOptim(coco.object, boundaries = list(), 
 #' ncores = "auto", optim.type, optim.control)
 #' @param coco.object (\code{S4}) a \link{coco} object.
@@ -152,8 +152,6 @@ cocoOptim <- function(coco.object, boundaries = list(),
     
     if(optim.type == "pmle"){
       
-      if(dim(coco.object@z)[2] > 1){stop('profile ML routines only handle single realizations.')}
-      
       if(!is.logical(designMatrix$par.pos$mean)){stop("profile ML only available when considering covariates in the mean.")}
 
       x_betas <- mod_DM[, designMatrix$par.pos$mean]
@@ -174,7 +172,6 @@ cocoOptim <- function(coco.object, boundaries = list(),
         tmp_par_pos$mean <- rep(FALSE, length(tmp_par_pos$mean))    
       }
 
-      
       args_optim <- list(
         "fn" = cocons::GetNeg2loglikelihoodProfile,
         "method" = "L-BFGS-B",
@@ -205,13 +202,14 @@ cocoOptim <- function(coco.object, boundaries = list(),
                                   smooth_limits = args_optim$smooth.limits)
       
       # Compute Betas
+
       if(T){
         L <- chol(Sigma_cpp)
         V <- backsolve(L, forwardsolve(L, x_betas,
                                        transpose = TRUE, 
                                        upper.tri = TRUE))
         W <- crossprod(x_betas, V)
-        betass <- c(solve(W, t(V)) %*% args_optim$z)
+        betass <- c(solve(W, t(V)) %*% rowSums(args_optim$z)) / dim(args_optim$z)[2]
         names(betass) <- colnames(x_betas)
       }
       
@@ -286,7 +284,7 @@ cocoOptim <- function(coco.object, boundaries = list(),
     
     if(optim.type == "pmle"){
       
-      if(dim(coco.object@z)[2] > 1){stop('profile ML routines only handle single realizations.')}
+      if(dim(coco.object@z)[2] > 1){stop('profile ML routine only handle single realizations.')}
       
       # taper
       ref_taper <- coco.object@info$taper(

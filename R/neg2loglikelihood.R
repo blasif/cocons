@@ -127,10 +127,16 @@ GetNeg2loglikelihoodProfile <- function(theta, par.pos, locs, x_covariates,
     }
     
     logdet <- sum(log(diag(cholS)))
-    quad_sum <- c(crossprod(z, P_mat %*% z))
     
-    return(n * log(2 * pi) + 2 * logdet + quad_sum + 
-      .cocons.getPen(n, lambda, theta_list, smooth.limits))
+    sum_logliks <- sum(apply(z, 2, function(x){
+      
+      quad_sum <- c(crossprod(x, P_mat %*% x))
+      
+      return(n * log(2 * pi) + 2 * logdet + quad_sum)
+    }))
+    
+    return(sum_logliks + 
+      .cocons.getPen(n * dim(z)[2], lambda, theta_list, smooth.limits))
     
   }
   
