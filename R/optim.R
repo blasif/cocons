@@ -178,7 +178,7 @@ cocoOptim <- function(coco.object, boundaries = list(),
         "lower" = boundaries$theta_lower,
         "par" = boundaries$theta_init,
         "upper" = boundaries$theta_upper,
-        "n" = length(coco.object@z),
+        "n" = dim(coco.object@z)[1],
         "smooth.limits" = coco.object@info$smooth.limits,
         "z" = coco.object@z,
         "x_covariates" = mod_DM,
@@ -214,7 +214,10 @@ cocoOptim <- function(coco.object, boundaries = list(),
       }
       
       output_dense$par <- c(betass, output_dense$par)
-
+      
+      tmp_boundaries$theta_upper[1:(sum(designMatrix$par.pos$mean))] <- rep(Inf,sum(designMatrix$par.pos$mean))
+      tmp_boundaries$theta_lower[1:(sum(designMatrix$par.pos$mean))] <- rep(-Inf,sum(designMatrix$par.pos$mean))
+      
       .cocons.check.convergence(output_dense, tmp_boundaries)
       
       coco.object@output <- output_dense
@@ -261,7 +264,7 @@ cocoOptim <- function(coco.object, boundaries = list(),
         "smooth.limits" = coco.object@info$smooth.limits,
         "cholS" = spam::chol.spam(ref_taper),
         "z" = coco.object@z,
-        "n" = length(coco.object@z),
+        "n" = dim(coco.object@z)[1],
         "lambda" = coco.object@info$lambda
       )
       
@@ -284,7 +287,7 @@ cocoOptim <- function(coco.object, boundaries = list(),
     
     if(optim.type == "pmle"){
       
-      if(dim(coco.object@z)[2] > 1){stop('profile ML routine only handle single realizations.')}
+      if(!is.logical(designMatrix$par.pos$std.dev)){stop("at least a global sigma needs to be estimated for sparse pmle coco objects.")}
       
       # taper
       ref_taper <- coco.object@info$taper(
@@ -303,13 +306,13 @@ cocoOptim <- function(coco.object, boundaries = list(),
       
       tmp_par.pos <- designMatrix$par.pos
       
-      if(is.logical(tmp_par.pos$std.dev)){
-        tmp_par.pos$std.dev[1] <- FALSE
-      }
-      
+      tmp_par.pos$std.dev[1] <- FALSE
+
       boundaries_temp <- boundaries
       
-      first_sigma <- sum(designMatrix$par.pos$mean) + 1
+      first_sigma <- if(is.logical(designMatrix$par.pos$mean)){
+        first_sigma <- sum(designMatrix$par.pos$mean) + 1
+      } else{ first_sigma <- 1}
       
       boundaries$theta_init <- boundaries$theta_init[-first_sigma]
       boundaries$theta_upper <- boundaries$theta_upper[-first_sigma]
@@ -328,7 +331,7 @@ cocoOptim <- function(coco.object, boundaries = list(),
         "smooth.limits" = coco.object@info$smooth.limits,
         "cholS" = spam::chol.spam(ref_taper),
         "z" = coco.object@z,
-        "n" = length(coco.object@z),
+        "n" = dim(coco.object@z)[1],
         "lambda" = coco.object@info$lambda
       )
       
@@ -349,21 +352,33 @@ cocoOptim <- function(coco.object, boundaries = list(),
                                                                                                      rowpointers = args_optim$ref_taper@rowpointers,
                                                                                                      smooth_limits =  args_optim$smooth.limits)
         
-        resid <- c(args_optim$z - args_optim$x_covariates %*% theta_list$mean)
+        cum_qprod <- sum(apply(args_optim$z, MARGIN = 2, FUN = function(x){
+          resid <- c(x - args_optim$x_covariates %*% theta_list$mean)
+          SigmaX <- spam::solve(args_optim$ref_taper, resid)
+          c(resid %*% SigmaX)
+        }))
         
-        SigmaX <- spam::solve(args_optim$ref_taper, resid)
-        sigma_0 <- c(resid %*% SigmaX) / args_optim$n
+        sigma_0 <- cum_qprod / (args_optim$n * dim(args_optim$z)[2])
         
       }
       
-      first_scale <- sum(args_optim$par.pos$mean) + sum(args_optim$par.pos$std.dev) + 1
+      first_scale <- if(is.logical(designMatrix$par.pos$mean)){
+        sum(args_optim$par.pos$mean) + sum(args_optim$par.pos$std.dev) + 1
+      } else{
+        sum(args_optim$par.pos$std.dev) + 1
+      }
       
-      tmp_global_scale <- output_taper$par[first_scale]
+      # what if scale is fixed (?) -- implemented v0.1
+        
+      tmp_global_scale <- if(is.logical(args_optim$par.pos$scale)){output_taper$par[first_scale]} else{
+        tmp_global_scale <- args_optim$par.pos$scale[1]
+      }
       
       first_par <- log(sigma_0) + tmp_global_scale
       names(first_par) <- "std.dev.limits"
       second_par <- log(sigma_0) - tmp_global_scale
-      
+      names(second_par) <- "scale.limits"
+        
       if(is.logical(args_optim$par.pos$mean)){
         new_pars <- output_taper$par[1:(sum(args_optim$par.pos$mean))]
       } else{new_pars <- numeric(0)}
@@ -376,24 +391,33 @@ cocoOptim <- function(coco.object, boundaries = list(),
       
       if(is.logical(args_optim$par.pos$scale)){
         new_pars <- c(new_pars, second_par, output_taper$par[(first_scale+1):(first_scale + sum(args_optim$par.pos$scale) - 1)])
+        first_smooth <- first_scale + if(is.logical(args_optim$par.pos$scale)){sum(args_optim$par.pos$scale)}
+      } else{
+        first_smooth <- first_scale
       }
-      
-      first_smooth <- first_scale + sum(args_optim$par.pos$scale)
       
       if(is.logical(args_optim$par.pos$smooth)){
         new_pars <- c(new_pars, output_taper$par[first_smooth:(first_smooth + sum(args_optim$par.pos$smooth) - 1)])
-      }
+        first_nugget <- first_smooth + if(is.logical(args_optim$par.pos$smooth)){sum(args_optim$par.pos$smooth)}
+      } else{first_nugget <- first_smooth}
       
-      first_nugget <- first_smooth + sum(args_optim$par.pos$smooth)
-      
-      if(sum(args_optim$par.pos$nugget) > 0){
+      if(is.logical(args_optim$par.pos$nugget)){
         new_pars <- c(new_pars, output_taper$par[first_nugget:(first_nugget + sum(args_optim$par.pos$nugget) - 1)])
       }
       
       output_taper$par <- new_pars
       
       # fix names output_taper
-
+      
+      boundaries_temp$theta_lower[first_sigma] <- -Inf
+      boundaries_temp$theta_upper[first_sigma] <- Inf
+      
+      if(is.logical(args_optim$par.pos$scale)){
+        tmp_value <- boundaries_temp$theta_upper[first_scale]
+        boundaries_temp$theta_upper[first_scale + 1] <- log(sigma_0) - boundaries_temp$theta_lower[first_scale]
+        boundaries_temp$theta_lower[first_scale + 1] <- log(sigma_0) - tmp_value        
+      }
+      
       .cocons.check.convergence(output_taper, boundaries_temp)
       
       coco.object@output <- output_taper

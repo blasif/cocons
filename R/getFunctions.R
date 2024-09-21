@@ -346,6 +346,7 @@ getScale <- function(x, mean.vector = NULL, sd.vector = NULL){
     
     if(is.null(mean.vector)){
       mean.vector <- apply(x_std, MARGIN = 2, base::mean)
+      mean.vector[1] <- 0
     }
     
     if(is.null(sd.vector)){
@@ -373,6 +374,7 @@ getScale <- function(x, mean.vector = NULL, sd.vector = NULL){
     
     if(is.null(mean.vector)){
       mean.vector <- apply(x, MARGIN = 2, base::mean)
+      mean.vector[1] <- 0
     }
     
     if(is.null(sd.vector)){
@@ -564,7 +566,6 @@ getModelLists <- function(theta, par.pos, type = "diff"){
     length_strange <- mean(unlist(lapply(par.pos[which(unlist(tmp_info))], FUN = length))) # should be only variance and range but at the end all should have the same length
     
     list_pars_temp <- list_pars
-    
     
     if(is.logical(par.pos$std.dev) & is.logical(par.pos$scale)){
       for(ii in 1:length_strange){

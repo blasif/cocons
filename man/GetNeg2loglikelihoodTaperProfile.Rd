@@ -29,7 +29,7 @@ locs, x_covariates, smooth.limits, cholS, z, n, lambda)
 \item{lambda}{\code{(numeric)} regularization parameter.}
 }
 \value{
-value
+\code{(numeric)}
 }
 \description{
 compute the negative 2 log likelihood based on theta

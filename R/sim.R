@@ -129,13 +129,13 @@ cocoSim <- function(coco.object,
                                            par.pos = coco_items$par.pos, 
                                            type = type)
       
-      if(type == "classic"){
+      if(!is.formula(coco.object@model.list$smooth)){
         
-        if(!is.formula(coco.object@model.list$smooth)){
-          
-          theta_to_fit$smooth[1] <- log(coco.object@info$smooth.limits[1])
-          
-        }
+        theta_to_fit$smooth[1] <- log(coco.object@info$smooth.limits[1])
+        
+      }
+      
+      if(type == "classic"){
         
         covmat <- cocons::cov_rns_classic(theta = theta_to_fit[-1], 
                                          locs = coco.object@locs,

@@ -60,7 +60,7 @@ GetNeg2loglikelihoodTaper <- function(theta, par.pos, ref_taper, locs,
 #' @param z \code{(numeric vector)} a vector of observed values.
 #' @param n \code{(integer)} dim(z)\[1\].
 #' @param lambda \code{(numeric)} regularization parameter.
-#' @returns value 
+#' @returns \code{(numeric)} 
 #' @author Federico Blasi
 GetNeg2loglikelihoodTaperProfile <- function(theta, par.pos, ref_taper, locs,
                                              x_covariates, smooth.limits,
@@ -78,12 +78,19 @@ GetNeg2loglikelihoodTaperProfile <- function(theta, par.pos, ref_taper, locs,
                                                                          smooth_limits =  smooth.limits)
   
   Sigma_cpp <- spam::update.spam.chol.NgPeyton(cholS, ref_taper)
+  
   logdet <- c(spam::determinant.spam.chol.NgPeyton(Sigma_cpp)$modulus)
   
-  resid <- z - c(x_covariates %*% theta_list$mean)
-  
-  return(n * log(2 * pi / n) + n + 2 * logdet + 
-    n * log(sum(resid * spam::solve.spam(Sigma_cpp, resid))) + .cocons.getPen(n, lambda, theta_list, smooth.limits))
+  sum_in <- sum(apply(z,2,function(x){
+    resid <- x - c(x_covariates %*% theta_list$mean)
+    sum(resid * spam::solve.spam(Sigma_cpp, resid))
+  }))
+
+  return(dim(z)[2] * n * log(2 * pi) + 
+           dim(z)[2] * n + 
+           dim(z)[2] * 2 * logdet + 
+           dim(z)[2] * n * log(sum_in / (dim(z)[2] * n)) + 
+           .cocons.getPen(n * dim(z)[2], lambda, theta_list, smooth.limits))
 
 }
 
