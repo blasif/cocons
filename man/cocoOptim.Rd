@@ -5,7 +5,7 @@
 \title{Optimizer for nonstationary spatial models}
 \usage{
 cocoOptim(coco.object, boundaries = list(), 
-ncores = "auto", optim.type, optim.control)
+ncores = "auto", optim.type, safe, optim.control)
 }
 \arguments{
 \item{coco.object}{(\code{S4}) a \link{coco} object.}
@@ -18,6 +18,8 @@ it is computed based on \link{getBoundaries} with global lower and upper values 
 \item{optim.type}{(\code{character}) Optimization approach: whether \code{"mle"} for classical Maximum Likelihood approach,
 or \code{"pmle"} to factor out the spatial trend (when handling \code{"dense"} coco objects), or
 to factor out the global marginal standard deviation parameter (when considering \code{"sparse"} coco objects).}
+
+\item{safe}{(\code{TRUE/FALSE}) when TRUE avoid Cholesky decomposition errors due to ill-posed covariance matrices (instead returns a pre-defined large value). By default set to \code{TRUE}.}
 
 \item{optim.control}{(\code{list}) list with settings to be passed to the optimParallel function [2].}
 }

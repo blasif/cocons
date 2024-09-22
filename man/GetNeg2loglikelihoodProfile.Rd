@@ -5,7 +5,7 @@
 \title{GetNeg2loglikelihoodProfile}
 \usage{
 GetNeg2loglikelihoodProfile(theta, par.pos, locs, x_covariates, 
-smooth.limits, z, n, x_betas,lambda)
+smooth.limits, z, n, x_betas,lambda, safe = TRUE)
 }
 \arguments{
 \item{theta}{\code{(numeric vector)} a vector with parameters values.}
@@ -25,6 +25,8 @@ smooth.limits, z, n, x_betas,lambda)
 \item{x_betas}{\code{(matrix) or (data.frame)} design matrix for the trend.}
 
 \item{lambda}{\code{(numeric)} regularization parameter.}
+
+\item{safe}{\code{(TRUE/FALSE)} if \code{TRUE} returns a large pre-defined value under Cholesky errors. Default \code{TRUE}.}
 }
 \value{
 value

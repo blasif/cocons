@@ -5,7 +5,7 @@
 \title{GetNeg2loglikelihoodTaper}
 \usage{
 GetNeg2loglikelihoodTaper(theta, par.pos, ref_taper, locs, 
-x_covariates, smooth.limits, cholS, z, n, lambda)
+x_covariates, smooth.limits, cholS, z, n, lambda, safe = TRUE)
 }
 \arguments{
 \item{theta}{\code{(numeric vector)} a vector with parameters values.}
@@ -27,6 +27,8 @@ x_covariates, smooth.limits, cholS, z, n, lambda)
 \item{n}{\code{(numeric)} dim(z)[1].}
 
 \item{lambda}{\code{(numeric)} regularization parameter.}
+
+\item{safe}{\code{(TRUE/FALSE)} if \code{TRUE} returns a large pre-defined value under Cholesky errors. Default \code{TRUE}.}
 }
 \value{
 value

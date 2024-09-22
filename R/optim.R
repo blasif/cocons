@@ -4,7 +4,7 @@
 #' @details
 #' Current implementation only allows a single realization for \code{"pmle"} \code{optim.type} when combined with \code{"sparse"} objects. 
 #' @usage cocoOptim(coco.object, boundaries = list(), 
-#' ncores = "auto", optim.type, optim.control)
+#' ncores = "auto", optim.type, safe, optim.control)
 #' @param coco.object (\code{S4}) a \link{coco} object.
 #' @param boundaries (\code{list}) if provided, a list with lower, init, and upper values, as the one provided by \link{getBoundaries}. Otherwise,
 #' it is computed based on \link{getBoundaries} with global lower and upper values -2 and 2.
@@ -12,6 +12,7 @@
 #' @param optim.type (\code{character}) Optimization approach: whether \code{"mle"} for classical Maximum Likelihood approach, 
 #' or \code{"pmle"} to factor out the spatial trend (when handling \code{"dense"} coco objects), or
 #' to factor out the global marginal standard deviation parameter (when considering \code{"sparse"} coco objects).
+#' @param safe (\code{TRUE/FALSE}) when TRUE avoid Cholesky decomposition errors due to ill-posed covariance matrices (instead returns a pre-defined large value). By default set to \code{TRUE}.
 #' @param optim.control (\code{list}) list with settings to be passed to the optimParallel function \[2\].
 #' @returns (\code{S4}) An optimized S4 object of class \code{coco}.
 #' @author Federico Blasi
@@ -51,6 +52,7 @@
 #' 
 cocoOptim <- function(coco.object, boundaries = list(), 
                       ncores = "auto", optim.type = "mle",
+                      safe = TRUE,
                       optim.control = NULL){
   
   # Init objects
@@ -127,7 +129,8 @@ cocoOptim <- function(coco.object, boundaries = list(),
         "x_covariates" = mod_DM,
         "par.pos" = designMatrix$par.pos,
         "lambda" = coco.object@info$lambda,
-        "locs" = coco.object@locs
+        "locs" = coco.object@locs,
+        "safe" = safe
       )
       
       rm(designMatrix)
@@ -145,6 +148,8 @@ cocoOptim <- function(coco.object, boundaries = list(),
       coco.object@info$mean.vector <- tmp_values$mean.vector
       coco.object@info$sd.vector <- tmp_values$sd.vector
       coco.object@info$optim.type <- "mle"
+      coco.object@info$safe <- safe
+      coco.object@info$call <- match.call()
       
       return(coco.object)
       
@@ -185,7 +190,8 @@ cocoOptim <- function(coco.object, boundaries = list(),
         "par.pos" = tmp_par_pos,
         "lambda" = coco.object@info$lambda,
         "locs" = coco.object@locs,
-        "x_betas" = x_betas
+        "x_betas" = x_betas,
+        "safe" = safe
       )
       
       # Call optim routine
@@ -225,6 +231,8 @@ cocoOptim <- function(coco.object, boundaries = list(),
       coco.object@info$mean.vector <- tmp_values$mean.vector
       coco.object@info$sd.vector <- tmp_values$sd.vector
       coco.object@info$optim.type <- "pmle"
+      coco.object@info$safe <- safe
+      coco.object@info$call <- match.call()
       
       return(coco.object)
       
@@ -247,7 +255,7 @@ cocoOptim <- function(coco.object, boundaries = list(),
       parallel::setDefaultCluster(cl = cl)
       parallel::clusterEvalQ(cl, library("cocons"))
       parallel::clusterEvalQ(cl, library("spam"))
-      parallel::clusterEvalQ(cl, library("spam64"))
+      #parallel::clusterEvalQ(cl, library("spam64"))
       parallel::clusterEvalQ(cl, options(spam.cholupdatesingular = "error"))
       parallel::clusterEvalQ(cl, options(spam.cholsymmetrycheck = FALSE))
       
@@ -265,7 +273,8 @@ cocoOptim <- function(coco.object, boundaries = list(),
         "cholS" = spam::chol.spam(ref_taper),
         "z" = coco.object@z,
         "n" = dim(coco.object@z)[1],
-        "lambda" = coco.object@info$lambda
+        "lambda" = coco.object@info$lambda,
+        "safe" = safe
       )
       
       # Call optim routine
@@ -281,7 +290,9 @@ cocoOptim <- function(coco.object, boundaries = list(),
       coco.object@info$mean.vector <- tmp_values$mean.vector
       coco.object@info$sd.vector <- tmp_values$sd.vector
       coco.object@info$optim.type <- "mle"
-
+      coco.object@info$safe <- safe
+      coco.object@info$call <- match.call()
+      
       return(coco.object)
     }
     
@@ -300,7 +311,7 @@ cocoOptim <- function(coco.object, boundaries = list(),
       parallel::setDefaultCluster(cl = cl)
       parallel::clusterEvalQ(cl, library("cocons"))
       parallel::clusterEvalQ(cl, library("spam"))
-      parallel::clusterEvalQ(cl, library("spam64"))
+      #parallel::clusterEvalQ(cl, library("spam64"))
       parallel::clusterEvalQ(cl, options(spam.cholupdatesingular = "error"))
       parallel::clusterEvalQ(cl, options(spam.cholsymmetrycheck = FALSE))
       
@@ -332,7 +343,8 @@ cocoOptim <- function(coco.object, boundaries = list(),
         "cholS" = spam::chol.spam(ref_taper),
         "z" = coco.object@z,
         "n" = dim(coco.object@z)[1],
-        "lambda" = coco.object@info$lambda
+        "lambda" = coco.object@info$lambda,
+        "safe" = safe
       )
       
       # Call optim routine
@@ -425,7 +437,9 @@ cocoOptim <- function(coco.object, boundaries = list(),
       coco.object@info$mean.vector <- tmp_values$mean.vector
       coco.object@info$sd.vector <- tmp_values$sd.vector
       coco.object@info$optim.type <- "pmle"
-
+      coco.object@info$safe <- safe
+      coco.object@info$call <- match.call()
+      
       return(coco.object)
     }
     

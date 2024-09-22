@@ -5,7 +5,7 @@
 \title{GetNeg2loglikelihood}
 \usage{
 GetNeg2loglikelihood(theta, par.pos, locs, x_covariates, 
-smooth.limits, z, n, lambda)
+smooth.limits, z, n, lambda, safe = TRUE)
 }
 \arguments{
 \item{theta}{\code{(numeric vector)} a vector with parameters values.}
@@ -23,6 +23,8 @@ smooth.limits, z, n, lambda)
 \item{n}{\code{(integer)} dim(z)[1].}
 
 \item{lambda}{\code{(numeric)} regularization parameter.}
+
+\item{safe}{\code{(TRUE/FALSE)} if \code{TRUE} returns a large pre-defined value under Cholesky errors. Default \code{TRUE}.}
 }
 \value{
 value

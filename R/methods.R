@@ -442,10 +442,10 @@ setMethod("summary", signature(object = "coco"),
                 } else {
                   
                   cat(sprintf("%-15s %15s %15s %15s\n", "Output:", " ", " ", " "))
-                  cat(rep("-", 60), "\n")
+                  cat(rep("-", 65), "\n")
                   
                   cat(sprintf("%-15s %10s %10s %10s %10s %10s %10s %10s\n", "(raw)", "Mean", "Std. Dev.", "Scale", "Aniso.", "Tilt", "Smooth", "Nugget"))
-                  cat(rep("-", 60), "\n")
+                  cat(rep("-", 65), "\n")
                   
                   for (ii in 1:dim(adjusted_effects)[2]) {
                     cat(sprintf("%-15s %10s %10s %10s %10s %10s %10s %10s\n", 
@@ -492,10 +492,10 @@ setMethod("summary", signature(object = "coco"),
                 if(!is.null(inv.hess)){
                   
                   cat(sprintf("%-15s %15s %15s %15s\n", "Output:", " ", " ", " "))
-                  cat(rep("-", 65), "\n")
+                  cat(rep("-", 50), "\n")
                   
                   cat(sprintf("%-15s %15s %15s %15s %15s %15s\n", "(raw)", "Mean", "Std. Dev.", "Scale", "Smooth", "Nugget"))
-                  cat(rep("-", 65), "\n")
+                  cat(rep("-", 50), "\n")
                   
                   for (ii in 1:dim(adjusted_effects)[2]) {
                     cat(sprintf("%-15s %15s %15s %15s %15s %15s\n", 
@@ -537,10 +537,10 @@ setMethod("summary", signature(object = "coco"),
                 } else {
                   
                   cat(sprintf("%-15s %15s %15s %15s\n", "Output:", " ", " ", " "))
-                  cat(rep("-", 60), "\n")
+                  cat(rep("-", 50), "\n")
                   
                   cat(sprintf("%-15s %10s %10s %10s %10s %10s\n", "(raw)", "Mean", "Std. Dev.", "Scale", "Smooth", "Nugget"))
-                  cat(rep("-", 60), "\n")
+                  cat(rep("-", 50), "\n")
                   
                   for (ii in 1:dim(adjusted_effects)[2]) {
                     cat(sprintf("%-15s %10s %10s %10s %10s %10s\n", 
@@ -566,7 +566,7 @@ setMethod("summary", signature(object = "coco"),
                   
                 }
                 
-                cat(rep("-", 65), "\n")
+                cat(rep("-", 50), "\n")
                 
               
               }

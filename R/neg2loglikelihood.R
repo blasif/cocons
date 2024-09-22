@@ -3,7 +3,7 @@
 #' @description compute the negative 2 log likelihood based on theta
 #' 
 #' @usage GetNeg2loglikelihoodTaper(theta, par.pos, ref_taper, locs, 
-#' x_covariates, smooth.limits, cholS, z, n, lambda)
+#' x_covariates, smooth.limits, cholS, z, n, lambda, safe = TRUE)
 #' @param theta \code{(numeric vector)} a vector with parameters values.
 #' @param par.pos \code{(list)} par.pos list from \link{getDesignMatrix}.
 #' @param ref_taper \code{(S4)} spam object based on a compact-supported covariance function.
@@ -14,11 +14,12 @@
 #' @param z \code{(numeric vector)} a vector of observed values.
 #' @param n \code{(numeric)} dim(z)\[1\].
 #' @param lambda \code{(numeric)} regularization parameter.
+#' @param safe \code{(TRUE/FALSE)} if \code{TRUE} returns a large pre-defined value under Cholesky errors. Default \code{TRUE}.
 #' @returns value 
 #' @author Federico Blasi
 GetNeg2loglikelihoodTaper <- function(theta, par.pos, ref_taper, locs,
                                       x_covariates, smooth.limits,
-                                      cholS, z, n, lambda) {
+                                      cholS, z, n, lambda, safe = TRUE) {
   
   theta_list <- getModelLists(theta = theta, par.pos = par.pos, type = "diff")
   
@@ -29,27 +30,34 @@ GetNeg2loglikelihoodTaper <- function(theta, par.pos, ref_taper, locs,
                                                                          rowpointers = ref_taper@rowpointers,
                                                                          smooth_limits =  smooth.limits)
   
-  Sigma_cpp <- spam::update.spam.chol.NgPeyton(cholS, ref_taper)
-  logdet <- c(spam::determinant.spam.chol.NgPeyton(Sigma_cpp)$modulus)
+  check_pd <- tryCatch(cholS <-  spam::update.spam.chol.NgPeyton(cholS, ref_taper), error = function(e) e)
+
+  if (inherits(check_pd, "error")) {
+    if(safe){return(1e+06)} else{
+      stop("Cholesky error")
+    }
+  }
+  
+  logdet <- c(spam::determinant.spam.chol.NgPeyton(cholS)$modulus)
   
   sumlogs <- sum(apply(z, 2, function(x){
-
+    
     resid <- x - c(x_covariates %*% theta_list$mean)
     
-    n * log(2 * pi) + 2 * c(spam::determinant.spam.chol.NgPeyton(Sigma_cpp)$modulus) + 
-      sum(resid * spam::solve.spam(Sigma_cpp, resid))    
+    n * log(2 * pi) + 2 * c(spam::determinant.spam.chol.NgPeyton(cholS)$modulus) + 
+      sum(resid * spam::solve.spam(cholS, resid))    
     
   }))
-
+  
   return(sumlogs + .cocons.getPen(n * dim(z)[2], lambda, theta_list, smooth.limits))
-
+  
 }
 
 #' GetNeg2loglikelihoodTaperProfile
 #' @description compute the negative 2 log likelihood based on theta
 #' 
 #' @usage GetNeg2loglikelihoodTaperProfile(theta, par.pos, ref_taper, 
-#' locs, x_covariates, smooth.limits, cholS, z, n, lambda)
+#' locs, x_covariates, smooth.limits, cholS, z, n, lambda, safe = TRUE)
 #' @param theta \code{(numeric vector)} a vector with parameters values.
 #' @param par.pos \code{(list)} par.pos list.
 #' @param ref_taper \code{(S4)} spam object based on a taper based covariance function.
@@ -60,11 +68,12 @@ GetNeg2loglikelihoodTaper <- function(theta, par.pos, ref_taper, locs,
 #' @param z \code{(numeric vector)} a vector of observed values.
 #' @param n \code{(integer)} dim(z)\[1\].
 #' @param lambda \code{(numeric)} regularization parameter.
+#' @param safe \code{(TRUE/FALSE)} if \code{TRUE} returns a large pre-defined value under Cholesky errors. Default \code{TRUE}.
 #' @returns \code{(numeric)} 
 #' @author Federico Blasi
 GetNeg2loglikelihoodTaperProfile <- function(theta, par.pos, ref_taper, locs,
                                              x_covariates, smooth.limits,
-                                             cholS, z, n, lambda) {
+                                             cholS, z, n, lambda, safe = TRUE) {
   
   theta_list <- getModelLists(theta = theta, par.pos = par.pos, type = "diff")
   
@@ -77,15 +86,21 @@ GetNeg2loglikelihoodTaperProfile <- function(theta, par.pos, ref_taper, locs,
                                                                          rowpointers = ref_taper@rowpointers,
                                                                          smooth_limits =  smooth.limits)
   
-  Sigma_cpp <- spam::update.spam.chol.NgPeyton(cholS, ref_taper)
+  check_pd <- tryCatch(cholS <-  spam::update.spam.chol.NgPeyton(cholS, ref_taper), error = function(e) e)
   
-  logdet <- c(spam::determinant.spam.chol.NgPeyton(Sigma_cpp)$modulus)
+  if (inherits(check_pd, "error")) {
+    if(safe){return(1e+06)} else{
+      stop("Cholesky error")
+    }
+  }
+  
+  logdet <- c(spam::determinant.spam.chol.NgPeyton(cholS)$modulus)
   
   sum_in <- sum(apply(z,2,function(x){
     resid <- x - c(x_covariates %*% theta_list$mean)
-    sum(resid * spam::solve.spam(Sigma_cpp, resid))
+    sum(resid * spam::solve.spam(cholS, resid))
   }))
-
+  
   return(dim(z)[2] * n * log(2 * pi) + 
            dim(z)[2] * n + 
            dim(z)[2] * 2 * logdet + 
@@ -98,7 +113,7 @@ GetNeg2loglikelihoodTaperProfile <- function(theta, par.pos, ref_taper, locs,
 #' @description compute the negative 2 log likelihood based on theta
 #'
 #' @usage GetNeg2loglikelihoodProfile(theta, par.pos, locs, x_covariates, 
-#' smooth.limits, z, n, x_betas,lambda)
+#' smooth.limits, z, n, x_betas,lambda, safe = TRUE)
 #' @param theta \code{(numeric vector)} a vector with parameters values.
 #' @param par.pos \code{(list)} par.pos list.
 #' @param locs \code{(matrix)} spatial location matrix.
@@ -108,10 +123,11 @@ GetNeg2loglikelihoodTaperProfile <- function(theta, par.pos, ref_taper, locs,
 #' @param n \code{(integer)} dim(z)\[1\].
 #' @param x_betas \code{(matrix) or (data.frame)} design matrix for the trend.
 #' @param lambda \code{(numeric)} regularization parameter.
+#' @param safe \code{(TRUE/FALSE)} if \code{TRUE} returns a large pre-defined value under Cholesky errors. Default \code{TRUE}.
 #' @returns value 
 #' @author Federico Blasi
 GetNeg2loglikelihoodProfile <- function(theta, par.pos, locs, x_covariates, 
-                                        smooth.limits, z, n, x_betas, lambda) {
+                                        smooth.limits, z, n, x_betas, lambda, safe = TRUE) {
   
   theta_list <- cocons::getModelLists(theta = theta, par.pos = par.pos, type = "diff")
   
@@ -119,33 +135,34 @@ GetNeg2loglikelihoodProfile <- function(theta, par.pos, locs, x_covariates,
                               x_covariates =  x_covariates,
                               smooth_limits = smooth.limits)
   
-    check_pd <- tryCatch(cholS <- base::chol(Sigma_cpp), error = function(e) e)
+  check_pd <- tryCatch(cholS <- base::chol(Sigma_cpp), error = function(e) e)
+  
   if (inherits(check_pd, "error")) {
-    return(1e+06)
-  } else{
-    
-    if(T){
-      V <- backsolve(cholS, forwardsolve(cholS, x_betas,
-                                     transpose = TRUE, 
-                                     upper.tri = TRUE))
-      W <- crossprod(x_betas, V)
-      Sigma_inv <- chol2inv(cholS)
-      P_mat <- Sigma_inv - V %*% solve(W, t(V))
+    if(safe){return(1e+06)} else{
+      stop("Cholesky error")
     }
-    
-    logdet <- sum(log(diag(cholS)))
-    
-    sum_logliks <- sum(apply(z, 2, function(x){
-      
-      quad_sum <- c(crossprod(x, P_mat %*% x))
-      
-      return(n * log(2 * pi) + 2 * logdet + quad_sum)
-    }))
-    
-    return(sum_logliks + 
-      .cocons.getPen(n * dim(z)[2], lambda, theta_list, smooth.limits))
-    
   }
+  
+  if(T){
+    V <- backsolve(cholS, forwardsolve(cholS, x_betas,
+                                       transpose = TRUE, 
+                                       upper.tri = TRUE))
+    W <- crossprod(x_betas, V)
+    Sigma_inv <- chol2inv(cholS)
+    P_mat <- Sigma_inv - V %*% solve(W, t(V))
+  }
+  
+  logdet <- sum(log(diag(cholS)))
+  
+  sum_logliks <- sum(apply(z, 2, function(x){
+    
+    quad_sum <- c(crossprod(x, P_mat %*% x))
+    
+    return(n * log(2 * pi) + 2 * logdet + quad_sum)
+  }))
+  
+  return(sum_logliks + 
+           .cocons.getPen(n * dim(z)[2], lambda, theta_list, smooth.limits))
   
 }
     
@@ -153,7 +170,7 @@ GetNeg2loglikelihoodProfile <- function(theta, par.pos, locs, x_covariates,
 #' @description compute the negative 2 log likelihood based on theta
 #'
 #' @usage GetNeg2loglikelihood(theta, par.pos, locs, x_covariates, 
-#' smooth.limits, z, n, lambda)
+#' smooth.limits, z, n, lambda, safe = TRUE)
 #' @param theta \code{(numeric vector)} a vector with parameters values.
 #' @param par.pos \code{(list)} par.pos list.
 #' @param locs \code{(matrix)} spatial location matrix.
@@ -162,6 +179,7 @@ GetNeg2loglikelihoodProfile <- function(theta, par.pos, locs, x_covariates,
 #' @param z \code{(numeric vector)} a vector of observed values.
 #' @param n \code{(integer)} dim(z)\[1\].
 #' @param lambda \code{(numeric)} regularization parameter.
+#' @param safe \code{(TRUE/FALSE)} if \code{TRUE} returns a large pre-defined value under Cholesky errors. Default \code{TRUE}.
 #' @returns value
 #' @author Federico Blasi
 GetNeg2loglikelihood <- function(theta, 
@@ -171,7 +189,8 @@ GetNeg2loglikelihood <- function(theta,
                                  smooth.limits, 
                                  z, 
                                  n,
-                                 lambda) {
+                                 lambda,
+                                 safe = TRUE) {
   
   theta_list <- cocons::getModelLists(theta = theta, par.pos = par.pos, type = "diff")
   
@@ -181,25 +200,27 @@ GetNeg2loglikelihood <- function(theta,
                                smooth_limits = smooth.limits)
   
   check_pd <- tryCatch(cholS <- base::chol(Sigma_cpp), error = function(e) e)
+  
   if (inherits(check_pd, "error")) {
-    return(1e+06)
-  } else{
-    
-    logdet <- sum(log(diag(cholS)))
-    sum_logliks <- 0
-    tmp_trend <- c(x_covariates %*% theta_list$mean)
-    
-    sum_logliks <- sum(apply(z, 2, function(x){
-        tmp_a <- x - tmp_trend
-        n * log(2 * pi) + 2 * logdet + sum(tmp_a * backsolve(cholS,
-                                                             forwardsolve(cholS, 
-                                                                          tmp_a, 
-                                                                          transpose = TRUE, 
-                                                                          upper.tri = TRUE),
-                                                             n))
-    }))
-
-    return(sum_logliks +  .cocons.getPen(n * dim(z)[2], lambda, theta_list, smooth.limits))
-    
+    if(safe){return(1e+06)} else{
+      stop("Cholesky error")
+    }
   }
+  
+  logdet <- sum(log(diag(cholS)))
+  sum_logliks <- 0
+  tmp_trend <- c(x_covariates %*% theta_list$mean)
+  
+  sum_logliks <- sum(apply(z, 2, function(x){
+    tmp_a <- x - tmp_trend
+    n * log(2 * pi) + 2 * logdet + sum(tmp_a * backsolve(cholS,
+                                                         forwardsolve(cholS, 
+                                                                      tmp_a, 
+                                                                      transpose = TRUE, 
+                                                                      upper.tri = TRUE),
+                                                         n))
+  }))
+  
+  return(sum_logliks +  .cocons.getPen(n * dim(z)[2], lambda, theta_list, smooth.limits))
+  
 }
