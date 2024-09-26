@@ -402,7 +402,7 @@
   
   if(any(output$loginfo[,which(colnames(output$loginfo) == 'fn')] == 1e6)){
     which_ones <- which(output$loginfo[,which(colnames(output$loginfo) == 'fn')] == 1e6)
-    warning("ill-posed covariance function at iter/iters ", paste0(which_ones,collapse = ","))
+    warning("ill-posed covariance matrix at iter/iters ", paste0(which_ones,collapse = ","))
   }
   
   if(output$convergence != 0){
