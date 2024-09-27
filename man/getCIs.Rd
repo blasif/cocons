@@ -2,22 +2,22 @@
 % Please edit documentation in R/getFunctions.R
 \name{getCIs}
 \alias{getCIs}
-\title{Compute Confidence Intervals for a coco object}
+\title{Compute approximate confidence intervals for a coco object}
 \usage{
 getCIs(coco.object, inv.hess, alpha = 0.05)
 }
 \arguments{
 \item{coco.object}{\code{(S4)} a fitted coco S4 object.}
 
-\item{inv.hess}{\code{(matrix)} Inverse of the Hessian.}
+\item{inv.hess}{\code{(matrix)} Inverse of the Hessian. \link{getHessian}.}
 
 \item{alpha}{\code{(numeric)} confidence level.}
 }
 \value{
-(\code{numeric matrix}) a matrix with confidence intervals for each parameter in the model
+(\code{numeric matrix}) a matrix with approximate confidence intervals for each parameter in the model.
 }
 \description{
-Compute confidence intervals for a (fitted) coco object.
+Compute approximate confidence intervals for a (fitted) coco object.
 }
 \author{
 Federico Blasi

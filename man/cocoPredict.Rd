@@ -2,29 +2,31 @@
 % Please edit documentation in R/predict.R
 \name{cocoPredict}
 \alias{cocoPredict}
-\title{Prediction routines for nonstationary spatial models}
+\title{Prediction Routines for Nonstationary Spatial Models}
 \usage{
 cocoPredict(coco.object, newdataset, newlocs, type = 'mean', ...)
 }
 \arguments{
-\item{coco.object}{(\code{S4}) a fitted \link{coco} object.}
+\item{coco.object}{(\code{S4}) A fitted \link{coco} object.}
 
-\item{newdataset}{(\code{data.frame}) a data.frame containing covariates present in model.list at prediction locations.}
+\item{newdataset}{(\code{data.frame}) A data.frame containing the covariates present in \code{model.list} at the prediction locations.}
 
-\item{newlocs}{(\code{matrix}) a matrix with locations related to prediction locations, matching indexing of \code{newdataset}.}
+\item{newlocs}{(\code{matrix}) A matrix specifying the prediction locations, matching \code{newdataset} index.}
 
-\item{type}{(\code{character}) whether \code{"mean"} or \code{"pred"}, which gives a point prediction for the former,
-as well as of point prediction and standard errors for the latter.}
+\item{type}{(\code{character}) Specifies whether to return only the point prediction (\code{'mean'}) or both the point prediction and prediction standard errors (\code{'pred'}).}
 
-\item{...}{(\code{character}) when coco.object has multiple realizations, specifying \code{"index.pred"} specifying which column of
-\code{coco.object@z} should be used to perform predictions.}
+\item{...}{Additional arguments. If \code{coco.object} contains multiple realizations, the argument \code{index.pred} can be used to specify which realization of \code{coco.object@z} should be used for the predictions.}
 }
 \value{
-(\code{list}) a list with the conditional mean, splitted into the systematic large-scale variability \code{trend},
-and due to stochastic \code{mean}, as well as standard errors \code{"sd.pred"} if \code{"pred"} is specified.
+A list containing:
+\itemize{
+\item \code{trend}: The systematic large-scale variability.
+\item \code{mean}: The stochastic mean.
+\item \code{sd.pred}: The standard errors, returned only when \code{type = 'pred'} is specified.
+}
 }
 \description{
-Computes the point predictions and standard errors based on conditional Gaussian distributions.
+Computes point predictions and standard errors based on conditional Gaussian distributions for nonstationary spatial models.
 }
 \examples{
 \dontrun{

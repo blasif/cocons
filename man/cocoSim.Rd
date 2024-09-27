@@ -2,41 +2,41 @@
 % Please edit documentation in R/sim.R
 \name{cocoSim}
 \alias{cocoSim}
-\title{Marginal and conditional simulation of nonstationary Gaussian process}
+\title{Marginal and conditional simulation of nonstationary Gaussian processes}
 \usage{
 cocoSim(coco.object, pars, n, seed, standardize, 
 type = 'classic', sim.type = NULL, cond.info = NULL)
 }
 \arguments{
-\item{coco.object}{(\code{S4}) a \link{coco} object.}
+\item{coco.object}{(\code{S4}) A \link{coco} object.}
 
-\item{pars}{(\code{numeric vector}) a vector of parameters values related to \code{model.list}.}
+\item{pars}{(\code{numeric vector}) A vector of parameter values associated with \code{model.list}.}
 
-\item{n}{(\code{integer}) number of realizations to simulate.}
+\item{n}{(\code{integer}) Number of realizations to simulate.}
 
-\item{seed}{(\code{integer or NULL}) seed number. default set to NULL.}
+\item{seed}{(\code{integer or NULL}) Seed for random number generation. Defaults to NULL.}
 
-\item{standardize}{(\code{TRUE/FALSE}) logical argument describing whether provided covariates
-should be standardize (TRUE) or not (FALSE). By default set to TRUE.}
+\item{standardize}{(\code{logical}) Indicates whether the provided covariates should be standardized (\code{TRUE}) or not (\code{FALSE}). Defaults to \code{TRUE}.}
 
-\item{type}{(\code{character}) whether parameters are related to a classical parameterization ('classic') or
-a difference parameterization \code{'diff'}. Default set to \code{'classic'}. For \code{'sparse'} coco objects, only \code{'diff'} is available.}
+\item{type}{(\code{character}) Specifies whether the parameters follow a classical parameterization (\code{'classic'}) or a difference parameterization (\code{'diff'}). Defaults to \code{'classic'}. For sparse \code{coco} objects, only \code{'diff'} is allowed.}
 
-\item{sim.type}{(\code{character}) if set \code{'cond'} then a conditional simulation takes place.}
+\item{sim.type}{(\code{character}) If set to \code{'cond'}, a conditional simulation is performed.}
 
-\item{cond.info}{(\code{list}) a list containing added information to perform conditional simulation.}
+\item{cond.info}{(\code{list}) A list containing additional information required for conditional simulation.}
 }
 \value{
 (\code{matrix}) a matrix n x dim(data)[1].
 }
 \description{
-draw realizations of nonstationary Gaussian processes with covariate-based covariance functions.
+draw realizations of stationary and nonstationary Gaussian processes with covariate-based covariance functions.
 }
 \details{
-\code{'cond'} sim.type requires specifying in \code{'cond.info'} a list with \code{'newdataset'} a data.frame containing covariates present in model.list at simulation locations,
-and \code{'newlocs'} a matrix with locations related to the simulation locations, matching indexing of \code{'newdataset'}.
+#' The argument \code{sim.type = 'cond'} specifies a conditional simulation, requiring \code{cond.info} to be provided.
+\code{cond.info} is a list including \code{newdataset}, a data.frame containing covariates present in \code{model.list} at the simulation locations, and \code{newlocs},
+a matrix specifying the locations corresponding to the simulation, with indexing that matches \code{newdataset}.
 
-\code{type = 'classic'} assumes a simpler parameterization for the covariance function, assuming log-parameterizations for \code{'std.dev'}, \code{'scale'}, and \code{'smooth'}.
+The argument \code{type = 'classic'} assumes a simplified parameterization for the covariance function, with log-parameterizations applied to the parameters \code{std.dev},
+\code{scale}, and \code{smooth}.
 }
 \examples{
 \dontrun{

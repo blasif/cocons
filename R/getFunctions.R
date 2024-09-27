@@ -187,14 +187,14 @@ getTrend <- function(coco.object){
   return(tmp_scaled %*% getEstims(coco.object)$mean)
 }
 
-#' Compute Confidence Intervals for a coco object
-#' @description Compute confidence intervals for a (fitted) coco object.
+#' Compute approximate confidence intervals for a coco object
+#' @description Compute approximate confidence intervals for a (fitted) coco object.
 #'
 #' @usage getCIs(coco.object, inv.hess, alpha = 0.05)
 #' @param coco.object \code{(S4)} a fitted coco S4 object.
-#' @param inv.hess \code{(matrix)} Inverse of the Hessian.
+#' @param inv.hess \code{(matrix)} Inverse of the Hessian. \link{getHessian}.
 #' @param alpha \code{(numeric)} confidence level.
-#' @returns (\code{numeric matrix}) a matrix with confidence intervals for each parameter in the model
+#' @returns (\code{numeric matrix}) a matrix with approximate confidence intervals for each parameter in the model.
 #' @author Federico Blasi
 getCIs <- function(coco.object, inv.hess, alpha = 0.05){
   
@@ -808,7 +808,7 @@ getBoundariesV3 <- function(coco.object,
 }
 
 #' getHessian
-#' @description returns the approximate (observed) Hesian (inverse of Fisher Information Matrix)
+#' @description numerically approximate the Hessian. Hessians of parameters based on "pmle" are based on full likelihoods.
 #' @usage getHessian(coco.object, ncores = parallel::detectCores() - 1, 
 #' eps = .Machine$double.eps^(1/4))
 #' @param coco.object \code{(S4)} a fitted coco object.
@@ -847,13 +847,25 @@ getHessian <- function(coco.object, ncores = parallel::detectCores() - 1,
     
     x_covariates <- coco_x_std$std.covs
     
+    if(coco.object@info$optim.type == "pmle"){
+      
+      f00 <- cocons::GetNeg2loglikelihood(coco.object@output$par, par.pos = par.pos,
+                                   locs = coco.object@locs,
+                                   x_covariates = x_covariates, 
+                                   smooth.limits = coco.object@info$smooth.limits, 
+                                   n = n, 
+                                   z = coco.object@z,
+                                   lambda = coco.object@info$lambda)
+      
+    } else{f00 <- coco.object@output$value}
+    
     cl <- parallel::makeCluster(ncores)
     on.exit(parallel::stopCluster(cl), add = TRUE)
     parallel::setDefaultCluster(cl = cl)
     parallel::clusterEvalQ(cl, library("cocons"))
     
     parallel::clusterExport(cl = cl, list("x_covariates", "coco.object",
-                                          "n", "par.pos", "eps"),
+                                          "n", "par.pos", "eps","f00"),
                             envir = environment())
     
     vector_responses <- parallel::parApply(cl = cl, 
@@ -892,7 +904,7 @@ getHessian <- function(coco.object, ncores = parallel::detectCores() - 1,
                                                                                     z = coco.object@z, 
                                                                                     lambda = coco.object@info$lambda)
                                              
-                                             0.5 * ((f11 - f01 - f10 + coco.object@output$value) / (eps*eps))
+                                             0.5 * ((f11 - f01 - f10 + f00) / (eps*eps))
                                            })
     
     count_index <- 0
@@ -946,6 +958,21 @@ getHessian <- function(coco.object, ncores = parallel::detectCores() - 1,
     )
     
     cholS <- spam::chol.spam(ref_taper)
+    
+    if(coco.object@info$optim.type == "pmle"){
+      
+      f00 <- cocons::GetNeg2loglikelihoodTaper(theta = coco.object@output$par,
+                                               par.pos = par.pos,
+                                               ref_taper = ref_taper,
+                                               locs = coco.object@locs,
+                                               x_covariates = x_covariates,
+                                               smooth.limits = coco.object@info$smooth.limits,
+                                               cholS = cholS,
+                                               z = coco.object@z,
+                                               n = n,
+                                               lambda = coco.object@info$lambda)
+      
+    } else{f00 <- coco.object@output$value}
 
     cl <- parallel::makeCluster(ncores)
     on.exit(parallel::stopCluster(cl), add = TRUE)
@@ -954,7 +981,7 @@ getHessian <- function(coco.object, ncores = parallel::detectCores() - 1,
     
     parallel::clusterExport(cl = cl, list("x_covariates", "coco.object",
                                           "n", "par.pos", "eps",
-                                          "ref_taper","cholS"),
+                                          "ref_taper","cholS","f00"),
                             envir = environment())
     
     vector_responses <- parallel::parApply(cl = cl, 
@@ -1002,7 +1029,7 @@ getHessian <- function(coco.object, ncores = parallel::detectCores() - 1,
                                                                                           n = n,
                                                                                           lambda = coco.object@info$lambda)
                                              
-                                             0.5 * ((f11 - f01 - f10 + coco.object@output$value) / (eps*eps))
+                                             0.5 * ((f11 - f01 - f10 + f00) / (eps*eps))
                                              
                                            })
     

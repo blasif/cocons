@@ -1,16 +1,25 @@
 
-#' Prediction routines for nonstationary spatial models
-#' @description Computes the point predictions and standard errors based on conditional Gaussian distributions.
-#' @usage cocoPredict(coco.object, newdataset, newlocs, type = 'mean', ...)
-#' @param coco.object (\code{S4}) a fitted \link{coco} object.
-#' @param newdataset (\code{data.frame}) a data.frame containing covariates present in model.list at prediction locations.
-#' @param newlocs (\code{matrix}) a matrix with locations related to prediction locations, matching indexing of \code{newdataset}.
-#' @param type (\code{character}) whether \code{"mean"} or \code{"pred"}, which gives a point prediction for the former, 
-#' as well as of point prediction and standard errors for the latter.
-#' @param ... (\code{character}) when coco.object has multiple realizations, specifying \code{"index.pred"} specifying which column of 
-#' \code{coco.object@z} should be used to perform predictions.
-#' @returns (\code{list}) a list with the conditional mean, splitted into the systematic large-scale variability \code{trend}, 
-#' and due to stochastic \code{mean}, as well as standard errors \code{"sd.pred"} if \code{"pred"} is specified.
+#' Prediction Routines for Nonstationary Spatial Models
+#' 
+#' @description 
+#' Computes point predictions and standard errors based on conditional Gaussian distributions for nonstationary spatial models.
+#' 
+#' @usage 
+#' cocoPredict(coco.object, newdataset, newlocs, type = 'mean', ...)
+#' 
+#' @param coco.object (\code{S4}) A fitted \link{coco} object.
+#' @param newdataset (\code{data.frame}) A data.frame containing the covariates present in `model.list` at the prediction locations.
+#' @param newlocs (\code{matrix}) A matrix specifying the prediction locations, matching `newdataset` index.
+#' @param type (\code{character}) Specifies whether to return only the point prediction (`'mean'`) or both the point prediction and prediction standard errors (`'pred'`).
+#' @param ... Additional arguments. If `coco.object` contains multiple realizations, the argument `index.pred` can be used to specify which realization of `coco.object@z` should be used for the predictions.
+#' 
+#' @returns 
+#' A list containing:
+#' \itemize{
+#'   \item \code{trend}: The systematic large-scale variability.
+#'   \item \code{mean}: The stochastic mean.
+#'   \item \code{sd.pred}: The standard errors, returned only when `type = 'pred'` is specified.
+#' }
 #' @author Federico Blasi
 #' @examples
 #' \dontrun{

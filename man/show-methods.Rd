@@ -9,7 +9,7 @@
 \S4method{show}{coco}(object)
 }
 \arguments{
-\item{object}{An object of class 'coco'.}
+\item{object}{(\code{S4}) An object of class 'coco'.}
 }
 \value{
 A plot is created.

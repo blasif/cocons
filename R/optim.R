@@ -1,19 +1,24 @@
 
-#' Optimizer for nonstationary spatial models
-#' @description Estimation of the spatial model parameters based on the L-BFGS-B optimizer \[1\]. 
-#' @details
-#' Current implementation only allows a single realization for \code{"pmle"} \code{optim.type} when combined with \code{"sparse"} objects. 
-#' @usage cocoOptim(coco.object, boundaries = list(), 
-#' ncores = "auto", optim.type, safe, optim.control)
-#' @param coco.object (\code{S4}) a \link{coco} object.
-#' @param boundaries (\code{list}) if provided, a list with lower, init, and upper values, as the one provided by \link{getBoundaries}. Otherwise,
-#' it is computed based on \link{getBoundaries} with global lower and upper values -2 and 2.
-#' @param ncores (\code{character} or \code{integer}) number of threads for the optimization routine. If "auto" then it is set based on optimal number of threads (when available) or a fraction of it.
-#' @param optim.type (\code{character}) Optimization approach: whether \code{"mle"} for classical Maximum Likelihood approach, 
-#' or \code{"pmle"} to factor out the spatial trend (when handling \code{"dense"} coco objects), or
-#' to factor out the global marginal standard deviation parameter (when considering \code{"sparse"} coco objects).
-#' @param safe (\code{TRUE/FALSE}) when TRUE avoid Cholesky decomposition errors due to ill-posed covariance matrices (instead returns a pre-defined large value). By default set to \code{TRUE}.
-#' @param optim.control (\code{list}) list with settings to be passed to the optimParallel function \[2\].
+#' Optimizer for Nonstationary Spatial Models
+#' 
+#' @description 
+#' This function estimates the spatial model parameters using the L-BFGS-B optimizer \[1\].
+#' 
+#' 
+#' @usage 
+#' cocoOptim(coco.object, boundaries = list(), ncores = "auto", 
+#' optim.type, safe, optim.control)
+#' 
+#' @param coco.object (\code{S4}) A \link{coco} object.
+#' @param boundaries (\code{list}) If provided, a list containing lower, initial, and upper values for the parameters, as defined by \link{getBoundaries}. If not provided, these values are automatically computed with global lower and upper bounds set to -2 and 2.
+#' @param ncores (\code{character} or \code{integer}) The number of threads to use for the optimization. If set to `"auto"`, the number of threads is chosen based on system capabilities or a fraction of the available cores.
+#' @param optim.type (\code{character}) The optimization approach. Options include:
+#' \itemize{
+#'   \item \code{"mle"}: Classical Maximum Likelihood Estimation.
+#'   \item \code{"pmle"}: Penalized Maximum Likelihood, factoring out the spatial trend for dense objects or the global marginal variance parameter for sparse objects.
+#' }
+#' @param safe (\code{logical}) If `TRUE`, the function avoids Cholesky decomposition errors due to ill-posed covariance matrices by returning a pre-defined large value. Defaults to `TRUE`.
+#' @param optim.control (\code{list}) A list of settings to be passed to the \link[optimParallel]{optimParallel} function \[2\].
 #' @returns (\code{S4}) An optimized S4 object of class \code{coco}.
 #' @author Federico Blasi
 #' @seealso [\link[optimParallel]{optimParallel}]

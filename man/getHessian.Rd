@@ -18,7 +18,7 @@ eps = .Machine$double.eps^(1/4))
 (\code{numeric matrix}) a symmetric matrix pxp of the approximated (observed) Hessian
 }
 \description{
-returns the approximate (observed) Hesian (inverse of Fisher Information Matrix)
+numerically approximate the Hessian. Hessians of parameters based on "pmle" are based on full likelihoods.
 }
 \author{
 Federico Blasi

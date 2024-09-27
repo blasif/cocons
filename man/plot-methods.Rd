@@ -9,7 +9,7 @@
 \S4method{plot}{coco,missing}(x, y, ..., type = NULL, index = NULL, factr = 0.1, delta = NULL)
 }
 \arguments{
-\item{x}{An object of class \code{coco}.}
+\item{x}{(\code{S4}) A fitted object of class \code{coco}.}
 
 \item{y}{Not used.}
 

@@ -5,14 +5,13 @@
 
 #' An S4 class to store information
 #'
-#' @slot type One of two available types "dense" or "sparse". See description.
-#' @slot data A data.frame with covariates information, where colnames(data) matches model.list specification
-#' @slot locs a matrix with locs matching data
-#' @slot z A vector with response values
-#' @slot model.list A list specyfing a model for each aspect of the spatial structure.
-#' @slot info a list with information about the coco object
-#' @slot output an output from optimparallel output, including as well boundaries 
-#' information as another element of the list
+#' @slot type (\code{character}) One of two available types "dense" or "sparse". See description.
+#' @slot data (\code{data.frame}) A data.frame with covariates information, where colnames(data) matches model.list specification
+#' @slot locs (\code{numeric matrix}) a matrix with locs matching data
+#' @slot z (\code{numeric matrix}) A matrix of dimension n x p with response values
+#' @slot model.list (\code{list}) A list specifying a model for each aspect of the spatial structure.
+#' @slot info (\code{list}) a list with information about the coco object
+#' @slot output (\code{list}) if building an already fitted \code{coco} object (not the standard approach), then requires an output from Optimparallel output, including as well boundaries, etc.
 #' @author Federico Blasi
 #' 
 setClass("coco", slots = list(
@@ -35,7 +34,7 @@ setClass("coco", slots = list(
 #' @rdname plot-methods
 #' @docType methods
 #' @aliases plot,coco-method
-#' @param x An object of class \code{coco}.
+#' @param x (\code{S4}) A fitted object of class \code{coco}.
 #' @param y Not used.
 #' @param ... Additional arguments passed to \link[fields]{quilt.plot}. 
 #' @param type (\code{character}  or \code{NULL}) The type of plot. NULL or "ellipse" for drawing ellipse of the convolution kernels.
@@ -578,7 +577,7 @@ setMethod("summary", signature(object = "coco"),
 #' This method show objects of class 'coco'.
 #' @name show
 #' @aliases show,coco-method
-#' @param object An object of class 'coco'.
+#' @param object (\code{S4}) An object of class 'coco'.
 #' @return A plot is created.
 #' @docType methods
 #' @rdname show-methods

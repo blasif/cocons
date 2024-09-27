@@ -2,6 +2,7 @@
 
 - Vignette updates, watermark removed.
 - Documentation polishing
+- New "holes_bm" dataset with independent realizations and spatial trend.
 
 ### Enhances
 

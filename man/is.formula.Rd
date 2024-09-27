@@ -2,18 +2,18 @@
 % Please edit documentation in R/isFunctions.R
 \name{is.formula}
 \alias{is.formula}
-\title{check whether an object belongs to a formula class}
+\title{check whether an R object is a formula}
 \usage{
 is.formula(x)
 }
 \arguments{
-\item{x}{an R object}
+\item{x}{(ANY) an R object.}
 }
 \value{
 TRUE/FALSE
 }
 \description{
-check whether an object belongs to a formula class
+check whether an R object is a formula
 }
 \author{
 Federico Blasi

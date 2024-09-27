@@ -10,20 +10,19 @@ An S4 class to store information
 \section{Slots}{
 
 \describe{
-\item{\code{type}}{One of two available types "dense" or "sparse". See description.}
+\item{\code{type}}{(\code{character}) One of two available types "dense" or "sparse". See description.}
 
-\item{\code{data}}{A data.frame with covariates information, where colnames(data) matches model.list specification}
+\item{\code{data}}{(\code{data.frame}) A data.frame with covariates information, where colnames(data) matches model.list specification}
 
-\item{\code{locs}}{a matrix with locs matching data}
+\item{\code{locs}}{(\code{numeric matrix}) a matrix with locs matching data}
 
-\item{\code{z}}{A vector with response values}
+\item{\code{z}}{(\code{numeric matrix}) A matrix of dimension n x p with response values}
 
-\item{\code{model.list}}{A list specyfing a model for each aspect of the spatial structure.}
+\item{\code{model.list}}{(\code{list}) A list specifying a model for each aspect of the spatial structure.}
 
-\item{\code{info}}{a list with information about the coco object}
+\item{\code{info}}{(\code{list}) a list with information about the coco object}
 
-\item{\code{output}}{an output from optimparallel output, including as well boundaries
-information as another element of the list}
+\item{\code{output}}{(\code{list}) if building an already fitted \code{coco} object (not the standard approach), then requires an output from Optimparallel output, including as well boundaries, etc.}
 }}
 
 \author{
