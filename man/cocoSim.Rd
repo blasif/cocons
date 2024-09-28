@@ -10,7 +10,7 @@ type = 'classic', sim.type = NULL, cond.info = NULL)
 \arguments{
 \item{coco.object}{(\code{S4}) A \link{coco} object.}
 
-\item{pars}{(\code{numeric vector}) A vector of parameter values associated with \code{model.list}.}
+\item{pars}{(\code{numeric vector} or NULL) A vector of parameter values associated with \code{model.list}. If coco.object is a fitted object, and pars is \code{NULL}, it get pars from coco.object\@output$pars.}
 
 \item{n}{(\code{integer}) Number of realizations to simulate.}
 
@@ -25,7 +25,7 @@ type = 'classic', sim.type = NULL, cond.info = NULL)
 \item{cond.info}{(\code{list}) A list containing additional information required for conditional simulation.}
 }
 \value{
-(\code{matrix}) a matrix n x dim(data)[1].
+(\code{matrix}) a matrix dim(data)[1] x n.
 }
 \description{
 draw realizations of stationary and nonstationary Gaussian processes with covariate-based covariance functions.

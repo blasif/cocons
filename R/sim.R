@@ -12,14 +12,14 @@
 #' @usage cocoSim(coco.object, pars, n, seed, standardize, 
 #' type = 'classic', sim.type = NULL, cond.info = NULL)
 #' @param coco.object (\code{S4}) A \link{coco} object.
-#' @param pars (\code{numeric vector}) A vector of parameter values associated with \code{model.list}.
+#' @param pars (\code{numeric vector} or NULL) A vector of parameter values associated with \code{model.list}. If coco.object is a fitted object, and pars is \code{NULL}, it get pars from coco.object\@output$pars.
 #' @param n (\code{integer}) Number of realizations to simulate.
 #' @param seed (\code{integer or NULL}) Seed for random number generation. Defaults to NULL.
 #' @param standardize (\code{logical}) Indicates whether the provided covariates should be standardized (\code{TRUE}) or not (\code{FALSE}). Defaults to \code{TRUE}.
 #' @param type (\code{character}) Specifies whether the parameters follow a classical parameterization (\code{'classic'}) or a difference parameterization (\code{'diff'}). Defaults to \code{'classic'}. For sparse \code{coco} objects, only \code{'diff'} is allowed.
 #' @param sim.type (\code{character}) If set to \code{'cond'}, a conditional simulation is performed.
 #' @param cond.info (\code{list}) A list containing additional information required for conditional simulation.
-#' @returns (\code{matrix}) a matrix n x dim(data)\[1\].
+#' @returns (\code{matrix}) a matrix dim(data)\[1\] x n.
 #' @author Federico Blasi
 #' @seealso \link{coco}
 #' @examples
@@ -49,7 +49,7 @@
 #' }
 #' 
 cocoSim <- function(coco.object, 
-                     pars,
+                     pars = NULL,
                      n = 1,
                      seed = NULL, 
                      standardize = TRUE, 
@@ -59,6 +59,10 @@ cocoSim <- function(coco.object,
   
   .cocons.check.pars(coco.object,pars)
   .cocons.check.type(coco.object@type)
+  
+  if(is.null(pars)){
+    pars <- coco.object@output$par
+  }
   
   if(coco.object@type == "dense"){
     
@@ -110,7 +114,7 @@ cocoSim <- function(coco.object,
         
         tmp_mu <- step_one$trend + step_one$mean
         
-        return(sweep(t(iiderrors) %*% L, 2, tmp_mu, "+"))
+        return(t(sweep(t(iiderrors) %*% L, 2, tmp_mu, "+")))
         
       } 
     } else{
@@ -161,7 +165,7 @@ cocoSim <- function(coco.object,
       
       tmp_mu <- std_coco$std.covs %*% theta_to_fit$mean
       
-      return(sweep(t(iiderrors) %*% cholS, 2, tmp_mu, "+"))
+      return(t(sweep(t(iiderrors) %*% cholS, 2, tmp_mu, "+")))
       
     }
   } 
@@ -205,7 +209,7 @@ cocoSim <- function(coco.object,
     
     tmp_mu <- std_coco$std.covs %*% theta_to_fit$mean
     
-    return(sweep(as.matrix(t(iiderrors) %*% cholS)[,iord, drop = F], 2, tmp_mu, "+"))
+    return(t(sweep(as.matrix(t(iiderrors) %*% cholS)[,iord, drop = F], 2, tmp_mu, "+")))
     
   }
   

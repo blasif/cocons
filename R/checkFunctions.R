@@ -167,6 +167,9 @@
 }
 
 .cocons.check.pars <- function(coco.object, pars){
+  
+  if(is.null(pars) & length(coco.object@output) > 1){return(0)}
+  
   stopifnot("length of pars does not match number of parameters to estimate in the coco object." =
               .cocons.get.npars(coco.object) == length(pars))
 }
