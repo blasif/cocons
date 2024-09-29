@@ -10,7 +10,7 @@ type = 'classic', sim.type = NULL, cond.info = NULL)
 \arguments{
 \item{coco.object}{(\code{S4}) A \link{coco} object.}
 
-\item{pars}{(\code{numeric vector} or NULL) A vector of parameter values associated with \code{model.list}. If coco.object is a fitted object, and pars is \code{NULL}, it get pars from coco.object\@output$pars.}
+\item{pars}{(\code{numeric vector} or NULL) A vector of parameter values associated with \code{model.list}. If coco.object is a fitted object, and pars is \code{NULL}, it get pars from coco.object\@output$pars (and also sets 'type' to 'diff').}
 
 \item{n}{(\code{integer}) Number of realizations to simulate.}
 

@@ -12,7 +12,7 @@
 #' @usage cocoSim(coco.object, pars, n, seed, standardize, 
 #' type = 'classic', sim.type = NULL, cond.info = NULL)
 #' @param coco.object (\code{S4}) A \link{coco} object.
-#' @param pars (\code{numeric vector} or NULL) A vector of parameter values associated with \code{model.list}. If coco.object is a fitted object, and pars is \code{NULL}, it get pars from coco.object\@output$pars.
+#' @param pars (\code{numeric vector} or NULL) A vector of parameter values associated with \code{model.list}. If coco.object is a fitted object, and pars is \code{NULL}, it get pars from coco.object\@output$pars (and also sets 'type' to 'diff').
 #' @param n (\code{integer}) Number of realizations to simulate.
 #' @param seed (\code{integer or NULL}) Seed for random number generation. Defaults to NULL.
 #' @param standardize (\code{logical}) Indicates whether the provided covariates should be standardized (\code{TRUE}) or not (\code{FALSE}). Defaults to \code{TRUE}.
@@ -62,6 +62,7 @@ cocoSim <- function(coco.object,
   
   if(is.null(pars)){
     pars <- coco.object@output$par
+    type <- "diff"
   }
   
   if(coco.object@type == "dense"){

@@ -1,24 +1,25 @@
 ## cocons 0.1.3
 
-- Vignette updates, watermark removed.
-- Documentation polishing
-- New "holes_bm" dataset with independent realizations and spatial trend.
+- Vignette updates, watermark removed
+- Documentation polished
+- New `holes_bm` dataset with independent realizations and spatial trend
 
 ### Enhances
 
-- added a NEWS.md file with version updates / enhances / etc.
+- added a NEWS.md file with version updates / modifications / enhances / etc
 - Better visualization for `plot(cocoOptim object, type = "ellipse"")`
 - `cocoOptim`:
-  - "auto" option for `ncores` argument for `cocoOptim`, providing a convenient number of threads based on the number of parameters to estimate, available threads, and settings of the LBFGSB routine.
+  - "auto" option for `ncores` argument for `cocoOptim`, providing a convenient number of threads based on the number of parameters to estimate, available threads, and settings of the LBFGSB routine
   - "safe" argument, which prevents crashes due to ill-posed covariance matrices (Choelsky factorization error)
   - `.cocons.check.convergence` now checks and reports at which iteration ill-posed covariance matrices have been found during the optimization. 
   - now "pmle" works with multiple independent realizations for coco types `dense` and `sparse`
   - safer parallel handling
 - `getHessian` more memory efficient
 - `cocoSim`: 
+  - if provided a fitted coco object, then `pars` argument can be `NULL` (default), and `coco.object@output$par` is used instead
   - more memory efficient
-  - safer parallel handling
-- polishing of neg2loglikelihood functions, leading to more efficient code.
+- safer parallel handling for `getHessian`
+- polishing of neg2loglikelihood functions, leading to more efficient code
 - more and more polished internal functions to assess the validity of arguments (`stopifnot()` instead of `if() stop()`)
 - `getCondNumber` optimized
 - small improvement over cpp functions
@@ -26,9 +27,9 @@
 ### Changes
 
 - switched `getPen` as an internal function
-- method `plot` for `coco` objects shows rotation angle of the kernel w.r.t x-axis.
-- `GetSpateffects` now provides angle w.r.t to x-axis.
-- method "summary" for `coco` objecets (former "print" method).
+- method `plot` for `coco` objects shows rotation angle of the kernel w.r.t x-axis
+- `GetSpateffects` now provides angle w.r.t to x-axis
+- method "summary" for `coco` objecets (former "print" method)
 - more proper naming of objects inside functions
 - renaming of "cat.vars" to "skip.scale" + associated checks and optimization
 

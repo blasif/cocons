@@ -133,7 +133,8 @@ getSpatEffects <- function(coco.object){
     tp_mr_x <- sin(tp_tl) * exp(X_std$std.covs %*% theta_list$scale)
     tp_mr_y <- sin(tp_tl) * exp(X_std$std.covs %*% theta_list$scale) * exp(X_std$std.covs %*% theta_list$aniso)
 
-    tp_angle <- atan2(x = 2 * tp_ga^(0.5) * cos(tp_tl), 
+    
+    tp_angle <- atan2(x = 2 * tp_ga^(0.5) * cospi(tp_tl / pi), 
           y = tp_ga - 1 + sqrt((tp_ga + 1)^2 - 4 * tp_ga * sinpi(tp_tl / pi)^2)) # * 180 / pi
 
     return(list("sd" = tp_se,
