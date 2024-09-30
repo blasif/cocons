@@ -6,6 +6,7 @@
 #' @returns Outputs a sequence of plots detailing parameters during the 
 #' optimization routine
 #' @author Federico Blasi
+#' @seealso [cocoOptim()]
 plotOptimInfo <- function(coco.object, ...){
   
   if(length(coco.object@output) == 0){stop('did not find an output to work with.')}

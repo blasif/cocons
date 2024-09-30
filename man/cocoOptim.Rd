@@ -55,6 +55,8 @@ plot(optim_coco)
 summary(optim_coco)
  
 getEstims(optim_coco)
+
+plotOptimInfo(optim_coco)
 }
 
 }

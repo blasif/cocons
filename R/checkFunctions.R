@@ -246,7 +246,7 @@
   
   stopifnot("model.list not a list" = is.list(model.list))
 
-  if (any(names(model.list) != getOption("cocons.Dictionary"))) {
+  if (any(!names(model.list) %in% getOption("cocons.Dictionary"))) {
     stop("aspect names do not match reference ones. Please check getOption(\"cocons.Dictionary\")")
   }
   

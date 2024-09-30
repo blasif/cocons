@@ -15,10 +15,35 @@ based on the local aspects of a specific location (not implemented yet).}
 \item{index}{\code{(integer)} index to perform local covariance matrix (not implemented yet).}
 }
 \value{
-(\code{matrix}) a n x n covariance matrix.
+(\code{matrix} or \code{S4}) a n x n covariance matrix (for 'dense' coco objects) or a S4 spam object (for 'sparse' coco objects).
 }
 \description{
 Compute the covariance matrix of \code{coco.object}.
+}
+\examples{
+\dontrun{
+model.list <- list('mean' = 0,
+                   'std.dev' = formula( ~ 1 + cov_x + cov_y),
+                   'scale' = formula( ~ 1 + cov_x + cov_y),
+                   'aniso' = 0,
+                   'tilt' = 0,
+                   'smooth' = 3/2,
+                   'nugget' = -Inf)
+                   
+coco_object <- coco(type = 'dense',
+                    data = holes[[1]][1:100,],
+                    locs = as.matrix(holes[[1]][1:100,1:2]),
+                    z = holes[[1]][1:100,]$z,
+                    model.list = model.list)
+                    
+optim_coco <- cocoOptim(coco_object,
+boundaries = getBoundaries(coco_object,
+lower.value = -3, 3))
+
+getCovMatrix(optim_coco)
+
+}
+
 }
 \author{
 Federico Blasi

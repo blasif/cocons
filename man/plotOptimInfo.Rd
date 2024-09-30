@@ -18,6 +18,9 @@ optimization routine
 \description{
 plot output of optim
 }
+\seealso{
+\code{\link[=cocoOptim]{cocoOptim()}}
+}
 \author{
 Federico Blasi
 }

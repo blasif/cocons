@@ -8,6 +8,9 @@
 
 - added a NEWS.md file with version updates / modifications / enhances / etc
 - Better visualization for `plot(cocoOptim object, type = "ellipse"")`
+- `coco`:
+  - now it is not necessary to provide all models for each source of nonstationarity. Those not specified will be set to those referenced
+  with a stationary 0-mean model (i.e. tilt = 0 , aniso = 0, nugget = -Inf (because of log-parameterization)). If 'smooth' is not specified, then it is set to 0.5.
 - `cocoOptim`:
   - "auto" option for `ncores` argument for `cocoOptim`, providing a convenient number of threads based on the number of parameters to estimate, available threads, and settings of the LBFGSB routine
   - "safe" argument, which prevents crashes due to ill-posed covariance matrices (Choelsky factorization error)

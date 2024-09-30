@@ -98,6 +98,31 @@ coco <- function(type,
   
   .cocons.check.model.list(model.list,
                           data)
+  
+  #
+  
+  if(is.null(model.list$mean)){
+    model.list$mean <- 0
+  }
+  
+  if(is.null(model.list$aniso)){
+    model.list$aniso <- 0
+  }
+  
+  if(is.null(model.list$tilt)){
+    model.list$tilt <- 0
+  }
+  
+  if(is.null(model.list$smooth)){
+    model.list$smooth <- 0.5
+  }
+  
+  if(is.null(model.list$nugget)){
+    model.list$nugget <- -Inf
+  }
+  
+  model.list <- model.list[c("mean", "std.dev", "scale", "aniso", "tilt", "smooth", "nugget")]
+  
   .cocons.check.info(type = type, 
                     info = info,
                     model.list = model.list,

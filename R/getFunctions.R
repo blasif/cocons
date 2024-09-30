@@ -6,8 +6,32 @@
 #' @param type \code{(character)} whether \code{'global'} to retrieve the regular covariance matrix, or \code{'local'} to retrieve global covariance.
 #' based on the local aspects of a specific location (not implemented yet).
 #' @param index \code{(integer)} index to perform local covariance matrix (not implemented yet).
-#' @returns (\code{matrix}) a n x n covariance matrix.
+#' @returns (\code{matrix} or \code{S4}) a n x n covariance matrix (for 'dense' coco objects) or a S4 spam object (for 'sparse' coco objects).
 #' @author Federico Blasi
+#' @examples
+#' \dontrun{
+#' model.list <- list('mean' = 0,
+#'                    'std.dev' = formula( ~ 1 + cov_x + cov_y),
+#'                    'scale' = formula( ~ 1 + cov_x + cov_y),
+#'                    'aniso' = 0,
+#'                    'tilt' = 0,
+#'                    'smooth' = 3/2,
+#'                    'nugget' = -Inf)
+#'                    
+#' coco_object <- coco(type = 'dense',
+#'                     data = holes[[1]][1:100,],
+#'                     locs = as.matrix(holes[[1]][1:100,1:2]),
+#'                     z = holes[[1]][1:100,]$z,
+#'                     model.list = model.list)
+#'                     
+#' optim_coco <- cocoOptim(coco_object,
+#' boundaries = getBoundaries(coco_object,
+#' lower.value = -3, 3))
+#' 
+#' getCovMatrix(optim_coco)
+#' 
+#' }
+#' 
 getCovMatrix <- function(coco.object, type = "global", index = NULL){
   
   x_covs <- cocons::getScale(coco.object)$std.covs
@@ -52,7 +76,7 @@ getCovMatrix <- function(coco.object, type = "global", index = NULL){
                                                                                  rowpointers = ref_taper@rowpointers,
                                                                                  smooth_limits =  coco.object@info$smooth.limits)
       
-      return(as.matrix(ref_taper))
+      return(ref_taper)
       
     }
     

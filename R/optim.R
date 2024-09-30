@@ -53,6 +53,8 @@
 #' summary(optim_coco)
 #'  
 #' getEstims(optim_coco)
+#' 
+#' plotOptimInfo(optim_coco)
 #' }
 #' 
 cocoOptim <- function(coco.object, boundaries = list(), 
