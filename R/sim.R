@@ -12,7 +12,8 @@
 #' @usage cocoSim(coco.object, pars, n, seed, standardize, 
 #' type = 'classic', sim.type = NULL, cond.info = NULL)
 #' @param coco.object (\code{S4}) A \link{coco} object.
-#' @param pars (\code{numeric vector} or NULL) A vector of parameter values associated with \code{model.list}. If coco.object is a fitted object, and pars is \code{NULL}, it get pars from coco.object\@output$pars (and also sets 'type' to 'diff').
+#' @param pars (\code{numeric vector} or NULL) A vector of parameter values associated with \code{model.list}. 
+#' If coco.object is a fitted object, and pars is \code{NULL}, it get pars from coco.object\@output$pars (and also sets 'type' to 'diff').
 #' @param n (\code{integer}) Number of realizations to simulate.
 #' @param seed (\code{integer or NULL}) Seed for random number generation. Defaults to NULL.
 #' @param standardize (\code{logical}) Indicates whether the provided covariates should be standardized (\code{TRUE}) or not (\code{FALSE}). Defaults to \code{TRUE}.
@@ -100,7 +101,10 @@ cocoSim <- function(coco.object,
                                        x_covariates = std_pred,
                                        smooth_limits = coco.object@info$smooth.limits)
         
-        L <- base::chol(covmat_unobs - covmat_pred %*% solve(covmat,t(covmat_pred)))
+        
+        
+        L <- base::chol(covmat_unobs - covmat_pred %*% solve(covmat, t(covmat_pred)) + 
+                          .cocons.getDelta(dim(covmat_unobs)[1], sigma = sqrt(exp(to_pass$std.dev[1]))) * diag(dim(covmat_unobs)[1])) # 
         
         if(exists("seed")){
           set.seed(seed)

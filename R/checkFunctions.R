@@ -405,7 +405,7 @@
   
   if(any(output$loginfo[,which(colnames(output$loginfo) == 'fn')] == 1e6)){
     which_ones <- which(output$loginfo[,which(colnames(output$loginfo) == 'fn')] == 1e6)
-    warning("ill-posed covariance matrix at iter/iters ", paste0(which_ones,collapse = ","))
+    warning("ill-posed covariance matrix at iter/s ", paste0(which_ones,collapse = ","))
   }
   
   if(output$convergence != 0){
@@ -447,5 +447,11 @@
                    (1 + exp(-theta_list$smooth[1])) + 
                    smooth.limits[1]))
   )
+  
+}
+
+.cocons.getDelta <- function(n, sigma, topDelta = 1e-9){
+  
+  return(sigma * topDelta * (1/(1+exp(- (n - 5000)/1000))))
   
 }

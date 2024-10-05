@@ -188,18 +188,6 @@ getSpatEffects <- function(coco.object){
 
 }
 
-#' Condition number for (fitted) coco objects
-#' @description Computes the condition number of the associated correlation matrix of the fitted coco object.
-#'
-#' @usage getCondNumber(coco.object)
-#' @param coco.object \code{(S4)} a fitted coco S4 object.
-#' @returns (\code{numeric}) the condition number.
-#' @author Federico Blasi
-getCondNumber <- function(coco.object){
-  eigen_mat <- eigen(stats::cov2cor(getCovMatrix(coco.object)))
-  eigen_mat$values[1] / eigen_mat$values[dim(eigen_mat$vectors)[1]]
-}
-
 #' Computes the spatial trend of a (fitted) coco object
 #' @description Compute the trend of the (fitted) coco object.
 #'

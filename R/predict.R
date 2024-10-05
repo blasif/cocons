@@ -18,7 +18,7 @@
 #' \itemize{
 #'   \item \code{trend}: The systematic large-scale variability.
 #'   \item \code{mean}: The stochastic mean.
-#'   \item \code{sd.pred}: The standard errors, returned only when `type = 'pred'` is specified.
+#'   \item \code{sd.pred}: The standard errors, when `type = 'pred'` is specified.
 #' }
 #' @author Federico Blasi
 #' @examples

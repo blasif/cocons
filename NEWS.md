@@ -7,6 +7,7 @@
 ### Enhances
 
 - added a NEWS.md file with version updates / modifications / enhances / etc
+- automatized `delta` for method `plot` for coco class.
 - Better visualization for `plot(cocoOptim object, type = "ellipse"")`
 - `coco`:
   - now it is not necessary to provide all models for each source of nonstationarity. Those not specified will be set to those referenced
@@ -19,11 +20,11 @@
   - safer parallel handling
 - `getHessian` more memory efficient
 - `cocoSim`: 
-  - if provided a fitted coco object, then `pars` argument can be `NULL` (default), and `coco.object@output$par` is used instead
+  - if provided a fitted coco object, then `pars` argument can be `NULL` (default), and `coco.object@output$par` is used instead (and also `type` is set to `diff`).
   - more memory efficient
 - safer parallel handling for `getHessian`
 - polishing of neg2loglikelihood functions, leading to more efficient code
-- more and more polished internal functions to assess the validity of arguments (`stopifnot()` instead of `if() stop()`)
+- new and more polished internal functions to assess the validity of arguments (`stopifnot()` instead of `if() stop()`)
 - `getCondNumber` optimized
 - small improvement over cpp functions
 
@@ -35,6 +36,7 @@
 - method "summary" for `coco` objecets (former "print" method)
 - more proper naming of objects inside functions
 - renaming of "cat.vars" to "skip.scale" + associated checks and optimization
+- `getCondNumber` removed, which can be replaced with `kappa` function from base R (i.e. `kappa(cov2cor(getCovMatrix(coco.object)),exact = TRUE)`)
 
 ## cocons 0.1.2
 

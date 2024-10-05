@@ -22,7 +22,7 @@ A list containing:
 \itemize{
 \item \code{trend}: The systematic large-scale variability.
 \item \code{mean}: The stochastic mean.
-\item \code{sd.pred}: The standard errors, returned only when \code{type = 'pred'} is specified.
+\item \code{sd.pred}: The standard errors, when \code{type = 'pred'} is specified.
 }
 }
 \description{

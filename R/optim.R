@@ -48,13 +48,18 @@
 #' boundaries = getBoundaries(coco_object,
 #' lower.value = -3, 3))
 #' 
+#' plotOptimInfo(optim_coco)
+#' 
 #' plot(optim_coco)
+#' 
+#' plot(optim_coco, type = 'ellipse')
+#' 
+#' plot(optim_coco, type = 'correlations', index = c(2,3,5))
 #' 
 #' summary(optim_coco)
 #'  
 #' getEstims(optim_coco)
 #' 
-#' plotOptimInfo(optim_coco)
 #' }
 #' 
 cocoOptim <- function(coco.object, boundaries = list(), 

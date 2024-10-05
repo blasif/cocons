@@ -28,7 +28,7 @@ setClass("coco", slots = list(
 # Methods ----------------------------------------------------------------------
 ###############################################################################-
 
-#' Plot Method for Coco Class
+#' Plot Method for coco objects
 #'
 #' This method plots objects of class \code{coco}.
 #' @rdname plot-methods
@@ -36,19 +36,17 @@ setClass("coco", slots = list(
 #' @aliases plot,coco-method
 #' @param x (\code{S4}) A fitted object of class \code{coco}.
 #' @param y Not used.
-#' @param ... Additional arguments passed to \link[fields]{quilt.plot}. 
 #' @param type (\code{character}  or \code{NULL}) The type of plot. NULL or "ellipse" for drawing ellipse of the convolution kernels.
 #' @param index (\code{integer vector}) For plotting local correlation plots.
 #' @param factr (\code{numeric}) Factor rate for size of ellipses.
-#' @param delta (\code{numeric}) when type "ellipse", "delta" of nearest.dist must be specified.
+#' @param ... Additional arguments passed to \link[fields]{quilt.plot}. 
 #' @return Several plots are created.
 #' @author Federico Blasi
 #' 
 setMethod("plot",
           signature(x = "coco", y = "missing"),
           definition =
-            function(x, y, ..., type = NULL, index = NULL, factr = 0.1, 
-                     delta = NULL) {
+            function(x, y, type = NULL, index = NULL, factr = 0.1, ...) {
               
               if (length(x@output) == 0) {
                 stop("object has not yet been fitted.")
@@ -130,7 +128,7 @@ setMethod("plot",
                       for (jj in 1:number_x) {
                         center_locs <- c(vals_x[ii], range_y[1] + jj / number_x * (range_y[2] - range_y[1]))
                         
-                        sss <- spam::nearest.dist(x = matrix(center_locs, ncol = 2), y = x@locs, delta = delta) # fix delta to automatic
+                        sss <- spam::nearest.dist(x = matrix(center_locs, ncol = 2), y = x@locs, delta = diff(range(x@locs))/5)
                         
                         to_compute_sd <- sss@colindices[which.min(sss@entries)]
                         
@@ -168,7 +166,7 @@ setMethod("plot",
                   
                   for (ww in index) {
                     
-                    fields::quilt.plot(x@locs, tmp_cov[ww,], zlim = c(0, 1), main = 'global corr.')
+                    fields::quilt.plot(x@locs, tmp_cov[ww,], zlim = c(0, 1), main = paste0('global corr. at index ',ww))
                     graphics::points(x@locs[ww,1], x@locs[ww,2], pch = "X", bg='red', col = 'violet', cex = 2)
                     
                     local_var <- X_std$std.covs[ww, ] %*% theta_list$std.dev
@@ -214,7 +212,7 @@ setMethod("plot",
                       smooth_limits = x@info$smooth.limits
                     ))
                     
-                    fields::quilt.plot(x@locs, tmp_cov_two[ww, ], main = 'local corr.')
+                    fields::quilt.plot(x@locs, tmp_cov_two[ww, ], main = paste0('local corr. at index ',ww))
                     graphics::points(x@locs[ww,1], x@locs[ww,2], pch = "X", bg='red', col = 'violet', cex = 2)
                   }
                 }
@@ -269,7 +267,7 @@ setMethod("plot",
                       for (jj in 1:number_x) {
                         center_locs <- c(vals_x[ii], range_y[1] + jj / number_x * (range_y[2] - range_y[1]))
                         
-                        sss <- spam::nearest.dist(x = matrix(center_locs, ncol = 2), y = x@locs, delta = delta) # fix delta to automatic
+                        sss <- spam::nearest.dist(x = matrix(center_locs, ncol = 2), y = x@locs, delta = diff(range(x@locs))/5) 
                         
                         to_compute_sd <- sss@colindices[which.min(sss@entries)]
                         
