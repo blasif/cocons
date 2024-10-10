@@ -23,8 +23,19 @@
 #' @author Federico Blasi
 #' @examples
 #' \dontrun{
+#' 
+#' # Stationary model
+#' 
+#' model.list_stat <- list('mean' = 0,
+#' 'std.dev' = formula( ~ 1),
+#' 'scale' = formula( ~ 1),
+#' 'aniso' = 0,
+#' 'tilt' = 0,
+#' 'smooth' = 3/2,
+#' 'nugget' = -Inf)
+#' 
 #'  
-#' model.list <- list('mean' = 0,
+#' model.list_ns <- list('mean' = 0,
 #' 'std.dev' = formula( ~ 1 + cov_x + cov_y),
 #' 'scale' = formula( ~ 1 + cov_x + cov_y),
 #' 'aniso' = 0,
@@ -36,24 +47,36 @@
 #' data = holes[[1]][1:100, ],
 #' locs = as.matrix(holes[[1]][1:100, 1:2]),
 #' z = holes[[1]][1:100, ]$z,
-#' model.list = model.list)
+#' model.list = model.list_stat)
 #' 
-#' optim_coco <- cocoOptim(coco_object,
+#' optim_coco_stat <- cocoOptim(coco_object,
 #' boundaries = getBoundaries(coco_object,
 #' lower.value = -3, 3))
 #' 
-#' coco_preds <- cocoPredict(optim_coco, newdataset = holes[[2]],
+#' coco_preds_stat <- cocoPredict(optim_coco_stat, newdataset = holes[[2]],
 #' newlocs = as.matrix(holes[[2]][, 1:2]),
 #' type = "pred")
 #' 
-#' coco_preds
+#' # Update model
+#' coco_object@model.list <- model.list_ns
 #' 
-#' par(mfrow = c(1, 2))
+#' optim_coco_ns <- cocoOptim(coco_object,
+#' boundaries = getBoundaries(coco_object,
+#' lower.value = -3, 3))
 #' 
-#' fields::quilt.plot(main = "mean", holes[[2]][, 1:2], 
-#' coco_preds$mean, xlim = c(-1, 1), ylim = c(-1, 1))
-#' fields::quilt.plot(main = "se", holes[[2]][, 1:2], 
-#' coco_preds$sd.pred, xlim = c(-1, 1), ylim = c(-1, 1))
+#' coco_preds_ns <- cocoPredict(optim_coco_ns, newdataset = holes[[2]],
+#' newlocs = as.matrix(holes[[2]][, 1:2]),
+#' type = "pred")
+#'
+#' par(mfrow = c(1, 3))
+#' 
+#' fields::quilt.plot(main = "full data", holes[[1]][, 1:2], 
+#' holes[[1]]$z, xlim = c(-1, 1), ylim = c(-1, 1))
+#' 
+#' fields::quilt.plot(main = "stationary se", holes[[2]][, 1:2], 
+#' coco_preds_stat$sd.pred, xlim = c(-1, 1), ylim = c(-1, 1))
+#' fields::quilt.plot(main = "nonstationary se", holes[[2]][, 1:2], 
+#' coco_preds_ns$sd.pred, xlim = c(-1, 1), ylim = c(-1, 1))
 #' 
 #' 
 #' }

@@ -14,8 +14,8 @@
 #' @param ncores (\code{character} or \code{integer}) The number of threads to use for the optimization. If set to `"auto"`, the number of threads is chosen based on system capabilities or a fraction of the available cores.
 #' @param optim.type (\code{character}) The optimization approach. Options include:
 #' \itemize{
-#'   \item \code{"mle"}: Classical Maximum Likelihood Estimation.
-#'   \item \code{"pmle"}: Penalized Maximum Likelihood, factoring out the spatial trend for dense objects or the global marginal variance parameter for sparse objects.
+#'   \item \code{"mle"}: Classical Maximum Likelihood estimation.
+#'   \item \code{"pmle"}: Profile Maximum Likelihood, factoring out the spatial trend for dense objects or the global marginal variance parameter for sparse objects.
 #' }
 #' @param safe (\code{logical}) If `TRUE`, the function avoids Cholesky decomposition errors due to ill-posed covariance matrices by returning a pre-defined large value. Defaults to `TRUE`.
 #' @param optim.control (\code{list}) A list of settings to be passed to the \link[optimParallel]{optimParallel} function \[2\].

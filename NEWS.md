@@ -8,7 +8,7 @@
 
 - added a NEWS.md file with version updates / modifications / enhances / etc
 - automatized `delta` for method `plot` for coco class.
-- Better visualization for `plot(cocoOptim object, type = "ellipse"")`
+- Better visualization for `plot(cocoOptim object, type = "ellipse")`
 - `coco`:
   - now it is not necessary to provide all models for each source of nonstationarity. Those not specified will be set to those referenced
   with a stationary 0-mean model (i.e. tilt = 0 , aniso = 0, nugget = -Inf (because of log-parameterization)). If 'smooth' is not specified, then it is set to 0.5.
@@ -36,7 +36,7 @@
 - method "summary" for `coco` objecets (former "print" method)
 - more proper naming of objects inside functions
 - renaming of "cat.vars" to "skip.scale" + associated checks and optimization
-- `getCondNumber` removed, which can be replaced with `kappa` function from base R (i.e. `kappa(cov2cor(getCovMatrix(coco.object)),exact = TRUE)`)
+- `getCondNumber` removed, which can be replaced with `kappa` function from base R (i.e. `kappa(getCovMatrix(coco.object),exact = TRUE)`)
 
 ## cocons 0.1.2
 

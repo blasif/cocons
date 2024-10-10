@@ -94,9 +94,7 @@ coco <- function(type,
     z <- matrix(z, ncol = 1)
   }
   
-  if(is.data.frame(locs)){
-    locs <- as.matrix(locs)
-  }
+
   
   .cocons.check.z(z, data)
   
