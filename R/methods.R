@@ -130,6 +130,8 @@ setMethod("plot",
                         
                         sss <- spam::nearest.dist(x = matrix(center_locs, ncol = 2), y = x@locs, delta = diff(range(x@locs))/5)
                         
+                        if(length(sss@entries) == 0){next}
+                        
                         to_compute_sd <- sss@colindices[which.min(sss@entries)]
                         
                         .cocons.DrawEllipsoid(

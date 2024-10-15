@@ -26,8 +26,8 @@
 #' \eqn{\nu_{l}}, and \eqn{\nu_{u}} are the lower and upper bounds limiting the range of variation of the spatially-varying smoothness, and where \eqn{\boldsymbol{X}_{\ell}} relates to a specific design matrix defined by the specific models for each of the source of nonstationarity.
 #' 
 #' Lastly, arguments for the \code{"info"} list argument involve: \itemize{
-#' \item \code{"lambda"}: (\code{numeric}) a positive scalar specifying the regularization parameter.
-#' \item \code{"smooth.limits"}: (\code{numeric vector}) specifying the allowed range of variation for the spatially varying smoothness.
+#' \item \code{"lambda"}: (\code{numeric}) a positive scalar specifying the regularization parameter. Larger values penalizes highly-smoothed long-tailed covariance functions. 
+#' \item \code{"smooth.limits"}: (\code{numeric vector}) specifying the range of variation for the spatially varying smoothness (e.g. c(0.5, 2.5)).
 #' \item \code{"taper"}: (\code{numeric}) specifying the desired taper function from the spam package (only for "sparse" coco objects).
 #' \item \code{"delta"}: (\code{numeric}) specifying the taper range/scale (only for "sparse" coco objects).
 #' \item \code{"skip.scale"}: (\code{integer vector}) By default, all covariates are scaled. \code{skip.scale} allows to specify the index of those variables in \code{data} that should not be scaled during the optimization.

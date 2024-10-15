@@ -9,7 +9,9 @@ Authors@R: c(person("Federico", "Blasi", email = "federico.blasi@math.uzh.ch",
   role = c("ctb"), comment = c(ORCID = "0000-0002-6319-2332"))
   )
 Maintainer: Federico Blasi <federico.blasi@math.uzh.ch>
-Description: Estimation and prediction of nonstationary Gaussian process with modular covariate-based covariance functions. An induced compact-supported nonstationary covariance function is provided to speed up computations when handling densly sampled domains.
+Description: Estimation, prediction, and simulation of nonstationary Gaussian process with modular covariate-based covariance functions. 
+  Sources of nonstationarity, such as trend, variance, geometric anisotropy, smoothness, and nugget, can be considered based on spatial characteristics. 
+  An induced compact-supported nonstationary covariance function is provided, enabling fast and memory-efficient computations when handling densely sampled domains.
 Encoding: UTF-8
 LazyData: true
 License: GPL (>= 3)
