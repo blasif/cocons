@@ -66,8 +66,8 @@ setMethod("plot",
                   do.call(fields::quilt.plot, list(
                     "x" = x@locs[, 1],
                     "y" = x@locs[, 2],
-                    "main" = "trend",
-                    "z" = getTrend(x)
+                    "main" = "spatial mean",
+                    "z" = getSpatMean(x)
                   ), ...)
                   
                   if(T){
@@ -75,7 +75,7 @@ setMethod("plot",
                       "x" = x@locs[, 1],
                       "y" = x@locs[, 2],
                       "main" = "residuals",
-                      "z" = x@z[,1] - getTrend(x)
+                      "z" = x@z[,1] - getSpatMean(x)
                     ), ...)                    
                   }
 
@@ -228,8 +228,8 @@ setMethod("plot",
                 
                 tmp_list <- list("x" = x@locs[, 1],
                                  "y" = x@locs[, 2],
-                                 "main" = "trend",
-                                 "z" = getTrend(x))
+                                 "main" = "spatial mean",
+                                 "z" = getSpatMean(x))
                 
                 graphics::par(mfrow = c(1, 2))
                 do.call(fields::quilt.plot, args = tmp_list)
@@ -237,7 +237,7 @@ setMethod("plot",
                 tmp_list <- list("x" = x@locs[, 1],
                                  "y" = x@locs[, 2],
                                  "main" = "residuals",
-                                 "z" = x@z[,1] - getTrend(x))
+                                 "z" = x@z[,1] - getSpatMean(x))
                 
                 do.call(fields::quilt.plot, args = tmp_list)
                 

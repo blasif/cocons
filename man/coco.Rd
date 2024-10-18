@@ -15,11 +15,11 @@ coco(type, data, locs, z, model.list, info, output = list())
 
 \item{z}{(\code{vector} or \code{matrix}) A matrix of \eqn{n \times r} response realizations, one realization per column. When considering only one realization, a vector can also be provided.}
 
-\item{model.list}{(\code{list}) A \code{list} specifying a model for each aspect of the spatial structure.}
+\item{model.list}{(\code{list}) A \code{list} specifying a model for each source of nonstationarity.}
 
 \item{info}{(\code{list} or \code{NULL}) A \code{list} specifying characteristics of the coco object.}
 
-\item{output}{(\code{list} or \code{NULL}) Empty or the resulting object from running \link[optimParallel]{optimParallel}, adding to this a list with boundary information (check \link{getBoundaries} to check the expected structure).}
+\item{output}{(\code{list} or \code{NULL}) Empty or the resulting object from running \link[optimParallel]{optimParallel}, adding to this a list with boundary information (see \link{getBoundaries} to check the expected structure).}
 }
 \value{
 (\code{S4}) An S4 object of class \code{coco}.
@@ -34,11 +34,11 @@ matrices by tapering the dense covariance matrix with a compact isotropic compac
 Type \code{"sparse"} allows a set of efficient algorithms, thus making it more suitable for large sample sizes.
 
 An important component of the \code{coco} S4 class is the \code{model.list} specification, involving individual formulas provided as a list, where each of them specifies a covariate-based parametric model for a specific source of nonstationarity.
-It involves \code{"trend"} for the spatial trend, the \code{"std.dev"} for the marginal standard deviation,
+It involves \code{"mean"} for the spatial mean, the \code{"std.dev"} for the marginal standard deviation,
 \code{"scale"}, \code{"aniso"} and \code{"tilt"}, each of them shaping specific aspects of the local spatial geometrically anisotropy structure,
 \code{"smooth"} handling local smoothness, and \code{"nugget"} handling the local nugget effect. The models are defined as:\tabular{llll}{
    Source \tab Related to \tab Description \tab Model \cr
-   \emph{mean} \tab \eqn{\mu} \tab Mean function \tab \eqn{\boldsymbol{X}_1\boldsymbol{\beta}} \cr
+   \emph{mean} \tab \eqn{\mu} \tab Spatial mean function \tab \eqn{\boldsymbol{X}_1\boldsymbol{\beta}} \cr
    \emph{std.dev} \tab \eqn{\sigma^{X}} \tab Marginal standard deviation \tab \eqn{\text{exp}(0.5 \boldsymbol{X}_2 \boldsymbol{\alpha})} \cr
    \emph{scale} \tab \eqn{\boldsymbol{\Sigma}^{X}} \tab Local scale \tab \eqn{\text{exp}(\boldsymbol{X}_3 \boldsymbol{\theta}_1)} \cr
    \emph{aniso} \tab \eqn{\boldsymbol{\Sigma}^{X}} \tab Local geometric anisotropy \tab \eqn{\text{exp}(\boldsymbol{X}_4 \boldsymbol{\theta}_2)} \cr
@@ -49,7 +49,7 @@ It involves \code{"trend"} for the spatial trend, the \code{"std.dev"} for the m
 
 
 where \eqn{\boldsymbol{\beta}}, \eqn{\boldsymbol{\alpha}}, \eqn{\boldsymbol{\theta}_1}, \eqn{\boldsymbol{\theta}_2}, \eqn{\boldsymbol{\theta}_3}, \eqn{\boldsymbol{\phi}}, and \eqn{\boldsymbol{\zeta}} are the parameter vectors of each model,
-\eqn{\nu_{l}}, and \eqn{\nu_{u}} are the lower and upper bounds limiting the range of variation of the spatially-varying smoothness, and where \eqn{\boldsymbol{X}_{\ell}} relates to a specific design matrix defined by the specific models for each of the source of nonstationarity.
+\eqn{\nu_{l}}, and \eqn{\nu_{u}} are the lower and upper bounds limiting the range of variation of the spatially-varying smoothness, and where \eqn{\boldsymbol{X}_{\ell}} relates to the design matrix defined by the specific models for each of the source of nonstationarity.
 
 Lastly, arguments for the \code{"info"} list argument involve: \itemize{
 \item \code{"lambda"}: (\code{numeric}) a positive scalar specifying the regularization parameter. Larger values penalizes highly-smoothed long-tailed covariance functions.

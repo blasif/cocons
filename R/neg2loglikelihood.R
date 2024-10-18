@@ -45,8 +45,7 @@ GetNeg2loglikelihoodTaper <- function(theta, par.pos, ref_taper, locs,
     resid <- x - c(x_covariates %*% theta_list$mean)
     
     n * log(2 * pi) + 2 * c(spam::determinant.spam.chol.NgPeyton(cholS)$modulus) + 
-      sum(resid * spam::solve.spam(cholS, resid))    
-    
+      c(crossprod(spam::forwardsolve.spam(cholS,resid)))
   }))
   
   return(sumlogs + .cocons.getPen(n * dim(z)[2], lambda, theta_list, smooth.limits))
@@ -97,8 +96,7 @@ GetNeg2loglikelihoodTaperProfile <- function(theta, par.pos, ref_taper, locs,
   logdet <- c(spam::determinant.spam.chol.NgPeyton(cholS)$modulus)
   
   sum_in <- sum(apply(z,2,function(x){
-    resid <- x - c(x_covariates %*% theta_list$mean)
-    sum(resid * spam::solve.spam(cholS, resid))
+    c(crossprod(spam::forwardsolve.spam(cholS, x - c(x_covariates %*% theta_list$mean))))
   }))
   
   return(dim(z)[2] * n * log(2 * pi) + 
@@ -213,12 +211,10 @@ GetNeg2loglikelihood <- function(theta,
   
   sum_logliks <- sum(apply(z, 2, function(x){
     tmp_a <- x - tmp_trend
-    n * log(2 * pi) + 2 * logdet + sum(tmp_a * backsolve(cholS,
-                                                         forwardsolve(cholS, 
-                                                                      tmp_a, 
-                                                                      transpose = TRUE, 
-                                                                      upper.tri = TRUE),
-                                                         n))
+    n * log(2 * pi) + 2 * logdet + c(crossprod(forwardsolve(cholS, 
+                                                        tmp_a, 
+                                                        transpose = TRUE, 
+                                                        upper.tri = TRUE)))
   }))
   
   return(sum_logliks +  .cocons.getPen(n * dim(z)[2], lambda, theta_list, smooth.limits))

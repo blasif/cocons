@@ -1,3 +1,11 @@
+## cocons 0.1.4
+
+- Documentation polished
+
+### Changes
+
+- `getTrend` now is called `getSpatMean`
+
 ## cocons 0.1.3
 
 - Vignette updates, watermark removed

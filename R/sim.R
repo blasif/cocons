@@ -2,7 +2,7 @@
 #' Marginal and conditional simulation of nonstationary Gaussian processes
 #' @description draw realizations of stationary and nonstationary Gaussian processes with covariate-based covariance functions.
 #' @details 
-#' #' The argument \code{sim.type = 'cond'} specifies a conditional simulation, requiring \code{cond.info} to be provided. 
+#' The argument \code{sim.type = 'cond'} specifies a conditional simulation, requiring \code{cond.info} to be provided. 
 #' \code{cond.info} is a list including \code{newdataset}, a data.frame containing covariates present in \code{model.list} at the simulation locations, and \code{newlocs}, 
 #' a matrix specifying the locations corresponding to the simulation, with indexing that matches \code{newdataset}.
 #' 

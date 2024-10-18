@@ -191,11 +191,11 @@ getSpatEffects <- function(coco.object){
 #' Computes the spatial trend of a (fitted) coco object
 #' @description Compute the trend of the (fitted) coco object.
 #'
-#' @usage getTrend(coco.object)
+#' @usage getSpatMean(coco.object)
 #' @param coco.object \code{(S4)} a fitted coco S4 object.
 #' @returns (\code{numeric vector}) a vector with the adjusted trend.
 #' @author Federico Blasi
-getTrend <- function(coco.object){
+getSpatMean <- function(coco.object){
   tmp_scaled <- getScale(coco.object)$std.covs
   return(tmp_scaled %*% getEstims(coco.object)$mean)
 }
