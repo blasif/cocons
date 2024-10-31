@@ -2,10 +2,10 @@
 % Please edit documentation in R/optim.R
 \name{cocoOptim}
 \alias{cocoOptim}
-\title{Optimizer for Nonstationary Spatial Models}
+\title{Optimizer for coco objects}
 \usage{
-cocoOptim(coco.object, boundaries = list(), ncores = "auto", 
-optim.type, safe, optim.control)
+cocoOptim(coco.object, boundaries = list(), ncores = "auto", safe = TRUE,
+optim.type, optim.control)
 }
 \arguments{
 \item{coco.object}{(\code{S4}) A \link{coco} object.}
@@ -14,13 +14,13 @@ optim.type, safe, optim.control)
 
 \item{ncores}{(\code{character} or \code{integer}) The number of threads to use for the optimization. If set to \code{"auto"}, the number of threads is chosen based on system capabilities or a fraction of the available cores.}
 
-\item{optim.type}{(\code{character}) The optimization approach. Options include:
+\item{safe}{(\code{logical}) If \code{TRUE}, the function avoids Cholesky decomposition errors due to ill-posed covariance matrices by returning a pre-defined large value. Defaults to \code{TRUE}.
 \itemize{
 \item \code{"mle"}: Classical Maximum Likelihood estimation.
 \item \code{"pmle"}: Profile Maximum Likelihood, factoring out the spatial trend for dense objects or the global marginal variance parameter for sparse objects.
 }}
 
-\item{safe}{(\code{logical}) If \code{TRUE}, the function avoids Cholesky decomposition errors due to ill-posed covariance matrices by returning a pre-defined large value. Defaults to \code{TRUE}.}
+\item{optim.type}{(\code{character}) The optimization approach. Options include:}
 
 \item{optim.control}{(\code{list}) A list of settings to be passed to the \link[optimParallel]{optimParallel} function [2].}
 }
@@ -28,7 +28,7 @@ optim.type, safe, optim.control)
 (\code{S4}) An optimized S4 object of class \code{coco}.
 }
 \description{
-This function estimates the spatial model parameters using the L-BFGS-B optimizer [1].
+Estimation the spatial model parameters using the L-BFGS-B optimizer [1].
 }
 \examples{
 \dontrun{

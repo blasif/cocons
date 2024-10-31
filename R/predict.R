@@ -1,5 +1,5 @@
 
-#' Prediction Routines for Nonstationary Spatial Models
+#' Prediction for coco objects
 #' 
 #' @description 
 #' Computes point predictions and standard errors based on conditional Gaussian distributions for nonstationary spatial models.
@@ -16,8 +16,8 @@
 #' @returns 
 #' A list containing:
 #' \itemize{
-#'   \item \code{trend}: The systematic large-scale variability.
-#'   \item \code{mean}: The stochastic mean.
+#'   \item \code{systematic}: The systematic component of the mean.
+#'   \item \code{stochastic}: The stochastic component of the mean.
 #'   \item \code{sd.pred}: The standard errors, when `type = 'pred'` is specified.
 #' }
 #' @author Federico Blasi
@@ -110,9 +110,6 @@ cocoPredict <- function(coco.object,
   .cocons.check.newlocs(newlocs)
   .cocons.check.type_pred(type)
 
-  # add check on the names of newdataset names and model.list
-  # add check type
-  
   if (coco.object@type == "dense") {
     
     tmp_matrix <- cocons::getDesignMatrix(model.list = coco.object@model.list, data = coco.object@data)
@@ -144,7 +141,7 @@ cocoPredict <- function(coco.object,
     
     cov_pred <- cocons::cov_rns_pred(
       theta = adjusted_eff_values[-1], locs = coco.object@locs,
-      locs_pred = as.matrix(newlocs),
+      locs_pred = newlocs,
       x_covariates = X_std$std.covs,
       x_covariates_pred = X_pred_std$std.covs,
       smooth_limits = coco.object@info$smooth.limits
@@ -152,19 +149,19 @@ cocoPredict <- function(coco.object,
     
     inv_cov <- solve(observed_cov, t(cov_pred))
     
-    # trend
-    trend_pred <- c(X_pred_std$std.covs %*% adjusted_eff_values$mean)
-    trendObs <- c(X_std$std.covs %*% adjusted_eff_values$mean)
+    # systematic
+    systematic_pred <- c(X_pred_std$std.covs %*% adjusted_eff_values$mean)
+    systematicObs <- c(X_std$std.covs %*% adjusted_eff_values$mean)
     
-    coco.resid <- coco.object@z[,index.pred] - trendObs
+    coco.resid <- coco.object@z[,index.pred] - systematicObs
     
     # spatial mean
-    mean_part <- c(crossprod(coco.resid, inv_cov))
+    stochastic_part <- c(crossprod(coco.resid, inv_cov))
     
     if (type == "mean") {
       return(list(
-        "trend" = trend_pred,
-        "mean" = mean_part
+        "systematic" = systematic_pred,
+        "stochastic" = stochastic_part
       ))
     }
     
@@ -181,8 +178,8 @@ cocoPredict <- function(coco.object,
 
       return(
         list(
-          "trend" = trend_pred,
-          "mean" = mean_part,
+          "systematic" = systematic_pred,
+          "stochastic" = stochastic_part,
           "sd.pred" = c(sqrt(uncertainty_some))
         )
       )
@@ -233,7 +230,7 @@ cocoPredict <- function(coco.object,
       smooth_limits = coco.object@info$smooth.limits
     )
     
-    pred_locs <- spam::nearest.dist(x = as.matrix(newlocs), y = coco.object@locs, delta = coco.object@info$delta)
+    pred_locs <- spam::nearest.dist(x = newlocs, y = coco.object@locs, delta = coco.object@info$delta)
     
     pred_taper <- coco.object@info$taper(pred_locs, theta = c(coco.object@info$delta, 1))
     
@@ -243,7 +240,7 @@ cocoPredict <- function(coco.object,
     pred_taper@entries <- pred_taper@entries * cocons::cov_rns_taper_pred(
       theta = adjusted_eff_values,
       locs = coco.object@locs,
-      locs_pred = as.matrix(newlocs),
+      locs_pred = newlocs,
       x_covariates = X_std$std.covs,
       x_covariates_pred = X_pred_std$std.covs,
       colindices = pred_taper@colindices,
@@ -253,19 +250,19 @@ cocoPredict <- function(coco.object,
     
     inv_cov <- spam::solve(taper_two, spam::t(pred_taper)) # memory intensive
     
-    # trend
-    trend_pred <- c(X_pred_std$std.covs %*% adjusted_eff_values$mean)
-    trend_obs <- c(X_std$std.covs %*% adjusted_eff_values$mean) 
-    coco.resid <- coco.object@z[,index.pred] - trend_obs
+    # systematic
+    systematic_pred <- c(X_pred_std$std.covs %*% adjusted_eff_values$mean)
+    systematic_obs <- c(X_std$std.covs %*% adjusted_eff_values$mean) 
+    coco.resid <- coco.object@z[,index.pred] - systematic_obs
     
-    # mean part
+    # stochastic part
     
-    mean_part <- c(crossprod(coco.resid, inv_cov))
+    stochastic_part <- c(crossprod(coco.resid, inv_cov))
     
     if (type == "mean") {
       return(list(
-        "trend" = trend_pred,
-        "mean" = mean_part
+        "systematic" = systematic_pred,
+        "stochastic" = stochastic_part
       ))
     }
     
@@ -281,8 +278,8 @@ cocoPredict <- function(coco.object,
       uncertainty_some[idx_neg] <- abs(uncertainty_some[idx_neg])
 
       return(list(
-        "trend" = trend_pred,
-        "mean" = mean_part,
+        "systematic" = systematic_pred,
+        "stochastic" = stochastic_part,
         "sd.pred" = c(sqrt(uncertainty_some))
         )
       )

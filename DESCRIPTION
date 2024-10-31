@@ -10,7 +10,7 @@ Authors@R: c(person("Federico", "Blasi", email = "federico.blasi@math.uzh.ch",
   )
 Maintainer: Federico Blasi <federico.blasi@math.uzh.ch>
 Description: Estimation, prediction, and simulation of nonstationary Gaussian process with modular covariate-based covariance functions. 
-  Sources of nonstationarity, such as trend, variance, geometric anisotropy, smoothness, and nugget, can be considered based on spatial characteristics. 
+  Sources of nonstationarity, such as spatial mean, variance, geometric anisotropy, smoothness, and nugget, can be considered based on spatial characteristics. 
   An induced compact-supported nonstationary covariance function is provided, enabling fast and memory-efficient computations when handling densely sampled domains.
 Encoding: UTF-8
 LazyData: true

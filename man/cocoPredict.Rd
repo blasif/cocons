@@ -2,7 +2,7 @@
 % Please edit documentation in R/predict.R
 \name{cocoPredict}
 \alias{cocoPredict}
-\title{Prediction Routines for Nonstationary Spatial Models}
+\title{Prediction for coco objects}
 \usage{
 cocoPredict(coco.object, newdataset, newlocs, type = 'mean', ...)
 }
@@ -20,8 +20,8 @@ cocoPredict(coco.object, newdataset, newlocs, type = 'mean', ...)
 \value{
 A list containing:
 \itemize{
-\item \code{trend}: The systematic large-scale variability.
-\item \code{mean}: The stochastic mean.
+\item \code{systematic}: The systematic component of the mean.
+\item \code{stochastic}: The stochastic component of the mean.
 \item \code{sd.pred}: The standard errors, when \code{type = 'pred'} is specified.
 }
 }

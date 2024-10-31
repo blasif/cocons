@@ -2,9 +2,15 @@
 
 - Documentation polished
 
+### Enhances
+
+- `GetNeg2loglikelihood`, `GetNeg2loglikelihoodTaper`, and `GetNeg2loglikelihoodTaperProfile` now much faster (~35\% faster)
+
 ### Changes
 
 - `getTrend` now is called `getSpatMean`
+- `cocoPredict` renamed output spatial mean vectors: `trend` is now called `systematic`, while `mean` is called `stochastic`.
+- `cocoOptim` reordering of arguments
 
 ## cocons 0.1.3
 

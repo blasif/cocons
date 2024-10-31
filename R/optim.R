@@ -1,23 +1,22 @@
 
-#' Optimizer for Nonstationary Spatial Models
+#' Optimizer for coco objects
 #' 
 #' @description 
-#' This function estimates the spatial model parameters using the L-BFGS-B optimizer \[1\].
-#' 
+#' Estimation the spatial model parameters using the L-BFGS-B optimizer \[1\].
 #' 
 #' @usage 
-#' cocoOptim(coco.object, boundaries = list(), ncores = "auto", 
-#' optim.type, safe, optim.control)
+#' cocoOptim(coco.object, boundaries = list(), ncores = "auto", safe = TRUE,
+#' optim.type, optim.control)
 #' 
 #' @param coco.object (\code{S4}) A \link{coco} object.
 #' @param boundaries (\code{list}) If provided, a list containing lower, initial, and upper values for the parameters, as defined by \link{getBoundaries}. If not provided, these values are automatically computed with global lower and upper bounds set to -2 and 2.
 #' @param ncores (\code{character} or \code{integer}) The number of threads to use for the optimization. If set to `"auto"`, the number of threads is chosen based on system capabilities or a fraction of the available cores.
 #' @param optim.type (\code{character}) The optimization approach. Options include:
+#' @param safe (\code{logical}) If `TRUE`, the function avoids Cholesky decomposition errors due to ill-posed covariance matrices by returning a pre-defined large value. Defaults to `TRUE`.
 #' \itemize{
 #'   \item \code{"mle"}: Classical Maximum Likelihood estimation.
 #'   \item \code{"pmle"}: Profile Maximum Likelihood, factoring out the spatial trend for dense objects or the global marginal variance parameter for sparse objects.
 #' }
-#' @param safe (\code{logical}) If `TRUE`, the function avoids Cholesky decomposition errors due to ill-posed covariance matrices by returning a pre-defined large value. Defaults to `TRUE`.
 #' @param optim.control (\code{list}) A list of settings to be passed to the \link[optimParallel]{optimParallel} function \[2\].
 #' @returns (\code{S4}) An optimized S4 object of class \code{coco}.
 #' @author Federico Blasi
@@ -63,8 +62,8 @@
 #' }
 #' 
 cocoOptim <- function(coco.object, boundaries = list(), 
-                      ncores = "auto", optim.type = "mle",
-                      safe = TRUE,
+                      ncores = "auto", safe = TRUE,
+                      optim.type = "mle",
                       optim.control = NULL){
   
   # Init objects

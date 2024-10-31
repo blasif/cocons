@@ -188,8 +188,8 @@ getSpatEffects <- function(coco.object){
 
 }
 
-#' Computes the spatial trend of a (fitted) coco object
-#' @description Compute the trend of the (fitted) coco object.
+#' Computes the spatial mean of a (fitted) coco object
+#' @description Computes the spatial mean of the (fitted) coco object.
 #'
 #' @usage getSpatMean(coco.object)
 #' @param coco.object \code{(S4)} a fitted coco S4 object.

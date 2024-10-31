@@ -2,7 +2,7 @@
 % Please edit documentation in R/getFunctions.R
 \name{getSpatMean}
 \alias{getSpatMean}
-\title{Computes the spatial trend of a (fitted) coco object}
+\title{Computes the spatial mean of a (fitted) coco object}
 \usage{
 getSpatMean(coco.object)
 }
@@ -13,7 +13,7 @@ getSpatMean(coco.object)
 (\code{numeric vector}) a vector with the adjusted trend.
 }
 \description{
-Compute the trend of the (fitted) coco object.
+Computes the spatial mean of the (fitted) coco object.
 }
 \author{
 Federico Blasi
