@@ -69,6 +69,13 @@ cocoOptim <- function(coco.object, boundaries = list(),
   # Init objects
   if(T){
     
+    # if optim.control not provided, then some general Optim.control is provided
+    optim.control <- if (is.null(optim.control)) {
+      getOption("cocons.Optim.Control")
+    } else {
+      .cocons.update.optim.control(optim.control)
+    }
+    
     if(is.character(ncores)){
       ncores <- .cocons.set.ncores(coco.object, optim.control)
     } else{
@@ -101,13 +108,6 @@ cocoOptim <- function(coco.object, boundaries = list(),
     } else {
       tmp_values <- cocons::getScale(designMatrix$model.matrix)
       mod_DM <- tmp_values$std.covs      
-    }
-    
-    # if optim.control not provided, then some general Optim.control is provided
-    optim.control <- if (is.null(optim.control)) {
-      getOption("cocons.Optim.Control")
-    } else {
-      .cocons.update.optim.control(optim.control)
     }
     
     # Suggested by OptimParallel

@@ -15,18 +15,18 @@ cocoPredict(coco.object, newdataset, newlocs, type = 'mean', ...)
 
 \item{type}{(\code{character}) Specifies whether to return only the point prediction (\code{'mean'}) or both the point prediction and prediction standard errors (\code{'pred'}).}
 
-\item{...}{Additional arguments. If \code{coco.object} contains multiple realizations, the argument \code{index.pred} can be used to specify which realization of \code{coco.object@z} should be used for the predictions.}
+\item{...}{Additional arguments. If \code{coco.object} contains multiple realizations, the argument \code{index.pred} can be used to specify which realization of \code{coco.object@z} should be used for predictions.}
 }
 \value{
 A list containing:
 \itemize{
-\item \code{systematic}: The systematic component of the mean.
-\item \code{stochastic}: The stochastic component of the mean.
+\item \code{systematic}: The systematic component of the conditional expectation.
+\item \code{stochastic}: The stochastic component of the conditional expectation.
 \item \code{sd.pred}: The standard errors, when \code{type = 'pred'} is specified.
 }
 }
 \description{
-Computes point predictions and standard errors based on conditional Gaussian distributions for nonstationary spatial models.
+Computes the conditional expectation and standard errors based on the conditional Gaussian distribution for nonstationary spatial models.
 }
 \examples{
 \dontrun{

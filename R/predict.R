@@ -2,7 +2,7 @@
 #' Prediction for coco objects
 #' 
 #' @description 
-#' Computes point predictions and standard errors based on conditional Gaussian distributions for nonstationary spatial models.
+#' Computes the conditional expectation and standard errors based on the conditional Gaussian distribution for nonstationary spatial models.
 #' 
 #' @usage 
 #' cocoPredict(coco.object, newdataset, newlocs, type = 'mean', ...)
@@ -11,13 +11,13 @@
 #' @param newdataset (\code{data.frame}) A data.frame containing the covariates present in `model.list` at the prediction locations.
 #' @param newlocs (\code{matrix}) A matrix specifying the prediction locations, matching `newdataset` index.
 #' @param type (\code{character}) Specifies whether to return only the point prediction (`'mean'`) or both the point prediction and prediction standard errors (`'pred'`).
-#' @param ... Additional arguments. If `coco.object` contains multiple realizations, the argument `index.pred` can be used to specify which realization of `coco.object@z` should be used for the predictions.
+#' @param ... Additional arguments. If `coco.object` contains multiple realizations, the argument `index.pred` can be used to specify which realization of `coco.object@z` should be used for predictions.
 #' 
 #' @returns 
 #' A list containing:
 #' \itemize{
-#'   \item \code{systematic}: The systematic component of the mean.
-#'   \item \code{stochastic}: The stochastic component of the mean.
+#'   \item \code{systematic}: The systematic component of the conditional expectation.
+#'   \item \code{stochastic}: The stochastic component of the conditional expectation.
 #'   \item \code{sd.pred}: The standard errors, when `type = 'pred'` is specified.
 #' }
 #' @author Federico Blasi

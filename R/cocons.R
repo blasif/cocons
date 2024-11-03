@@ -94,8 +94,6 @@ coco <- function(type,
     z <- matrix(z, ncol = 1)
   }
   
-
-  
   .cocons.check.z(z, data)
   
   .cocons.check.model.list(model.list,
