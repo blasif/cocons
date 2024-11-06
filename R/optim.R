@@ -166,7 +166,7 @@ cocoOptim <- function(coco.object, boundaries = list(),
       
     }
     
-    if(optim.type == "pmle"){
+    if(optim.type == "pmle" || optim.type == "reml"){
       
       if(!is.logical(designMatrix$par.pos$mean)){stop("profile ML only available when considering covariates in the mean.")}
 
@@ -189,14 +189,18 @@ cocoOptim <- function(coco.object, boundaries = list(),
       }
 
       args_optim <- list(
-        "fn" = cocons::GetNeg2loglikelihoodProfile,
+        "fn" = switch(optim.type,
+                      pmle = cocons::GetNeg2loglikelihoodProfile,
+                      reml = GetNeg2loglikelihoodREML),
         "method" = "L-BFGS-B",
         "lower" = boundaries$theta_lower,
         "par" = boundaries$theta_init,
         "upper" = boundaries$theta_upper,
         "n" = dim(coco.object@z)[1],
         "smooth.limits" = coco.object@info$smooth.limits,
-        "z" = coco.object@z,
+        "z" = switch(optim.type,
+                     pmle = coco.object@z,
+                     reml = (diag(dim(mod_DM)[1]) - mod_DM %*% solve(crossprod(mod_DM),t(mod_DM))) %*% coco.object@z), 
         "x_covariates" = mod_DM,
         "par.pos" = tmp_par_pos,
         "lambda" = coco.object@info$lambda,
@@ -226,7 +230,7 @@ cocoOptim <- function(coco.object, boundaries = list(),
                                        transpose = TRUE, 
                                        upper.tri = TRUE))
         W <- crossprod(x_betas, V)
-        betass <- c(solve(W, t(V)) %*% rowSums(args_optim$z)) / dim(args_optim$z)[2]
+        betass <- c(solve(W, t(V)) %*% rowSums(coco.object@z)) / dim(coco.object@z)[2]
         names(betass) <- colnames(x_betas)
       }
       
@@ -241,7 +245,7 @@ cocoOptim <- function(coco.object, boundaries = list(),
       coco.object@info$boundaries <- tmp_boundaries
       coco.object@info$mean.vector <- tmp_values$mean.vector
       coco.object@info$sd.vector <- tmp_values$sd.vector
-      coco.object@info$optim.type <- "pmle"
+      coco.object@info$optim.type <- switch(optim.type, pmle = "pmle", reml = "reml")
       coco.object@info$safe <- safe
       coco.object@info$call <- match.call()
       
