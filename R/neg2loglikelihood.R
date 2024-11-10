@@ -289,3 +289,6 @@ GetNeg2loglikelihoodREML <- function(theta,
   return(sum_logliks +  .cocons.getPen((n - p) * dim(z)[2], lambda, theta_list, smooth.limits))
   
 }
+
+
+

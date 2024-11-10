@@ -112,15 +112,10 @@ NumericVector cov_rns_taper_pred(List& theta,
           
         } else{
           
-          if(smooth_s_Q_ij < 706.0){
-            
-            dist_vector(acumulating) = prefactor * std::pow(2.0 , -(smtns - 1)) / std::tgamma(smtns) * 
-              std::pow(smooth_s_Q_ij, smtns) * boost::math::cyl_bessel_k(smtns, smooth_s_Q_ij) * 
-              sigma_vector_pred[ii] * sigma_vector[jj];
-            
-          } else {
-            dist_vector(acumulating) = 0.0;
-          }
+          dist_vector(acumulating) = prefactor * std::pow(2.0 , -(smtns - 1)) / std::tgamma(smtns) * 
+            std::pow(smooth_s_Q_ij, smtns) * boost::math::cyl_bessel_k(smtns, smooth_s_Q_ij) * 
+            sigma_vector_pred[ii] * sigma_vector[jj];
+          
         }
         
       }
@@ -224,15 +219,10 @@ NumericVector cov_rns_taper(List& theta,
           
         } else{
           
-          if(smooth_s_Q_ij < 706.0){
-            
-            dist_vector(acumulating) = prefactor *  std::pow(2.0 , -(smtns - 1)) / std::tgamma(smtns) * 
-              std::pow(smooth_s_Q_ij, smtns) * boost::math::cyl_bessel_k(smtns, smooth_s_Q_ij) * 
-              sigma_vector[ii] * sigma_vector[jj];
-            
-          } else {
-            dist_vector(acumulating) = 0.0;
-          }
+          dist_vector(acumulating) = prefactor *  std::pow(2.0 , -(smtns - 1)) / std::tgamma(smtns) * 
+            std::pow(smooth_s_Q_ij, smtns) * boost::math::cyl_bessel_k(smtns, smooth_s_Q_ij) * 
+            sigma_vector[ii] * sigma_vector[jj];
+          
         }
         
       }

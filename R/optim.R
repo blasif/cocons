@@ -191,7 +191,7 @@ cocoOptim <- function(coco.object, boundaries = list(),
       args_optim <- list(
         "fn" = switch(optim.type,
                       pmle = cocons::GetNeg2loglikelihoodProfile,
-                      reml = GetNeg2loglikelihoodREML),
+                      reml = cocons::GetNeg2loglikelihoodREML),
         "method" = "L-BFGS-B",
         "lower" = boundaries$theta_lower,
         "par" = boundaries$theta_init,

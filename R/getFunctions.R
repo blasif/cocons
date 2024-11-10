@@ -125,6 +125,28 @@ getCRPS <- function(z.pred, mean.pred, sd.pred){
   
 }
 
+#' Based on a specific taper scale (delta), retrieves the density of the covariance matrix.
+#' @description Based on a specific taper scale (delta), retrieves the density of the covariance matrix.
+#'
+#' @usage getDensityFromDelta(coco.object, delta)
+#' @param coco.object \code{(S4)} a fitted [coco()] object.
+#' @param delta \code{(numeric)} a delta taper scale (delta).
+#' @returns (\code{numeric vector}) the associate density of the tapered covariance matrix.
+#' @author Federico Blasi
+getDensityFromDelta <- function(coco.object, delta){
+  
+  if(coco.object@type != "sparse"){stop("only for sparse coco objects.")}
+  
+  if(length(coco.object@output) == 0){
+    coco.object@output$par <- rep(0, .cocons.get.npars(coco.object))
+  }
+  
+  coco.object@info$delta <- delta
+  
+  return(summary(getCovMatrix(coco.object))$density)
+  
+}
+
 #' Evaluates the spatially-varying functions from a coco object at locs
 #' @description Evaluates the spatially-varying functions of the nonstationary spatial structure.
 #'
