@@ -1,6 +1,7 @@
 `cocons`
 ================================================================================
 ![Downloads](https://cranlogs.r-pkg.org/badges/last-month/cocons) 
+![Total Downloads](https://cranlogs.r-pkg.org/badges/grand-total/cocons)
 ![Version](https://www.r-pkg.org/badges/version/cocons)
 ![GitHub R package version](https://img.shields.io/github/r-package/v/blasif/cocons)
 [![cran checks](https://badges.cranchecks.info/worst/cocons.svg)](https://cran.r-project.org/web/checks/check_results_cocons.html)
