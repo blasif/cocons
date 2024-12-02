@@ -15,13 +15,13 @@ using namespace Rcpp;
 //' @return sparse covariance matrix at locs 
 // [[Rcpp::export]]
 NumericVector cov_rns_taper_pred(List& theta, 
-                                                    NumericMatrix& locs,
-                                                    NumericMatrix& locs_pred,
-                                                    NumericMatrix& x_covariates, 
-                                                    NumericMatrix& x_covariates_pred, 
-                                                    NumericVector& colindices, 
-                                                    NumericVector& rowpointers, 
-                                                    NumericVector& smooth_limits){
+                                 NumericMatrix& locs,
+                                 NumericMatrix& locs_pred,
+                                 NumericMatrix& x_covariates, 
+                                 NumericMatrix& x_covariates_pred, 
+                                 NumericVector& colindices, 
+                                 NumericVector& rowpointers, 
+                                 NumericVector& smooth_limits){
   
   const double epsilon = std::numeric_limits<double>::epsilon();
   
@@ -167,6 +167,29 @@ NumericVector cov_rns_taper(List& theta,
   
   Rcpp::NumericVector dist_vector(taper_dim);
   
+  // Smoothness
+  
+  bool q_smooth_fix = allzeroelements(smooth);
+  
+  int smooth_switch = 0;
+  
+  double smooth_value;
+  
+  if(q_smooth_fix){
+    
+    smooth_value = smooth_limits[0];
+    smooth_switch =  mapSmoothValue(smooth_value);
+    
+  } 
+  
+  if(!q_smooth_fix || (smooth_switch == 0)){
+    
+    for(int ww = 0; ww < m_dim; ww++){
+      smooth_vector[ww] = std::sqrt(Pexpfma_new_smoothness(smooth, x_covariates(ww,_), smooth_limits[0], smooth_limits[1]));
+    }
+    
+  }
+  
   // global parameters
   
   // double global_range = 1 / exp(-2 * scale[0]);
@@ -175,7 +198,6 @@ NumericVector cov_rns_taper(List& theta,
     
     range_vector[ww] = Pexpfma_new(2 * scale, x_covariates(ww,_));
     sigma_vector[ww] = Pexpfma_new(0.5 * std_dev_vector, x_covariates(ww,_));
-    smooth_vector[ww] = std::sqrt(Pexpfma_new_smoothness(smooth, x_covariates(ww,_), smooth_limits[0], smooth_limits[1]));
   }
   
   colindices = colindices - 1;
@@ -185,52 +207,207 @@ NumericVector cov_rns_taper(List& theta,
   // int to_to;
   int acumulating = 0;
   
-  for(int ii = 0; ii < m_dim; ii++){
+  switch(smooth_switch){
+  
+  // smoothness 0.5
+  case 1:
     
-    for(int ww = rowpointers(ii); ww < (rowpointers(ii + 1)); ww++){
+    for(int ii = 0; ii < m_dim; ii++){
       
-      jj = colindices(ww);
-      
-      if(ii == jj){
+      for(int ww = rowpointers(ii); ww < (rowpointers(ii + 1)); ww++){
         
-        dist_vector(acumulating) = Pexpfma_new(std_dev_vector, x_covariates(ii,_)) + Pexpfma_new(nugget, x_covariates(ii,_));
+        jj = colindices(ww);
         
-        acumulating = acumulating + 1;
-        continue;
-        
-      } else {
-        
-        smtns = smooth_vector[ii] * smooth_vector[jj];
-        
-        prefactor = (2 * std::pow(range_vector[ii],0.5) * std::pow(range_vector[jj],0.5))/ ( range_vector[ii] + range_vector[jj]);
-        
-        global_range = (range_vector[ii] + range_vector[jj]) / 2;
-        
-        dif_s = locs(ii,_) - locs(jj,_);
-        
-        smooth_s_Q_ij = std::sqrt(8 * smtns) * std::sqrt(std::pow(dif_s(0), 2) + 
-          std::pow(dif_s(1), 2)) / std::sqrt(global_range);
-        
-        // smaller than eps?
-        if(smooth_s_Q_ij <= epsilon){
+        if(ii == jj){
+          
           dist_vector(acumulating) = Pexpfma_new(std_dev_vector, x_covariates(ii,_)) + Pexpfma_new(nugget, x_covariates(ii,_));
+          
           acumulating = acumulating + 1;
           continue;
           
-        } else{
+        } else {
           
-          dist_vector(acumulating) = prefactor *  std::pow(2.0 , -(smtns - 1)) / std::tgamma(smtns) * 
-            std::pow(smooth_s_Q_ij, smtns) * boost::math::cyl_bessel_k(smtns, smooth_s_Q_ij) * 
-            sigma_vector[ii] * sigma_vector[jj];
+          prefactor = (2 * std::pow(range_vector[ii],0.5) * std::pow(range_vector[jj],0.5))/ ( range_vector[ii] + range_vector[jj]);
+          
+          global_range = (range_vector[ii] + range_vector[jj]) / 2;
+          
+          dif_s = locs(ii,_) - locs(jj,_);
+          
+          smooth_s_Q_ij = std::sqrt(8 * smooth_value) * std::sqrt(std::pow(dif_s(0), 2) + 
+            std::pow(dif_s(1), 2)) / std::sqrt(global_range);
+          
+          // smaller than eps?
+          if(smooth_s_Q_ij <= epsilon){
+            dist_vector(acumulating) = Pexpfma_new(std_dev_vector, x_covariates(ii,_)) + Pexpfma_new(nugget, x_covariates(ii,_));
+            acumulating = acumulating + 1;
+            continue;
+            
+          } else{
+            
+            dist_vector(acumulating) = prefactor *  std::exp(-smooth_s_Q_ij) * 
+              sigma_vector[ii] * sigma_vector[jj];
+            
+          }
           
         }
         
+        acumulating = acumulating + 1;
+        
       }
-      
-      acumulating = acumulating + 1;
-      
     }
+    
+    break;
+    
+  case 2:
+    
+    for(int ii = 0; ii < m_dim; ii++){
+      
+      for(int ww = rowpointers(ii); ww < (rowpointers(ii + 1)); ww++){
+        
+        jj = colindices(ww);
+        
+        if(ii == jj){
+          
+          dist_vector(acumulating) = Pexpfma_new(std_dev_vector, x_covariates(ii,_)) + Pexpfma_new(nugget, x_covariates(ii,_));
+          
+          acumulating = acumulating + 1;
+          continue;
+          
+        } else {
+          
+          prefactor = (2 * std::pow(range_vector[ii],0.5) * std::pow(range_vector[jj],0.5))/ ( range_vector[ii] + range_vector[jj]);
+          
+          global_range = (range_vector[ii] + range_vector[jj]) / 2;
+          
+          dif_s = locs(ii,_) - locs(jj,_);
+          
+          smooth_s_Q_ij = std::sqrt(8 * smooth_value) * std::sqrt(std::pow(dif_s(0), 2) + 
+            std::pow(dif_s(1), 2)) / std::sqrt(global_range);
+          
+          // smaller than eps?
+          if(smooth_s_Q_ij <= epsilon){
+            dist_vector(acumulating) = Pexpfma_new(std_dev_vector, x_covariates(ii,_)) + Pexpfma_new(nugget, x_covariates(ii,_));
+            acumulating = acumulating + 1;
+            continue;
+            
+          } else{
+            
+            dist_vector(acumulating) = prefactor *  (1 + smooth_s_Q_ij) * std::exp(- smooth_s_Q_ij) * 
+              sigma_vector[ii] * sigma_vector[jj];
+            
+          }
+          
+        }
+        
+        acumulating = acumulating + 1;
+        
+      }
+    }
+    
+    break;
+    
+  case 3:
+    
+    for(int ii = 0; ii < m_dim; ii++){
+      
+      for(int ww = rowpointers(ii); ww < (rowpointers(ii + 1)); ww++){
+        
+        jj = colindices(ww);
+        
+        if(ii == jj){
+          
+          dist_vector(acumulating) = Pexpfma_new(std_dev_vector, x_covariates(ii,_)) + Pexpfma_new(nugget, x_covariates(ii,_));
+          
+          acumulating = acumulating + 1;
+          continue;
+          
+        } else {
+          
+          prefactor = (2 * std::pow(range_vector[ii],0.5) * std::pow(range_vector[jj],0.5))/ ( range_vector[ii] + range_vector[jj]);
+          
+          global_range = (range_vector[ii] + range_vector[jj]) / 2;
+          
+          dif_s = locs(ii,_) - locs(jj,_);
+          
+          smooth_s_Q_ij = std::sqrt(8 * smooth_value) * std::sqrt(std::pow(dif_s(0), 2) + 
+            std::pow(dif_s(1), 2)) / std::sqrt(global_range);
+          
+          // smaller than eps?
+          if(smooth_s_Q_ij <= epsilon){
+            dist_vector(acumulating) = Pexpfma_new(std_dev_vector, x_covariates(ii,_)) + Pexpfma_new(nugget, x_covariates(ii,_));
+            acumulating = acumulating + 1;
+            continue;
+            
+          } else{
+            
+            dist_vector(acumulating) = prefactor *  (1 + smooth_s_Q_ij + smooth_s_Q_ij * smooth_s_Q_ij / 3) * std::exp(- smooth_s_Q_ij) * 
+              sigma_vector[ii] * sigma_vector[jj];
+            
+          }
+          
+        }
+        
+        acumulating = acumulating + 1;
+        
+      }
+    }
+    
+    break;
+    
+  // o.w.
+  default:
+    
+    for(int ii = 0; ii < m_dim; ii++){
+      
+      for(int ww = rowpointers(ii); ww < (rowpointers(ii + 1)); ww++){
+        
+        jj = colindices(ww);
+        
+        if(ii == jj){
+          
+          dist_vector(acumulating) = Pexpfma_new(std_dev_vector, x_covariates(ii,_)) + Pexpfma_new(nugget, x_covariates(ii,_));
+          
+          acumulating = acumulating + 1;
+          continue;
+          
+        } else {
+          
+          smtns = smooth_vector[ii] * smooth_vector[jj];
+          
+          prefactor = (2 * std::pow(range_vector[ii],0.5) * std::pow(range_vector[jj],0.5))/ ( range_vector[ii] + range_vector[jj]);
+          
+          global_range = (range_vector[ii] + range_vector[jj]) / 2;
+          
+          dif_s = locs(ii,_) - locs(jj,_);
+          
+          smooth_s_Q_ij = std::sqrt(8 * smtns) * std::sqrt(std::pow(dif_s(0), 2) + 
+            std::pow(dif_s(1), 2)) / std::sqrt(global_range);
+          
+          // smaller than eps?
+          if(smooth_s_Q_ij <= epsilon){
+            dist_vector(acumulating) = Pexpfma_new(std_dev_vector, x_covariates(ii,_)) + Pexpfma_new(nugget, x_covariates(ii,_));
+            acumulating = acumulating + 1;
+            continue;
+            
+          } else{
+            
+            dist_vector(acumulating) = prefactor *  std::pow(2.0 , -(smtns - 1)) / std::tgamma(smtns) * 
+              std::pow(smooth_s_Q_ij, smtns) * boost::math::cyl_bessel_k(smtns, smooth_s_Q_ij) * 
+              sigma_vector[ii] * sigma_vector[jj];
+            
+          }
+          
+        }
+        
+        acumulating = acumulating + 1;
+        
+      }
+    }
+    
+    break;
+  
   }
   
   return dist_vector;
+  
 }

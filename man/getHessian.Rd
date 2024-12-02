@@ -18,7 +18,7 @@ eps = .Machine$double.eps^(1/4))
 (\code{numeric matrix}) a symmetric matrix pxp of the approximated (observed) Hessian
 }
 \description{
-numerically approximate the Hessian. Hessians of parameters based on "pmle" are based on full likelihoods.
+numerically approximate the Hessian. Hessians of parameters based on "pml" are based on full likelihoods.
 }
 \author{
 Federico Blasi

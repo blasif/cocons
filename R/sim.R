@@ -103,8 +103,7 @@ cocoSim <- function(coco.object,
         
         
         
-        L <- base::chol(covmat_unobs - covmat_pred %*% solve(covmat, t(covmat_pred)) + 
-                          .cocons.getDelta(dim(covmat_unobs)[1], sigma = sqrt(exp(to_pass$std.dev[1]))) * diag(dim(covmat_unobs)[1])) # 
+        L <- base::chol(covmat_unobs - covmat_pred %*% solve(covmat, t(covmat_pred))) 
         
         if(exists("seed")){
           set.seed(seed)
@@ -117,7 +116,7 @@ cocoSim <- function(coco.object,
                                         newlocs = as.matrix(cond.info$newlocs), 
                                         type = "mean")
         
-        tmp_mu <- step_one$trend + step_one$mean
+        tmp_mu <- step_one$systematic + step_one$stochastic
         
         return(t(sweep(t(iiderrors) %*% L, 2, tmp_mu, "+")))
         

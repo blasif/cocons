@@ -5,12 +5,21 @@
 ### Enhances
 
 - `GetNeg2loglikelihood`, `GetNeg2loglikelihoodTaper`, and `GetNeg2loglikelihoodTaperProfile` now much faster (~35\% faster)
-
+- `cocoOptim`:
+  - new `REML` estimation for dense `coco` type.
+- now cpp functions `cov_rns` and `cov_rns_taper` include as special cases the well-known shapes when nu = 0.5, 1.5, and 2.5, yielding computational speed-ups. 
+  
 ### Changes
 
-- `getTrend` now is called `getSpatMean`
+- `coco` now accepts `data.frame` for locs argument, which is then converted to matrix.
+- `getTrend` now is called `getSpatMean`.
 - `cocoPredict` renamed output spatial mean vectors: `trend` is now called `systematic`, while `mean` is called `stochastic`.
-- `cocoOptim` reordering of arguments
+- `cocoOptim` : 
+  - reordering of arguments.
+  - `mle` estimation method now called `ml`.
+  - `pmle` estimation method now called `pml`.
+- `getHessian` :
+  - `mle` to `ml` and `pmle` to `pml`.
 
 ## cocons 0.1.3
 

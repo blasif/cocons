@@ -16,8 +16,8 @@ optim.type, optim.control)
 
 \item{safe}{(\code{logical}) If \code{TRUE}, the function avoids Cholesky decomposition errors due to ill-posed covariance matrices by returning a pre-defined large value. Defaults to \code{TRUE}.
 \itemize{
-\item \code{"mle"}: Classical Maximum Likelihood estimation.
-\item \code{"pmle"}: Profile Maximum Likelihood, factoring out the spatial trend for dense objects or the global marginal variance parameter for sparse objects.
+\item \code{"ml"}: Classical Maximum Likelihood estimation.
+\item \code{"pml"}: Profile Maximum Likelihood, factoring out the spatial trend for dense objects or the global marginal variance parameter for sparse objects.
 }}
 
 \item{optim.type}{(\code{character}) The optimization approach. Options include:}

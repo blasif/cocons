@@ -259,11 +259,10 @@
       stop("variable names in model.list do not match data variable names.")
     }
   })
-  
+
   return(0)
 }
 
-# ADDED model.list here to check
 .cocons.check.info <- function(type, info, model.list, data){
   
   if (is.null(info$smooth.limits) & is.formula(model.list[6]$smooth)) {

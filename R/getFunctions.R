@@ -843,7 +843,7 @@ getBoundariesV3 <- function(coco.object,
 }
 
 #' getHessian
-#' @description numerically approximate the Hessian. Hessians of parameters based on "pmle" are based on full likelihoods.
+#' @description numerically approximate the Hessian. Hessians of parameters based on "pml" are based on full likelihoods.
 #' @usage getHessian(coco.object, ncores = parallel::detectCores() - 1, 
 #' eps = .Machine$double.eps^(1/4))
 #' @param coco.object \code{(S4)} a fitted coco object.
@@ -882,7 +882,7 @@ getHessian <- function(coco.object, ncores = parallel::detectCores() - 1,
     
     x_covariates <- coco_x_std$std.covs
     
-    if(coco.object@info$optim.type == "pmle"){
+    if(coco.object@info$optim.type == "pml"){
       
       f00 <- cocons::GetNeg2loglikelihood(coco.object@output$par, par.pos = par.pos,
                                    locs = coco.object@locs,
@@ -994,7 +994,7 @@ getHessian <- function(coco.object, ncores = parallel::detectCores() - 1,
     
     cholS <- spam::chol.spam(ref_taper)
     
-    if(coco.object@info$optim.type == "pmle"){
+    if(coco.object@info$optim.type == "pml"){
       
       f00 <- cocons::GetNeg2loglikelihoodTaper(theta = coco.object@output$par,
                                                par.pos = par.pos,

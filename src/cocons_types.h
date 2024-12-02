@@ -53,4 +53,21 @@ inline double kahan(double a, double b, double c, double d) {
   return (result - error);
 }
 
+inline bool allzeroelements(const Rcpp::NumericVector x) {
+  int n = x.size();
+  for (int i = 1; i < n; ++i) { // Start from the second element
+    if (x[i] != 0) {
+      return false; // Found a non-zero element
+    }
+  }
+  return true; // No non-zero elements found
+}
+
+inline int mapSmoothValue(double smooth_value) {
+  if (std::fabs(smooth_value - 0.5) < 1e-6) return 1;
+  if (std::fabs(smooth_value - 1.5) < 1e-6) return 2;
+  if (std::fabs(smooth_value - 2.5) < 1e-6) return 3;
+  return 0; // Default case
+}
+
 #endif // AUX_FUNCTIONS_H

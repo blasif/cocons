@@ -88,6 +88,11 @@ coco <- function(type,
   
   .cocons.check.type(type)
   .cocons.check.data(data)
+  
+  if(is.data.frame(locs)){
+    locs <- as.matrix(locs)
+  }
+  
   .cocons.check.locs(locs)
   
   if(is.vector(z)){
