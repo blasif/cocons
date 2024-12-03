@@ -4,7 +4,7 @@
 \alias{getCIs}
 \title{Compute approximate confidence intervals for a coco object}
 \usage{
-getCIs(coco.object, inv.hess, alpha = 0.05)
+getCIs(coco.object, inv.hess, alpha = 0.95)
 }
 \arguments{
 \item{coco.object}{\code{(S4)} a fitted coco S4 object.}

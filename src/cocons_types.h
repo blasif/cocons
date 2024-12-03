@@ -54,9 +54,8 @@ inline double kahan(double a, double b, double c, double d) {
 }
 
 inline bool allzeroelements(const Rcpp::NumericVector x) {
-  int n = x.size();
-  for (int i = 1; i < n; ++i) { // Start from the second element
-    if (x[i] != 0) {
+  for (int i = 1; i < x.size(); ++i) { // Start from the second element
+    if (x(i) != 0) {
       return false; // Found a non-zero element
     }
   }

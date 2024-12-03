@@ -11,7 +11,7 @@ This package is provided "as is" without warranty of any kind, either express or
 Backwards compatibility will not be offered until later versions.
 }
 \author{
-Federico Blasi [aut, cre], \email{federico.blasi@uzh.ch}
+Federico Blasi [aut, cre], \email{federico.blasi@gmail.com}
 }
 \examples{
 \dontrun{

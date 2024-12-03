@@ -458,3 +458,17 @@
   return(sigma * topDelta * (1/(1+exp(- (n - 5000)/1000))))
   
 }
+
+.cocons.updateNames <- function(namesToUpdate,DesignMatrix){
+  
+  for(ii in 1:length(namesToUpdate)){
+    
+    tmp_colnames <- colnames(DesignMatrix)
+    
+    namesToUpdate[ii] <- paste(sub("[0-9]+$", "", namesToUpdate[ii]), tmp_colnames[as.numeric(sub("^[a-zA-Z\\.]+", "", namesToUpdate[ii]))] )
+    
+  }
+  
+  return(namesToUpdate)
+  
+}

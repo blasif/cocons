@@ -7,7 +7,8 @@
 - `GetNeg2loglikelihood`, `GetNeg2loglikelihoodTaper`, and `GetNeg2loglikelihoodTaperProfile` now much faster (~35\% faster)
 - `cocoOptim`:
   - new `REML` estimation for dense `coco` type.
-- now cpp functions `cov_rns` and `cov_rns_taper` include as special cases the well-known shapes when nu = 0.5, 1.5, and 2.5, yielding computational speed-ups. 
+- now cpp functions `cov_rns` and `cov_rns_taper` include as special cases the well-known shapes when nu = 0.5, 1.5, and 2.5, yielding computational speed-ups.
+- now `getCIs` display names of covariate instead of index of Design Matrix.
   
 ### Changes
 
@@ -20,6 +21,7 @@
   - `pmle` estimation method now called `pml`.
 - `getHessian` :
   - `mle` to `ml` and `pmle` to `pml`.
+- `getCIs` now `alpha` argument reflects confidence level instead of 1-confidence level.
 
 ## cocons 0.1.3
 

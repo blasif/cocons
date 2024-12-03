@@ -225,28 +225,30 @@ getSpatMean <- function(coco.object){
 #' Compute approximate confidence intervals for a coco object
 #' @description Compute approximate confidence intervals for a (fitted) coco object.
 #'
-#' @usage getCIs(coco.object, inv.hess, alpha = 0.05)
+#' @usage getCIs(coco.object, inv.hess, alpha = 0.95)
 #' @param coco.object \code{(S4)} a fitted coco S4 object.
 #' @param inv.hess \code{(matrix)} Inverse of the Hessian. \link{getHessian}.
 #' @param alpha \code{(numeric)} confidence level.
 #' @returns (\code{numeric matrix}) a matrix with approximate confidence intervals for each parameter in the model.
 #' @author Federico Blasi
-getCIs <- function(coco.object, inv.hess, alpha = 0.05){
+getCIs <- function(coco.object, inv.hess, alpha = 0.95){
   
   if(alpha >= 1 || alpha <= 0){stop("check alpha.")}
   
-  tmp_par.pos <- cocons::getDesignMatrix(coco.object@model.list,coco.object@data)$par.pos
+  tmp_DM <- cocons::getDesignMatrix(coco.object@model.list,coco.object@data)
+  
+  tmp_par.pos <- tmp_DM$par.pos
   
   Hess_modified <- cocons::getModHess(coco.object = coco.object, 
                                      inv.hess = inv.hess)
   
   estims <- unlist(getEstims(coco.object)[which(unlist(lapply(tmp_par.pos,is.logical)))])[unlist(tmp_par.pos[which(unlist(lapply(tmp_par.pos, is.logical)))])]
   
-  to_return <- matrix(c(estims, estims), ncol = 2, byrow = FALSE) + as.matrix(sqrt(diag(Hess_modified)), ncol = 1) %*% matrix(c(-1, 1) * stats::qnorm(1 - alpha/2) ,ncol = 2)
+  to_return <- matrix(c(estims, estims), ncol = 2, byrow = FALSE) + as.matrix(sqrt(diag(Hess_modified)), ncol = 1) %*% matrix(c(-1, 1) * stats::qnorm(alpha) ,ncol = 2)
   
-  rownames(to_return) <- names(estims)
-  
-  colnames(to_return) <- c(paste((alpha/2 )* 100, "%"),paste((1 - alpha/2 ) * 100, "%"))
+  rownames(to_return) <- .cocons.updateNames(names(estims),tmp_DM$model.matrix)
+
+  colnames(to_return) <- c(paste(( (1 - alpha)/2 )* 100, "%"),paste( (1 - ( 1 - alpha )/2) * 100, "%"))
   
   return(to_return)
 }
