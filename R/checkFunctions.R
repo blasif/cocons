@@ -259,7 +259,7 @@
       stop("variable names in model.list do not match data variable names.")
     }
   })
-
+  
   return(0)
 }
 
@@ -277,11 +277,17 @@
     
   if(!is.null(info$smooth.limits)){
     if (info$smooth.limits[1] < 0) {
-      stop("lower bound smooth_limit is < 0 . Should be > 0")
+      stop("lower bound smooth_limit is <= 0 . Should be > 0")
     }
     
     if (info$smooth.limits[1] > info$smooth.limits[2]) {
       stop("lower bound smooth_limit is > upper bound . Should be the opposite.")
+    }
+  }
+  
+  if(!is.null(info$smooth.limits)){
+    if(is.formula(model.list$smooth) && (info$smooth.limits[1] == info$smooth.limits[2])){
+      stop("cannot estimate the smoothness when smooth.limits[1] = smooth.limits[2]")
     }
   }
   

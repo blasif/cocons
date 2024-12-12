@@ -858,6 +858,8 @@ getHessian <- function(coco.object, ncores = parallel::detectCores() - 1,
   
   if(coco.object@type == "dense"){
     
+    if(coco.object@info$optim.type == "reml"){stop("reml hessian not implemented yet.")}
+    
     p <- base::length(coco.object@output$par)
     H <- base::matrix(NA, p, p)
     
@@ -902,7 +904,7 @@ getHessian <- function(coco.object, ncores = parallel::detectCores() - 1,
     parallel::clusterEvalQ(cl, library("cocons"))
     
     parallel::clusterExport(cl = cl, list("x_covariates", "coco.object",
-                                          "n", "par.pos", "eps","f00"),
+                                          "n", "par.pos", "eps", "f00"),
                             envir = environment())
     
     vector_responses <- parallel::parApply(cl = cl, 

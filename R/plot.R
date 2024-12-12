@@ -25,16 +25,24 @@ plotOptimInfo <- function(coco.object, ...){
   tmp_names <- unlist(tmp_dm$par.pos[unlist(lapply(tmp_dm$par.pos, FUN = is.logical))])
   
   names_to_display <- rep(colnames(getDesignMatrix(coco.object@model.list,
-                                                   data = coco.object@data)$model.matrix),6)[tmp_names]
+                                                   data = coco.object@data)$model.matrix), 6)[tmp_names]
   
   tmp_names <- names(tmp_names[which(tmp_names == TRUE)])
   
-  for(ii in 1:base::length(coco.object@info$boundaries$theta_init)){
+  if(coco.object@info$optim.type == "reml" ||
+     coco.object@info$optim.type == "pml"){
+    
+    shift_mean <- length(base::attr(stats::terms(coco.object@model.list$mean), "term.labels")) + 
+      base::attr(stats::terms(coco.object@model.list$mean), "intercept")
+    
+  } else{ shift_mean <- 0}
+
+  for(ii in 1:sum(index_pars)){
     graphics::plot(x = x_grid, y = coco.object@output$loginfo[, index_pars][, ii], type = 'l', 
-                   main = base::paste0(tmp_names[ii]," ",names_to_display[ii]),
+                   main = base::paste0(tmp_names[ii + shift_mean]," ", names_to_display[ii + shift_mean]),
                    xlab = "Iters", ylab = " ")
-    graphics::abline(h = coco.object@info$boundaries$theta_lower[ii], col = 'blue')
-    graphics::abline(h = coco.object@info$boundaries$theta_upper[ii], col = 'red')
+    graphics::abline(h = coco.object@info$boundaries$theta_lower[ii + shift_mean], col = 'blue')
+    graphics::abline(h = coco.object@info$boundaries$theta_upper[ii + shift_mean], col = 'red')
     
     graphics::plot(x = x_grid, y = coco.object@output$loginfo[,index_grad][,ii], type = 'l',
                    main = 'gradient', xlab = "Iters", ylab = " ")

@@ -9,6 +9,7 @@
   - new `REML` estimation for dense `coco` type.
 - now cpp functions `cov_rns` and `cov_rns_taper` include as special cases the well-known shapes when nu = 0.5, 1.5, and 2.5, yielding computational speed-ups.
 - now `getCIs` display names of covariate instead of index of Design Matrix.
+- now `.cocons.check.info` also checks for smoothness model and smooth.limits.
   
 ### Changes
 
@@ -22,6 +23,10 @@
 - `getHessian` :
   - `mle` to `ml` and `pmle` to `pml`.
 - `getCIs` now `alpha` argument reflects confidence level instead of 1-confidence level.
+
+### Fixes
+
+- fix a bug for plotOptimInfo when handling `pml` or `reml` objects.
 
 ## cocons 0.1.3
 

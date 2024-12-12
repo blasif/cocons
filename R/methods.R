@@ -168,14 +168,14 @@ setMethod("plot",
                   
                   for (ww in index) {
                     
-                    fields::quilt.plot(x@locs, tmp_cov[ww,], zlim = c(0, 1), main = paste0('global corr. at index ',ww))
-                    graphics::points(x@locs[ww,1], x@locs[ww,2], pch = "X", bg='red', col = 'violet', cex = 2)
+                    fields::quilt.plot(x@locs, tmp_cov[ww, ], zlim = c(0, 1), main = paste0('global corr. at index ', ww))
+                    graphics::points(x@locs[ww, 1], x@locs[ww, 2], pch = "X", bg = 'red', col = 'blue', cex = 2)
                     
                     local_var <- X_std$std.covs[ww, ] %*% theta_list$std.dev
                     local_mr <- X_std$std.covs[ww, ] %*% theta_list$scale
                     local_ga <- X_std$std.covs[ww, ] %*% theta_list$aniso
                     local_tt <- X_std$std.covs[ww, ] %*% theta_list$tilt
-                    local_smtns <- X_std$std.covs[ww, ] %*% theta_list$smooth
+                    local_smtns <- diff(x@info$smooth.limits)/ (1 + exp(-X_std$std.covs[ww, ] %*% theta_list$smooth)) + x@info$smooth.limits[1]
                     local_nugget <- X_std$std.covs[ww, ] %*% theta_list$nugget
                     
                     model.list <- list(
@@ -184,7 +184,7 @@ setMethod("plot",
                       "scale" = stats::as.formula(" ~ 1"),
                       "aniso" = stats::as.formula(" ~ 1"),
                       "tilt" = stats::as.formula(" ~ 1"),
-                      "smooth" = stats::as.formula(" ~ 1"),
+                      "smooth" = local_smtns,
                       "nugget" = -Inf
                     )
                     
@@ -193,8 +193,7 @@ setMethod("plot",
                       locs = x@locs,
                       data = x@data,
                       z = x@z,
-                      model.list = model.list,
-                      info = list("smooth.limits" = x@info$smooth.limits)
+                      model.list = model.list
                     )
                     
                     DM_tmp <- getDesignMatrix(model.list = model.list, 
@@ -215,7 +214,7 @@ setMethod("plot",
                     ))
                     
                     fields::quilt.plot(x@locs, tmp_cov_two[ww, ], main = paste0('local corr. at index ',ww))
-                    graphics::points(x@locs[ww,1], x@locs[ww,2], pch = "X", bg='red', col = 'violet', cex = 2)
+                    graphics::points(x@locs[ww,1], x@locs[ww,2], pch = "X", bg='red', col = 'blue', cex = 2)
                   }
                 }
                 }
@@ -570,64 +569,4 @@ setMethod("summary", signature(object = "coco"),
               
               }
             }
-)
-
-#' Show Method for Coco Class
-#'
-#' This method show objects of class 'coco'.
-#' @name show
-#' @aliases show,coco-method
-#' @param object (\code{S4}) An object of class 'coco'.
-#' @return A plot is created.
-#' @docType methods
-#' @rdname show-methods
-#' @author Federico Blasi
-#' 
-setMethod("show",
-          signature(object = "coco"),
-          function(object){
-            
-            if(object@type == "dense"){
-              
-              cat(sprintf("%-30s %30s\n", "coco object", object@type))
-              cat(sprintf("%-30s %30s\n", "fitted", ifelse(identical(object@output, list()), yes = "no", 
-                                                           no = "yes")))
-              
-              cat(rep("-", 40), "\n")
-              cat(sprintf("%-30s %30s\n", "dataset dim", paste0(dim(object@data), collapse = ", ")))
-              
-              # number of parameters
-              
-              cat(sprintf("%-30s %30s\n", "model parameters", .cocons.get.npars(object)))
-              
-              # covariates names
-              
-              coco_info_light <- getDesignMatrix(model.list = object@model.list, data = object@data[1, , drop = FALSE])
-              
-              cat(sprintf("%-30s %10s", "covariates ", paste0(colnames(coco_info_light$model.matrix),collapse = ", ")))
-              
-            }
-            
-            if(object@type == "sparse"){
-              
-              cat(sprintf("%-30s %30s\n", "coco object", object@type))
-              cat(sprintf("%-30s %30s\n", "fitted", ifelse(identical(object@output, list()), yes = "no", 
-                                                           no = "yes")))
-
-              cat(rep("-", 40), "\n")
-              cat(sprintf("%-30s %30s\n", "dataset dim", paste0(dim(object@data), collapse = ", ")))
-              
-              # number of parameters
-
-              cat(sprintf("%-30s %30s\n", "model parameters", .cocons.get.npars(object)))
-              
-              # covariates names
-              
-              coco_info_light <- getDesignMatrix(model.list = object@model.list, data = object@data[1, , drop = FALSE])
-              
-              cat(sprintf("%-30s %10s", "covariates ", paste0(colnames(coco_info_light$model.matrix),collapse = ", ")))
-              
-            }
-            
-          }
 )

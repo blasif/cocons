@@ -110,6 +110,8 @@ cocoOptim <- function(coco.object, boundaries = list(),
       mod_DM <- tmp_values$std.covs      
     }
     
+    optim.type <- tolower(optim.type)
+    
     # Suggested by OptimParallel
     if(tolower(.Platform$OS.type) != "windows"){
       cl <- parallel::makeCluster(spec = ncores, type = "FORK", outfile = "")
@@ -168,7 +170,7 @@ cocoOptim <- function(coco.object, boundaries = list(),
     
     if(optim.type == "pml" || optim.type == "reml"){
       
-      if(!is.logical(designMatrix$par.pos$mean)){stop("profile ML only available when considering covariates in the mean.")}
+      if(!is.logical(designMatrix$par.pos$mean)){stop("Profile ML or Restricted ML only available when considering covariates in the mean.")}
 
       x_betas <- mod_DM[, designMatrix$par.pos$mean]
       
