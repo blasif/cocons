@@ -17,6 +17,8 @@ For a brief introduction:
   vignette("cocons")
 ```
 
-For a description of the class of modular covariate-based covariance functions implemented in this package, please check the following [Article](https://arxiv.org/abs/2410.16716#).
+or you can check the vignette directly [here](https://github.com/blasif/cocons/blob/main/inst/doc/cocons.pdf).
 
+For a description of the class of modular covariate-based covariance functions implemented in this package, please check the following [article](https://arxiv.org/abs/2410.16716#).
 
+**Bugs and/or errors?:** feel free to add new issues on [https://github.com/blasif/cocons/issues](https://github.com/blasif/cocons/issues).
