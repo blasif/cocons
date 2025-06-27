@@ -58,7 +58,7 @@ jobs:
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5
         with:
-          file: ./cobertura.xml
+          files: ./cobertura.xml
           token: ${{ secrets.CODECOV }}
           slug: blasif/cocons
         env:
