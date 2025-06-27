@@ -19,10 +19,11 @@ permissions:
 
 jobs:
   build:
-    runs-on: macos-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        r-version: ['4.1.1', '4.3.3']
+        r-version: ['oldrel', '4.3.3']
+        os: [ubuntu-latest, macos-latest]
 
     steps:
       - uses: actions/checkout@v4
@@ -39,7 +40,7 @@ jobs:
           needs: coverage
 
       - name: Show R version
-        run: Rscript -e "cat(R.version.string, '\\n')"
+        run: Rscript -e 'cat(R.version.string, "\n")'
         shell: Rscript {0}
 
       - name: Test coverage
