@@ -14,15 +14,14 @@ on:
   pull_request:
     branches: [ "main", "devel" ]
 
-permissions:
-  contents: read
+permissions: read-all
 
 jobs:
   build:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        r-version: ['3.5.3', '4.3.3']
+        r-version: ['4.3', '4.3.3']
         os: [ubuntu-22.04, macos-latest]
 
     steps:
