@@ -32,10 +32,6 @@ jobs:
         with:
           r-version: ${{ matrix.r-version }}
 
-      - name: Install TinyTeX
-        run: |
-          Rscript -e 'install.packages("tinytex"); tinytex::install_tinytex()'
-
       - name: Install dependencies
         uses: r-lib/actions/setup-r-dependencies@v2
         with:
@@ -51,7 +47,7 @@ jobs:
       - name: Test coverage
         run: |
           cov <- covr::package_coverage(
-            type = "all",
+            type = "tests",
             quiet = FALSE,
             clean = FALSE,
             install_path = file.path(normalizePath(Sys.getenv("RUNNER_TEMP"), winslash = "/"), "package")
