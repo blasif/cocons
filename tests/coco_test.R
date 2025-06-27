@@ -5,12 +5,6 @@ library(cocons)
 
 data_test <- cocons::holes$training[1:50,]
 
-# Create a minimal reproducible example
-locs <- matrix(c(0, 1, 0, 1), ncol = 2)
-data <- data.frame(x = locs[, 1])
-z <- rnorm(2)
-
-# Define a trivial model.list
 model.list <- list(
   'mean'    = 0,
   'std.dev' = ~ 1,
@@ -33,8 +27,54 @@ stopifnot(inherits(obj, "coco"))
 
 test_optim <- cocoOptim(obj, ncores = 1)
 
-# Basic sanity check: covariance matrix has correct dimensions
 cmat <- getCovMatrix(test_optim)
-
-stopifnot(all(eigen(cmat)$values > 0))
 stopifnot(is.matrix(cmat), nrow(cmat) == 50, ncol(cmat) == 50)
+stopifnot(all(eigen(cmat)$values > 0))
+
+predss <- cocoPredict(test_optim, newdataset = cocons::holes$test[1:50,1:4],newlocs = as.matrix(holes$test[1:50,1:2]))
+stopifnot(all(predss$systematic == 0))
+stopifnot(all(!is.na(predss$stochastic)))
+
+test_optim <- cocoOptim(obj, ncores = 1, optim.type = 'pml')
+
+cmat <- getCovMatrix(test_optim)
+stopifnot(is.matrix(cmat), nrow(cmat) == 50, ncol(cmat) == 50)
+stopifnot(all(eigen(cmat)$values > 0))
+
+predss <- cocoPredict(test_optim, newdataset = cocons::holes$test[1:50,1:4],newlocs = as.matrix(holes$test[1:50,1:2]))
+stopifnot(all(predss$systematic == 0))
+stopifnot(all(!is.na(predss$stochastic)))
+
+# Spam and sparse coco type
+
+# Run function
+obj <- coco(type = "sparse", 
+            data = data_test[,1:4], 
+            locs = data_test[,1:2], 
+            z = data_test$z,
+            model.list = model.list,
+            info = list('taper'= spam::cov.wend1,
+                        'delta'= 1))
+
+# Start manual checking
+stopifnot(inherits(obj, "coco"))
+
+test_optim <- cocoOptim(obj, ncores = 1)
+
+cmat <- getCovMatrix(test_optim)
+stopifnot(is.matrix(cmat), nrow(cmat) == 50, ncol(cmat) == 50)
+stopifnot(all(eigen(cmat)$values > 0))
+
+predss <- cocoPredict(test_optim, newdataset = cocons::holes$test[1:50,1:4],newlocs = as.matrix(holes$test[1:50,1:2]))
+stopifnot(all(predss$systematic == 0))
+stopifnot(all(!is.na(predss$stochastic)))
+
+test_optim <- cocoOptim(obj, ncores = 1,optim.type = "pml")
+
+cmat <- getCovMatrix(test_optim)
+stopifnot(is.matrix(cmat), nrow(cmat) == 50, ncol(cmat) == 50)
+stopifnot(all(eigen(cmat)$values > 0))
+
+predss <- cocoPredict(test_optim, newdataset = cocons::holes$test[1:50,1:4],newlocs = as.matrix(holes$test[1:50,1:2]))
+stopifnot(all(predss$systematic == 0))
+stopifnot(all(!is.na(predss$stochastic)))
