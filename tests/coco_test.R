@@ -64,6 +64,17 @@ stopifnot(all(!is.na(predss$stochastic)))
 # Spam and sparse coco type
 
 # Run function
+
+model.list <- list(
+  'mean'    = 0,
+  'std.dev' = ~ 1,
+  'scale'   = ~ 1,
+  'aniso'   = 0,
+  'tilt'    = 0,
+  'smooth'  = 1.5,
+  'nugget'  = -Inf
+)
+
 obj <- coco(type = "sparse", 
             data = data_test[,1:4], 
             locs = data_test[,1:2], 
@@ -77,7 +88,7 @@ stopifnot(inherits(obj, "coco"))
 
 test_optim <- cocoOptim(obj, ncores = 1)
 
-cmat <- getCovMatrix(test_optim)
+cmat <- as.matrix(getCovMatrix(test_optim))
 stopifnot(is.matrix(cmat), nrow(cmat) == 50, ncol(cmat) == 50)
 stopifnot(all(eigen(cmat)$values > 0))
 
@@ -87,7 +98,7 @@ stopifnot(all(!is.na(predss$stochastic)))
 
 test_optim <- cocoOptim(obj, ncores = 1,optim.type = "pml")
 
-cmat <- getCovMatrix(test_optim)
+cmat <- as.matrix(getCovMatrix(test_optim))
 stopifnot(is.matrix(cmat), nrow(cmat) == 50, ncol(cmat) == 50)
 stopifnot(all(eigen(cmat)$values > 0))
 
