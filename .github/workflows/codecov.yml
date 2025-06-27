@@ -26,6 +26,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 
 
       - name: install R
         uses: r-lib/actions/setup-r@v2
@@ -52,8 +54,11 @@ jobs:
             clean = FALSE,
             install_path = file.path(normalizePath(Sys.getenv("RUNNER_TEMP"), winslash = "/"), "package")
           )
-          covr::to_cobertura(cov)
+          covr::to_cobertura(cov, file = "cobertura.xml")
         shell: Rscript {0}
+
+      - name: where is cobertura file
+        run: ls -lh
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5
