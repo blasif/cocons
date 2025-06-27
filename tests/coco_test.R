@@ -22,8 +22,6 @@ obj <- coco(type = "dense",
             z = data_test$z,
             model.list = model.list)
 
-obj@info$lambda <- c(0,0,0)
-
 # Start manual checking
 stopifnot(inherits(obj, "coco"))
 
