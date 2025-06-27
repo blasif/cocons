@@ -32,6 +32,10 @@ jobs:
         with:
           r-version: ${{ matrix.r-version }}
 
+      - name: Install TinyTeX
+        run: |
+          Rscript -e 'install.packages("tinytex"); tinytex::install_tinytex()'
+
       - name: Install dependencies
         uses: r-lib/actions/setup-r-dependencies@v2
         with:
