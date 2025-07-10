@@ -135,8 +135,20 @@ coco <- function(type,
   
   .cocons.check.output(output)
   
-  if(is.null(info$lambda)){
-    info$lambda <- 0
+  if(is.null(info$lambda.reg)){
+    info$lambda.reg <- 0
+  }
+  
+  if(is.null(info$lambda.betas)){
+    info$lambda.betas <- 0
+  }
+  
+  if(is.null(info$lambda.Sigma)){
+    info$lambda.Sigma <- 0
+  }
+  
+  if(any(c(info$lambda.betas,info$lambda.Sigma) > 0) && (is.null(info$sparse.point))){
+    info$sparse.point <- 1e-4
   }
   
   if(T){

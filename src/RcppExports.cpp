@@ -11,6 +11,19 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
+// sumsmoothlone
+double sumsmoothlone(NumericVector& x, double lambda, double alpha);
+RcppExport SEXP _cocons_sumsmoothlone(SEXP xSEXP, SEXP lambdaSEXP, SEXP alphaSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< double >::type lambda(lambdaSEXP);
+    Rcpp::traits::input_parameter< double >::type alpha(alphaSEXP);
+    rcpp_result_gen = Rcpp::wrap(sumsmoothlone(x, lambda, alpha));
+    return rcpp_result_gen;
+END_RCPP
+}
 // cov_rns
 NumericMatrix cov_rns(List& theta, NumericMatrix& locs, NumericMatrix& x_covariates, NumericVector& smooth_limits);
 RcppExport SEXP _cocons_cov_rns(SEXP thetaSEXP, SEXP locsSEXP, SEXP x_covariatesSEXP, SEXP smooth_limitsSEXP) {
@@ -90,6 +103,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_cocons_sumsmoothlone", (DL_FUNC) &_cocons_sumsmoothlone, 3},
     {"_cocons_cov_rns", (DL_FUNC) &_cocons_cov_rns, 4},
     {"_cocons_cov_rns_pred", (DL_FUNC) &_cocons_cov_rns_pred, 6},
     {"_cocons_cov_rns_classic", (DL_FUNC) &_cocons_cov_rns_classic, 3},

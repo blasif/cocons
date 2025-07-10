@@ -2,6 +2,34 @@
 
 using namespace Rcpp;
 
+//' penalization function
+ //'
+ //' @param theta vector of parameters
+ //' @param locs a matrix with locations
+ //' @param x_covariates design data.frame
+ //' @param smooth_limits smooth limits
+ //' @return dense covariance matrix
+ // [[Rcpp::export]]
+ double sumsmoothlone(NumericVector& x,
+                      double lambda,
+                      double alpha = 1e6){
+   
+   double sum = 0;
+   
+   for(int ww = 0; ww < x.length(); ww++){
+     
+     if(std::abs(x[ww]) > 1e-4){
+       sum = sum + std::abs(x[ww]);
+     } else{
+       sum = sum + std::pow(alpha,-1) * (std::log(1 + std::exp(-alpha * x[ww])) + std::log(1 + exp(alpha * x[ww])));
+     }
+     
+   }
+   
+   return lambda * sum;
+   
+ }
+
 //' Dense covariance function (difference parameterization)
 //'
 //' @param theta vector of parameters
