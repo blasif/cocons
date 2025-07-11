@@ -193,7 +193,7 @@ cocoOptim <- function(coco.object, boundaries = list(),
           "z" = coco_pen@z,
           "x_covariates" = mod_DM,
           "par.pos" = designMatrix$par.pos,
-          "lambda" = c(0,0,coco_pen@info$lambda.reg),
+          "lambda" = c(0, 0, coco_pen@info$lambda.reg),
           "locs" = coco_pen@locs,
           "safe" = safe
         )  
@@ -243,7 +243,7 @@ cocoOptim <- function(coco.object, boundaries = list(),
         "z" = coco.object@z,
         "x_covariates" = mod_DM,
         "par.pos" = designMatrix$par.pos,
-        "lambda" = coco.object@info$lambda.reg,
+        "lambda" = c(0, 0, coco.object@info$lambda.reg),
         "locs" = coco.object@locs,
         "safe" = safe
       )
@@ -308,7 +308,7 @@ cocoOptim <- function(coco.object, boundaries = list(),
                      reml = (diag(dim(mod_DM)[1]) - mod_DM %*% solve(crossprod(mod_DM),t(mod_DM))) %*% coco.object@z), 
         "x_covariates" = mod_DM,
         "par.pos" = tmp_par_pos,
-        "lambda" = coco.object@info$lambda.reg,
+        "lambda" = c(0, 0, coco.object@info$lambda.reg),
         "locs" = coco.object@locs,
         "x_betas" = x_betas,
         "safe" = safe
@@ -504,7 +504,7 @@ cocoOptim <- function(coco.object, boundaries = list(),
         "cholS" = spam::chol.spam(ref_taper),
         "z" = coco.object@z,
         "n" = dim(coco.object@z)[1],
-        "lambda" = coco.object@info$lambda.reg,
+        "lambda" = c(0, 0, coco.object@info$lambda.reg),
         "safe" = safe
       )
       
@@ -574,7 +574,7 @@ cocoOptim <- function(coco.object, boundaries = list(),
         "cholS" = spam::chol.spam(ref_taper),
         "z" = coco.object@z,
         "n" = dim(coco.object@z)[1],
-        "lambda" = coco.object@info$lambda.reg,
+        "lambda" = c(0, 0, coco.object@info$lambda.reg),
         "safe" = safe
       )
       

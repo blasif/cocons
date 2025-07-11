@@ -498,289 +498,81 @@
   
   # Update model structure
   
+  par_pos <- getDesignMatrix(coco.object@model.list,data = coco.object@data)$par.pos
+  
+  number_parameters_models <- lapply(par_pos,sum)
+  
   new_formulas_list <- coco.object@model.list
   
   coco.object@output <- output
   
+  parss <- getEstims(coco.object)
+  
   # What if one estimate is exactly 0 ?
   # Check models formulas keeping environment
   
-  to_zero_mean <- which(abs(output$par[names(output$par) == "mean.limits"]) <= coco.object@info$sparse.point)
-  
-  if(is.formula(coco.object@model.list$mean)){
-    if((length(to_zero_mean) == 1) && (to_zero_mean == 1)){
-      new_formulas_list$mean <- as.formula("~1", env = globalenv())
-    } else{
-      
-      if(length(to_zero_mean) > 0){
-        
-        new_terms <- drop.terms(terms(coco.object@model.list$mean), dropx = (to_zero_mean - 1), keep.response = TRUE)
-        
-        if(attr(new_terms,"intercept") & (length(attr(new_terms,"term.labels")) > 0)){
-          new_terms <- c("1",attr(new_terms, "term.labels"))
-          
-        } else{
-          new_terms <- attr(new_terms, "term.labels")
-        }
-        
-        new_formula <- reformulate(new_terms, response = NULL, env = globalenv())
-        new_formulas_list$mean <- new_formula
-        
-      }
-      
-    }
-  }
-  
-  # std.dev 
-  to_zero_std <- which(abs(getEstims(coco.object)$std.dev[getEstims(coco.object)$std.dev != 0]) < coco.object@info$sparse.point)
-  
-  if(is.formula(coco.object@model.list$std.dev)){
+  for(ii in 1:7){
     
-    if((length(to_zero_std) == 1) && (to_zero_std == 1)){
-      new_formulas_list$std.dev <- as.formula("~1", env = globalenv())
-    } else{
-      
-      if(length(to_zero_std) == (sum(names(output$par) == "std.dev.limits") - 1)){
-        new_formulas_list$std.dev <- as.formula("~1", env = globalenv())
-      } else{
-        
-        if(length(to_zero_std) > 0){
-          
-          new_terms <- drop.terms(terms(coco.object@model.list$std.dev), dropx = to_zero_std - 1, keep.response = TRUE)
-          new_terms <- c("1",attr(new_terms, "term.labels"))
-          new_formula <- reformulate(new_terms, response = NULL, env = globalenv())
-          new_formulas_list$std.dev <- new_formula
-          
-        }
-      }
+    if(!is.formula(coco.object@model.list[[ii]])){
+      next
     }
-  }
-  # scale 
-  
-  to_zero_scale <- which(abs(getEstims(coco.object)$scale[getEstims(coco.object)$scale != 0]) < coco.object@info$sparse.point)
-  
-  if(is.formula(coco.object@model.list$scale)){
     
-    if((length(to_zero_scale) == 1) && (to_zero_scale == 1)){
-      new_formulas_list$scale <- as.formula("~1", env = globalenv())
-    } else{
-      
-      if(length(to_zero_scale) == (sum(names(output$par) == "scale.limits") - 1)){
-        new_formulas_list$scale <- as.formula("~1", env = globalenv())
-      } else{
-        
-        if(length(to_zero_scale) > 0){
-          new_terms <- drop.terms(terms(coco.object@model.list$scale), dropx = to_zero_scale - 1, keep.response = TRUE)
-          new_terms <- c("1",attr(new_terms, "term.labels"))
-          new_formula <- reformulate(new_terms, response = NULL, env = globalenv())
-          new_formulas_list$scale <- new_formula
-        }
-        
-      }
+    to_zero <- which(abs(parss[[ii]][par_pos[[ii]]]) <= coco.object@info$sparse.point)
+    
+    if(length(to_zero) == 0){
+      next
     }
-  }
-  
-  # aniso 
-  to_zero_aniso <- which(abs(output$par[names(output$par) == "aniso.limits"]) <= coco.object@info$sparse.point)
-  
-  if(is.formula(coco.object@model.list$aniso)){
-    if((length(to_zero_aniso) == 1) && (to_zero_aniso == 1)){
-      new_formulas_list$aniso <- as.formula("~1", env = globalenv())
-    } else{
-      
-      if(length(to_zero_aniso) == (sum(names(output$par) == "aniso.limits") - 1)){
-        new_formulas_list$aniso <- as.formula("~1", env = globalenv())
-      } else{
-        
-        if(length(to_zero_aniso) > 0){
-          
-          new_terms <- drop.terms(terms(coco.object@model.list$aniso), dropx = to_zero_aniso - 1, keep.response = TRUE)
-          
-          if(attr(new_terms,"intercept") & (length(attr(new_terms,"term.labels")) > 0)){
-            new_terms <- c("1",attr(new_terms, "term.labels"))
-          } else{
-            new_terms <- attr(new_terms, "term.labels")
-          }
-          
-          new_formula <- reformulate(new_terms, response = NULL, env = globalenv())
-          new_formulas_list$aniso <- new_formula
-          
-        }
-        
-      }
-    }  
-  }
-  
-  # tilt 
-  to_zero_tilt <- which(abs(output$par[names(output$par) == "tilt.limits"]) <= coco.object@info$sparse.point)
-  
-  if(is.formula(coco.object@model.list$tilt)){
-    if((length(to_zero_tilt) == 1) && (to_zero_tilt == 1)){
-      new_formulas_list$tilt <- as.formula("~1", env = globalenv())
-    } else{
-      
-      if(length(to_zero_tilt) == (sum(names(output$par) == "tilt.limits") - 1)){
-        new_formulas_list$tilt <- as.formula("~1", env = globalenv())
-      } else{
-        
-        if(length(to_zero_tilt) > 0){
-          
-          new_terms <- drop.terms(terms(coco.object@model.list$tilt), dropx = to_zero_tilt - 1, keep.response = TRUE)
-          
-          if(attr(new_terms,"intercept") & (length(attr(new_terms,"term.labels")) > 0)){
-            new_terms <- c("1",attr(new_terms, "term.labels"))
-          } else{
-            new_terms <- attr(new_terms, "term.labels")
-          }
-          
-          new_formula <- reformulate(new_terms, response = NULL, env = globalenv())
-          new_formulas_list$tilt <- new_formula
-          
-        }
-        
-      }
+    
+    to_zero_covs <- sum(abs(parss[[ii]][par_pos[[ii]]]) <= coco.object@info$sparse.point)
+    
+    if( to_zero_covs == (number_parameters_models[[ii]] - 1)){
+      new_formulas_list[[ii]] <- as.formula("~1", env = globalenv())
+      next
     }
-  }
-  
-  
-  # smooth 
-  to_zero_smooth <- which(abs(output$par[names(output$par) == "smooth.limits"]) <= coco.object@info$sparse.point)
-  
-  if(is.formula(coco.object@model.list$smooth)){
-    if((length(to_zero_smooth) == 1) && (to_zero_smooth == 1)){
-      new_formulas_list$smooth <- as.formula("~1", env = globalenv())
+    
+    # Update formula
+    
+    new_terms <- drop.terms(terms(coco.object@model.list[[ii]]), dropx = (to_zero - 1), keep.response = TRUE)
+    
+    if(attr(new_terms,"intercept") & (length(attr(new_terms,"term.labels")) > 0)){
+      new_terms <- c("1",attr(new_terms, "term.labels"))
     } else{
-      
-      if(length(to_zero_smooth) == (sum(names(output$par) == "smooth.limits") - 1)){
-        new_formulas_list$smooth <- as.formula("~1", env = globalenv())
-      } else{
-        if(length(to_zero_smooth) > 0){
-          
-          new_terms <- drop.terms(terms(coco.object@model.list$smooth), dropx = to_zero_smooth - 1, keep.response = TRUE)
-          
-          if(attr(new_terms,"intercept") & (length(attr(new_terms,"term.labels")) > 0)){
-            new_terms <- c("1",attr(new_terms, "term.labels"))
-          } else{
-            new_terms <- attr(new_terms, "term.labels")
-          }
-          
-          new_formula <- reformulate(new_terms, response = NULL, env = globalenv())
-          new_formulas_list$smooth <- new_formula
-          
-        }
-      }
+      new_terms <- attr(new_terms, "term.labels")
     }
+    
+    new_formula <- reformulate(new_terms, response = NULL, env = globalenv())
+    new_formulas_list[[ii]] <- new_formula
+  
   }
   
-  # nugget 
-  to_zero_nugget <- which(abs(output$par[names(output$par) == "nugget.limits"]) <= coco.object@info$sparse.point)
+  index_where <- 0
   
-  if(is.formula(coco.object@model.list$nugget)){
-    if((length(to_zero_nugget) == 1) && (to_zero_nugget == 1)){
-      new_formulas_list$nugget <- as.formula("~1", env = globalenv())
-    } else{
-      if(length(to_zero_nugget) == (sum(names(output$par) == "nugget.limits") - 1)){
-        new_formulas_list$nugget <- as.formula("~1", env = globalenv())
-      } else{
-        if(length(to_zero_nugget) > 0){
-          
-          new_terms <- drop.terms(terms(coco.object@model.list$nugget), dropx = to_zero_nugget - 1, keep.response = TRUE)
-          
-          if(attr(new_terms,"intercept") & (length(attr(new_terms,"term.labels")) > 0)){
-            new_terms <- c("1",attr(new_terms, "term.labels"))
-          } else{
-            new_terms <- attr(new_terms, "term.labels")
-          }
-          
-          new_formula <- reformulate(new_terms, response = NULL, env = globalenv())
-          new_formulas_list$nugget <- new_formula
-          
-        }
-        
-      }
+  vector_logical <- logical(length = length(output$par))
+  
+  for(ii in 1:7){
+    
+    if(!is.formula(coco.object@model.list[[ii]])){
+      next
     }
+    
+    to_zero <- which(abs(parss[[ii]][par_pos[[ii]]]) <= coco.object@info$sparse.point)
+    
+    # ??
+    if(any(to_zero == 1) & (length(to_zero) > 1)){
+      to_zero <- to_zero[-1]
+    }
+    
+    index_to_place <- (index_where + 1 ) : (index_where + number_parameters_models[[ii]])
+    
+    vector_logical[index_to_place][to_zero] <- TRUE
+    
+    index_where <- index_where + number_parameters_models[[ii]]
+    
   }
   
-  # update boundaries 
+  boundaries <- lapply(boundaries, function(x) x[!vector_logical])
   
-  to_zero_mean <- which(abs(output$par[names(output$par) == "mean.limits"]) <= coco.object@info$sparse.point)
-  
-  if(any(to_zero_mean == 1) & (length(to_zero_mean) > 1)){
-    to_zero_mean <- to_zero_mean[-1]
-  }
-  
-  output$par[names(output$par) == "mean.limits"][to_zero_mean] <- 0
-  
-  copy_boundaries <- boundaries
-  
-  copy_boundaries$theta_lower[names(output$par) == "mean.limits"][to_zero_mean] <- 0
-  copy_boundaries$theta_upper[names(output$par) == "mean.limits"][to_zero_mean] <- 0
-  
-  to_zero_std <- which(abs(getEstims(coco.object)$std.dev[getEstims(coco.object)$std.dev != 0]) < coco.object@info$sparse.point)
-  
-  if(any(to_zero_std == 1)){
-    to_zero_std <- to_zero_std[-1]
-  }
-  
-  to_zero_scale <- which(abs(getEstims(coco.object)$scale[getEstims(coco.object)$scale != 0]) < coco.object@info$sparse.point)
-  
-  if(any(to_zero_scale == 1)){
-    to_zero_scale <- to_zero_scale[-1]
-  }
-  
-  output$par[names(output$par) == "std.dev.limits"][to_zero_std] <- 0
-  output$par[names(output$par) == "scale.limits"][to_zero_scale] <- 0
-  
-  copy_boundaries$theta_lower[names(output$par) == "std.dev.limits"][to_zero_std] <- 0
-  copy_boundaries$theta_upper[names(output$par) == "std.dev.limits"][to_zero_std] <- 0
-  copy_boundaries$theta_lower[names(output$par) == "scale.limits"][to_zero_scale] <- 0
-  copy_boundaries$theta_upper[names(output$par) == "scale.limits"][to_zero_scale] <- 0      
-  
-  to_zero_aniso <- which(abs(output$par[names(output$par) == "aniso.limits"]) <= coco.object@info$sparse.point)
-  
-  if(any(to_zero_aniso == 1) & (length(to_zero_aniso) > 1)){
-    to_zero_aniso <- to_zero_aniso[-1]
-  }
-  
-  output$par[names(output$par) == "aniso.limits"][to_zero_aniso] <- 0
-  copy_boundaries$theta_lower[names(output$par) == "aniso.limits"][to_zero_aniso] <- 0
-  copy_boundaries$theta_upper[names(output$par) == "aniso.limits"][to_zero_aniso] <- 0
-  
-  to_zero_tilt <- which(abs(output$par[names(output$par) == "tilt.limits"]) <= coco.object@info$sparse.point)
-  
-  if(any(to_zero_tilt == 1) & (length(to_zero_tilt) > 1)){
-    to_zero_tilt <- to_zero_tilt[-1]
-  }
-  
-  output$par[names(output$par) == "tilt.limits"][to_zero_tilt] <- 0
-  copy_boundaries$theta_lower[names(output$par) == "tilt.limits"][to_zero_tilt] <- 0
-  copy_boundaries$theta_upper[names(output$par) == "tilt.limits"][to_zero_tilt] <- 0
-  
-  to_zero_smooth <- which(abs(output$par[names(output$par) == "smooth.limits"]) <= coco.object@info$sparse.point)
-  
-  if(any(to_zero_smooth == 1) & (length(to_zero_smooth) > 1)){
-    to_zero_smooth <- to_zero_smooth[-1]
-  }
-  
-  output$par[names(output$par) == "smooth.limits"][to_zero_smooth] <- 0
-  copy_boundaries$theta_lower[names(output$par) == "smooth.limits"][to_zero_smooth] <- 0
-  copy_boundaries$theta_upper[names(output$par) == "smooth.limits"][to_zero_smooth] <- 0
-  
-  to_zero_nugget <- which(abs(output$par[names(output$par) == "nugget.limits"]) <= coco.object@info$sparse.point)
-  
-  if(any(to_zero_nugget == 1) & (length(to_zero_nugget) > 1)){
-    to_zero_nugget <- to_zero_nugget[-1]
-  }
-  
-  output$par[names(output$par) == "nugget.limits"][to_zero_nugget] <- 0
-  copy_boundaries$theta_lower[names(output$par) == "nugget.limits"][to_zero_nugget] <- 0
-  copy_boundaries$theta_upper[names(output$par) == "nugget.limits"][to_zero_nugget] <- 0
-  
-  copy_boundaries$theta_lower <- copy_boundaries$theta_lower[!(output$par == 0)]
-  copy_boundaries$theta_upper <- copy_boundaries$theta_upper[!(output$par == 0)]
-  copy_boundaries$theta_init <- output$par[!(output$par == 0)]
-  
-  coco.object@info$boundaries <- copy_boundaries
+  coco.object@info$boundaries <- boundaries
   
   coco.object@model.list <- new_formulas_list
   
