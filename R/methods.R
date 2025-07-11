@@ -570,3 +570,65 @@ setMethod("summary", signature(object = "coco"),
               }
             }
 )
+
+
+
+#' Show Method for Coco Class
+#'
+#' This method show objects of class 'coco'.
+#' @name show
+#' @aliases show,coco-method
+#' @param object (\code{S4}) An object of class 'coco'.
+#' @return A plot is created.
+#' @docType methods
+#' @rdname show-methods
+#' @author Federico Blasi
+#' 
+setMethod("show",
+          signature(object = "coco"),
+          function(object){
+            
+            if(object@type == "dense"){
+              
+              cat(sprintf("%-30s %30s\n", "coco object", object@type))
+              cat(sprintf("%-30s %30s\n", "fitted", ifelse(identical(object@output, list()), yes = "no", 
+                                                           no = "yes")))
+              
+              cat(rep("-", 40), "\n")
+              cat(sprintf("%-30s %30s\n", "dataset dim", paste0(dim(object@data), collapse = ", ")))
+              
+              # number of parameters
+              
+              cat(sprintf("%-30s %30s\n", "model parameters", .cocons.get.npars(object)))
+              
+              # covariates names
+              
+              coco_info_light <- getDesignMatrix(model.list = object@model.list, data = object@data[1, , drop = FALSE])
+              
+              cat(sprintf("%-30s %10s", "covariates ", paste0(colnames(coco_info_light$model.matrix),collapse = ", ")))
+              
+            }
+            
+            if(object@type == "sparse"){
+              
+              cat(sprintf("%-30s %30s\n", "coco object", object@type))
+              cat(sprintf("%-30s %30s\n", "fitted", ifelse(identical(object@output, list()), yes = "no", 
+                                                           no = "yes")))
+              
+              cat(rep("-", 40), "\n")
+              cat(sprintf("%-30s %30s\n", "dataset dim", paste0(dim(object@data), collapse = ", ")))
+              
+              # number of parameters
+              
+              cat(sprintf("%-30s %30s\n", "model parameters", .cocons.get.npars(object)))
+              
+              # covariates names
+              
+              coco_info_light <- getDesignMatrix(model.list = object@model.list, data = object@data[1, , drop = FALSE])
+              
+              cat(sprintf("%-30s %10s", "covariates ", paste0(colnames(coco_info_light$model.matrix),collapse = ", ")))
+              
+            }
+            
+          }
+)
