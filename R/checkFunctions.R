@@ -532,6 +532,11 @@
     
     # Update formula
     
+    # If the only parameter to drop is the intercept
+    if(length(to_zero) == 1 && to_zero == 1){
+      next
+    }
+    
     new_terms <- drop.terms(terms(coco.object@model.list[[ii]]), dropx = (to_zero - 1), keep.response = TRUE)
     
     if(attr(new_terms,"intercept") & (length(attr(new_terms,"term.labels")) > 0)){
