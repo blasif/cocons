@@ -525,7 +525,7 @@
     
     to_zero_covs <- sum(abs(parss[[ii]][par_pos[[ii]]]) <= coco.object@info$sparse.point)
     
-    if( to_zero_covs == (number_parameters_models[[ii]] - 1)){
+    if( to_zero_covs == (number_parameters_models[[ii]] - 1) || (to_zero_covs == (number_parameters_models[[ii]]))){
       new_formulas_list[[ii]] <- as.formula("~1", env = globalenv())
       next
     }
