@@ -562,9 +562,13 @@
     
     to_zero <- which(abs(parss[[ii]][par_pos[[ii]]]) <= coco.object@info$sparse.point)
     
-    # ??
-    if(any(to_zero == 1) & (length(to_zero) > 1)){
+    if(any(to_zero == 1) && (length(to_zero) > 1)){
       to_zero <- to_zero[-1]
+    }
+    
+    if(length(to_zero) == 1 && to_zero == 1){
+      index_where <- index_where + number_parameters_models[[ii]]
+      next
     }
     
     index_to_place <- (index_where + 1 ) : (index_where + number_parameters_models[[ii]])
@@ -575,9 +579,9 @@
     
   }
   
-  boundaries <- lapply(boundaries, function(x) x[!vector_logical])
+  boundaries_new <- lapply(boundaries, function(x) x[!vector_logical])
   
-  coco.object@info$boundaries <- boundaries
+  coco.object@info$boundaries <- boundaries_new
   
   coco.object@model.list <- new_formulas_list
   

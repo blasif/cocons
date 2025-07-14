@@ -407,7 +407,7 @@ cocoOptim <- function(coco.object, boundaries = list(),
         optim.control
       ))
       
-      coco_pen <- .cocons.update.coco.first.step(coco.object,output_taper, boundaries)
+      coco_pen <- .cocons.update.coco.first.step(coco.object, output_taper, boundaries)
       
       # Create again design matrix
       
