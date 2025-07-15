@@ -12,7 +12,7 @@
 R package for nonstationary spatial modeling, simulation, and prediction of Gaussian processes with modular covariate-based covariance functions.
 
 <!-- set width, height, or both -->
-<img src="gifs/true_model.gif" alt="True Process" width="325" height="575" /> <img src="gifs/ns_model.gif" alt="Nonstationary Model" width="325" height="575" /> <img src="gifs/classic_model.gif" alt="Stationary Model" width="325" height="576" />
+<img src="gifs/true_model.gif" alt="True Process" width="300" height="550" /> <img src="gifs/ns_model.gif" alt="Nonstationary Model" width="300" height="550" /> <img src="gifs/classic_model.gif" alt="Stationary Model" width="300" height="550" />
 
 For a brief introduction:
 ``` R
