@@ -653,8 +653,8 @@ getBoundariesV4 <- function(coco.object,lower.bound = 2, upper.bound = 2){
   first_smooth <- which(names(boundaries_B$theta_init) == "smooth.limits")[1]
   n_smooth <- length(which(names(boundaries_B$theta_init) == "smooth.limits")) - 1
   
-  boundaries_B$theta_init[first_range] <- (log(sd(test_coco_classic@z)) -log(sd(c(dist(test_coco_classic@locs)))))/2
-  boundaries_B$theta_init[first_var] <- (log(sd(test_coco_classic@z)) +log(sd(c(dist(test_coco_classic@locs)))))/2
+  boundaries_B$theta_init[first_range] <- (log(sd(coco.object@z)) -log(sd(c(dist(coco.object@locs)))))/2
+  boundaries_B$theta_init[first_var] <- (log(sd(coco.object@z)) +log(sd(c(dist(coco.object@locs)))))/2
   
   boundaries_B$theta_upper[c(first_var, first_range)] <- c(3 * abs(boundaries_B$theta_init[first_var]), 3 * abs(boundaries_B$theta_init[first_range]))
   boundaries_B$theta_lower[c(first_var, first_range)] <- c(-3 * abs(boundaries_B$theta_init[first_var]), -3 * abs(boundaries_B$theta_init[first_range]))
@@ -662,7 +662,7 @@ getBoundariesV4 <- function(coco.object,lower.bound = 2, upper.bound = 2){
   boundaries_B$theta_upper[first_smooth] <- 3
   boundaries_B$theta_lower[first_smooth] <- -3.5
 
-  boundaries_B$theta_init[1] <- mean(test_coco_classic@z)
+  boundaries_B$theta_init[1] <- mean(coco.object@z)
   boundaries_B$theta_upper[1] <- boundaries_B$theta_init[1] + 3 * boundaries_B$theta_init[1]
   boundaries_B$theta_lower[1] <- boundaries_B$theta_init[1] - 3 * boundaries_B$theta_init[1]
   

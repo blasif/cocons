@@ -3,7 +3,7 @@ Type: Package
 Title: Covariate-Based Covariance Functions for Nonstationary Spatial Modeling
 Version: 0.1.5
 Author: Federico Blasi [aut, cre] (<https://orcid.org/0000-0001-9337-7154>), Reinhard Furrer [ctb] (<https://orcid.org/0000-0002-6319-2332>)
-Authors@R: c(person("Federico", "Blasi", email = "federico.blasi@gmail.com",
+Authors@R: c(person("Federico", "Blasi", email = "federico.blasi at gmail.com",
   role = c("aut", "cre"), comment = c(ORCID = "0000-0001-9337-7154")),
   person("Reinhard", "Furrer",
   role = c("ctb"), comment = c(ORCID = "0000-0002-6319-2332"))
