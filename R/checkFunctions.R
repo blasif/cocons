@@ -273,9 +273,21 @@
     stop("smooth limits not specified.")
   }
   
-  if (!is.null(info$lambda)) {
-    if(any(info$lambda < 0)){
-      stop("all lambdas must be non-negative.")
+  if (!is.null(info$lambda.reg)) {
+    if(info$lambda.reg < 0){
+      stop("lambda.reg must be non-negative.")
+    }
+  }
+  
+  if (!is.null(info$lambda.Sigma)) {
+    if(info$lambda.Sigma < 0){
+      stop("lambda.Sigma must be non-negative.")
+    }
+  }
+  
+  if (!is.null(info$lambda.betas)) {
+    if(info$lambda.betas < 0){
+      stop("lambda.betas must be non-negative.")
     }
   }
     

@@ -26,7 +26,7 @@ locs, x_covariates, smooth.limits, cholS, z, n, lambda, safe = TRUE)
 
 \item{n}{\code{(integer)} dim(z)[1].}
 
-\item{lambda}{\code{(numeric)} regularization parameter.}
+\item{lambda}{\code{(numeric vector)} a vector including lambda.Sigma, lambda.betas, lambda.reg (in this order)}
 
 \item{safe}{\code{(TRUE/FALSE)} if \code{TRUE} returns a large pre-defined value under Cholesky errors. Default \code{TRUE}.}
 }
