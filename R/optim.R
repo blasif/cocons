@@ -633,12 +633,18 @@ cocoOptim <- function(coco.object, boundaries = list(),
       
       new_pars <- c(new_pars, first_par)
       
-      if(is.logical(args_optim$par.pos$std.dev)){
+      if(is.logical(args_optim$par.pos$std.dev) & any(args_optim$par.pos$std.dev[-1])){
         new_pars <- c(new_pars, output_taper$par[first_sigma:(first_sigma + sum(args_optim$par.pos$std.dev) - 1)])
       }
       
       if(is.logical(args_optim$par.pos$scale)){
-        new_pars <- c(new_pars, second_par, output_taper$par[(first_scale+1):(first_scale + sum(args_optim$par.pos$scale) - 1)])
+        
+        if(any(args_optim$par.pos$scale[-1])){
+          new_pars <- c(new_pars, second_par, output_taper$par[(first_scale+1):(first_scale + sum(args_optim$par.pos$scale) - 1)])
+        } else{
+          new_pars <- c(new_pars, second_par)
+        }
+        
         first_smooth <- first_scale + if(is.logical(args_optim$par.pos$scale)){sum(args_optim$par.pos$scale)}
       } else{
         first_smooth <- first_scale
