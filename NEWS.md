@@ -1,3 +1,10 @@
+## cocons 0.1.5
+
+- Vignette updated
+- changed default max.iters from 200 to 500.
+- now `coco` objects store information about optim.control arguments for full reproducibility.
+- introduce a two-step optimization approach for automatic model selection. See `help(coco)`.
+
 ## cocons 0.1.4
 
 - Documentation polished

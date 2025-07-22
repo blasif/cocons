@@ -11,6 +11,9 @@
 
 R package for nonstationary spatial modeling, simulation, and prediction of Gaussian processes with modular covariate-based covariance functions.
 
+<!-- set width, height, or both -->
+<img src="gifs/true_model.gif" alt="True Process" width="250" height="550" /> <img src="gifs/ns_model.gif" alt="Nonstationary Model" width="250" height="550" /> <img src="gifs/classic_model.gif" alt="Stationary Model" width="250" height="550" />
+
 For a brief introduction:
 ``` R
   install.packages("cocons")

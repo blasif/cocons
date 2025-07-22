@@ -13,7 +13,7 @@
 #' @param cholS \code{(S4)} Cholesky object from spam.
 #' @param z \code{(numeric vector)} a vector of observed values.
 #' @param n \code{(numeric)} dim(z)\[1\].
-#' @param lambda \code{(numeric)} regularization parameter.
+#' @param lambda \code{(numeric vector)} a vector including lambda.Sigma, lambda.betas, lambda.reg (in this order)
 #' @param safe \code{(TRUE/FALSE)} if \code{TRUE} returns a large pre-defined value under Cholesky errors. Default \code{TRUE}.
 #' @returns value 
 #' @author Federico Blasi
@@ -66,7 +66,7 @@ GetNeg2loglikelihoodTaper <- function(theta, par.pos, ref_taper, locs,
 #' @param cholS \code{(S4)} Cholesky object from spam.
 #' @param z \code{(numeric vector)} a vector of observed values.
 #' @param n \code{(integer)} dim(z)\[1\].
-#' @param lambda \code{(numeric)} regularization parameter.
+#' @param lambda \code{(numeric vector)} a vector including lambda.Sigma, lambda.betas, lambda.reg (in this order)
 #' @param safe \code{(TRUE/FALSE)} if \code{TRUE} returns a large pre-defined value under Cholesky errors. Default \code{TRUE}.
 #' @returns \code{(numeric)} 
 #' @author Federico Blasi
@@ -120,7 +120,7 @@ GetNeg2loglikelihoodTaperProfile <- function(theta, par.pos, ref_taper, locs,
 #' @param z \code{(numeric vector)} a vector of observed values.
 #' @param n \code{(integer)} dim(z)\[1\].
 #' @param x_betas \code{(matrix) or (data.frame)} design matrix for the spatial mean.
-#' @param lambda \code{(numeric)} regularization parameter.
+#' @param lambda \code{(numeric vector)} a vector including lambda.Sigma, lambda.betas, lambda.reg (in this order)
 #' @param safe \code{(TRUE/FALSE)} if \code{TRUE} returns a large pre-defined value under Cholesky errors. Default \code{TRUE}.
 #' @returns value 
 #' @author Federico Blasi
@@ -176,7 +176,7 @@ GetNeg2loglikelihoodProfile <- function(theta, par.pos, locs, x_covariates,
 #' @param smooth.limits \code{(numeric vector)} smooth.limits.
 #' @param z \code{(numeric vector)} a vector of observed values.
 #' @param n \code{(integer)} dim(z)\[1\].
-#' @param lambda \code{(numeric)} regularization parameter.
+#' @param lambda \code{(numeric vector)} a vector including lambda.Sigma, lambda.betas, lambda.reg (in this order)
 #' @param safe \code{(TRUE/FALSE)} if \code{TRUE} returns a large pre-defined value under Cholesky errors. Default \code{TRUE}.
 #' @returns value
 #' @author Federico Blasi
@@ -234,7 +234,7 @@ GetNeg2loglikelihood <- function(theta,
 #' @param smooth.limits \code{(numeric vector)} smooth.limits.
 #' @param z \code{(numeric vector)} a vector of contrasts.
 #' @param n \code{(integer)} dim(z)\[1\].
-#' @param lambda \code{(numeric)} regularization parameter.
+#' @param lambda \code{(numeric vector)} a vector including lambda.Sigma, lambda.betas, lambda.reg (in this order)
 #' @param safe \code{(TRUE/FALSE)} if \code{TRUE} returns a large pre-defined value under Cholesky errors. Default \code{TRUE}.
 #' @returns value
 #' @author Federico Blasi

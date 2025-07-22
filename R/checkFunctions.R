@@ -17,6 +17,10 @@
     optim.control$control$factr <- to_update$control$factr
   }
   
+  if(is.null(optim.control$control$ndeps)){
+    optim.control$control$ndeps <- to_update$control$ndeps
+  }
+  
   if(is.null(optim.control$control$trace)){
     optim.control$control$trace <- to_update$control$trace
   }
@@ -269,9 +273,21 @@
     stop("smooth limits not specified.")
   }
   
-  if (!is.null(info$lambda)) {
-    if(info$lambda < 0){
-      stop("lambda must be non-negative.")
+  if (!is.null(info$lambda.reg)) {
+    if(info$lambda.reg < 0){
+      stop("lambda.reg must be non-negative.")
+    }
+  }
+  
+  if (!is.null(info$lambda.Sigma)) {
+    if(info$lambda.Sigma < 0){
+      stop("lambda.Sigma must be non-negative.")
+    }
+  }
+  
+  if (!is.null(info$lambda.betas)) {
+    if(info$lambda.betas < 0){
+      stop("lambda.betas must be non-negative.")
     }
   }
     
@@ -451,11 +467,21 @@
 
 .cocons.getPen <- function(n, lambda, theta_list, smooth.limits){
   
-  return(2 * n * lambda * exp(theta_list$scale[1]) * 
-           sqrt(((smooth.limits[2]-smooth.limits[1])/ 
-                   (1 + exp(-theta_list$smooth[1])) + 
-                   smooth.limits[1]))
-  )
+  if(T){
+    summ <- lambda[3] * exp(theta_list$scale[1]) * 
+      sqrt(((smooth.limits[2]-smooth.limits[1])/ 
+              (1 + exp(-theta_list$smooth[1])) + 
+              smooth.limits[1])) + sumsmoothlone(x = unlist(theta_list[[1]][-1]), lambda[2])    
+  }
+
+  for(ii in 2:6){
+    
+    lambda_i <- sumsmoothlone(x = unlist(theta_list[[ii]][-1]), lambda[1])
+    summ <- summ + lambda_i
+    
+  }
+  
+  return(2 * n * summ)
   
 }
 
@@ -477,4 +503,99 @@
   
   return(namesToUpdate)
   
+}
+
+
+.cocons.update.coco.first.step <- function(coco.object, output, boundaries){
+  
+  # Update model structure
+  
+  par_pos <- getDesignMatrix(coco.object@model.list,data = coco.object@data)$par.pos
+  
+  number_parameters_models <- lapply(par_pos,sum)
+  
+  new_formulas_list <- coco.object@model.list
+  
+  coco.object@output <- output
+  
+  parss <- getEstims(coco.object)
+  
+  # What if one estimate is exactly 0 ?
+  # Check models formulas keeping environment
+  
+  for(ii in 1:7){
+    
+    if(!is.formula(coco.object@model.list[[ii]])){
+      next
+    }
+    
+    to_zero <- which(abs(parss[[ii]][par_pos[[ii]]]) <= coco.object@info$sparse.point)
+    
+    if(length(to_zero) == 0){
+      next
+    }
+    
+    to_zero_covs <- sum(abs(parss[[ii]][par_pos[[ii]]]) <= coco.object@info$sparse.point)
+    
+    if( to_zero_covs == (number_parameters_models[[ii]] - 1) || (to_zero_covs == (number_parameters_models[[ii]]))){
+      new_formulas_list[[ii]] <- stats::as.formula("~1", env = globalenv())
+      next
+    }
+    
+    # Update formula
+    
+    # If the only parameter to drop is the intercept
+    if(length(to_zero) == 1 && to_zero == 1){
+      next
+    }
+    
+    new_terms <- stats::drop.terms(stats::terms(coco.object@model.list[[ii]]), dropx = (to_zero - 1), keep.response = TRUE)
+    
+    if(attr(new_terms,"intercept") & (length(attr(new_terms,"term.labels")) > 0)){
+      new_terms <- c("1",attr(new_terms, "term.labels"))
+    } else{
+      new_terms <- attr(new_terms, "term.labels")
+    }
+    
+    new_formula <- stats::reformulate(new_terms, response = NULL, env = globalenv())
+    new_formulas_list[[ii]] <- new_formula
+  
+  }
+  
+  index_where <- 0
+  
+  vector_logical <- logical(length = length(output$par))
+  
+  for(ii in 1:7){
+    
+    if(!is.formula(coco.object@model.list[[ii]])){
+      next
+    }
+    
+    to_zero <- which(abs(parss[[ii]][par_pos[[ii]]]) <= coco.object@info$sparse.point)
+    
+    if(any(to_zero == 1) && (length(to_zero) > 1)){
+      to_zero <- to_zero[-1]
+    }
+    
+    if(length(to_zero) == 1 && to_zero == 1){
+      index_where <- index_where + number_parameters_models[[ii]]
+      next
+    }
+    
+    index_to_place <- (index_where + 1 ) : (index_where + number_parameters_models[[ii]])
+    
+    vector_logical[index_to_place][to_zero] <- TRUE
+    
+    index_where <- index_where + number_parameters_models[[ii]]
+    
+  }
+  
+  boundaries_new <- lapply(boundaries, function(x) x[!vector_logical])
+  
+  coco.object@info$boundaries <- boundaries_new
+  
+  coco.object@model.list <- new_formulas_list
+  
+  return(coco.object)
 }

@@ -2,6 +2,33 @@
 
 using namespace Rcpp;
 
+//' smoothed-L1 penalization over the covariate-driven parameters
+//'
+//' @param x a vector of parameters to penalize
+//' @param lambda penalization hyperparameter
+//' @param alpha hyperparameter to approximate L1 penalization. By default 1e6 provides a decent approximation to L1, while also being a differentiable function
+//' @return penalization
+// [[Rcpp::export]]
+double sumsmoothlone(NumericVector& x,
+                      double lambda,
+                      double alpha = 1e6){
+   
+   double sum = 0;
+   
+   for(int ww = 0; ww < x.length(); ww++){
+     
+     if(std::abs(x[ww]) > 1e-4){
+       sum = sum + std::abs(x[ww]);
+     } else{
+       sum = sum + std::pow(alpha,-1) * (std::log(1 + std::exp(-alpha * x[ww])) + std::log(1 + exp(alpha * x[ww])));
+     }
+     
+   }
+   
+   return lambda * sum;
+   
+}
+
 //' Dense covariance function (difference parameterization)
 //'
 //' @param theta vector of parameters
@@ -260,13 +287,27 @@ NumericMatrix cov_rns(List& theta,
              
            } else{
              
-             dist_matrix(ii,jj) = dist_matrix(jj,ii) = std::pow(2.0 , -(smtns - 1)) / std::tgamma(smtns) * 
-               std::pow(smooth_s_Q_ij, smtns) * boost::math::cyl_bessel_k(smtns, smooth_s_Q_ij) * 
-               sigma_vector[ii] * sigma_vector[jj] * 
-               std::sqrt(dets_vector[ii] * std::sin(tilt_vector[ii]) * 
-               dets_vector[jj] * std::sin(tilt_vector[jj])) / std::sqrt(det_ij);
+             
+             if(smooth_s_Q_ij < 706.0){
+               
+               dist_matrix(ii,jj) = dist_matrix(jj,ii) = std::pow(2.0 , -(smtns - 1)) / std::tgamma(smtns) * 
+                 std::pow(smooth_s_Q_ij, smtns) * boost::math::cyl_bessel_k(smtns, smooth_s_Q_ij) * 
+                 sigma_vector[ii] * sigma_vector[jj] * 
+                 std::sqrt(dets_vector[ii] * std::sin(tilt_vector[ii]) * 
+                 dets_vector[jj] * std::sin(tilt_vector[jj])) / std::sqrt(det_ij);
+               
+             } else {
+               
+               dist_matrix(ii,jj) = dist_matrix(jj,ii) = dist_matrix(jj,ii) = std::pow(2.0 , -(smtns - 1)) / std::tgamma(smtns) * 
+                 std::pow(smooth_s_Q_ij, smtns) * std::sqrt(M_PI / (2.0 * smooth_s_Q_ij)) * std::exp(-smooth_s_Q_ij) * 
+                 sigma_vector[ii] * sigma_vector[jj] * 
+                 std::sqrt(dets_vector[ii] * std::sin(tilt_vector[ii]) * 
+                 dets_vector[jj] * std::sin(tilt_vector[jj])) / std::sqrt(det_ij);
+               
+             }
              
              continue;
+             
            }
          }
        }
@@ -402,11 +443,24 @@ NumericMatrix cov_rns_pred(List& theta, NumericMatrix& locs,
           
         } else{
           
-          dist_matrix(ii,jj) = std::pow(2.0 , -(smtns - 1)) / std::tgamma(smtns) * 
-            std::pow(smooth_s_Q_ij, smtns) * boost::math::cyl_bessel_k(smtns, smooth_s_Q_ij) * 
-            p_sigma_vector[ii] * sigma_vector[jj] * 
-            std::sqrt(p_dets_vector[ii] * std::sin(p_tilt_vector[ii]) * 
-            dets_vector[jj] * std::sin(tilt_vector[jj])) / std::sqrt(det_ij);
+          
+          if(smooth_s_Q_ij < 706.0){
+            
+            dist_matrix(ii,jj) = std::pow(2.0 , -(smtns - 1)) / std::tgamma(smtns) * 
+              std::pow(smooth_s_Q_ij, smtns) * boost::math::cyl_bessel_k(smtns, smooth_s_Q_ij) * 
+              p_sigma_vector[ii] * sigma_vector[jj] * 
+              std::sqrt(p_dets_vector[ii] * std::sin(p_tilt_vector[ii]) * 
+              dets_vector[jj] * std::sin(tilt_vector[jj])) / std::sqrt(det_ij);
+            
+          } else {
+            
+            dist_matrix(ii,jj) = std::pow(2.0 , -(smtns - 1)) / std::tgamma(smtns) * 
+              std::pow(smooth_s_Q_ij, smtns) * std::sqrt(M_PI / (2.0 * smooth_s_Q_ij)) * std::exp(-smooth_s_Q_ij) * 
+              p_sigma_vector[ii] * sigma_vector[jj] * 
+              std::sqrt(p_dets_vector[ii] * std::sin(p_tilt_vector[ii]) * 
+              dets_vector[jj] * std::sin(tilt_vector[jj])) / std::sqrt(det_ij);
+            
+          }
           
         }
       }
@@ -513,11 +567,23 @@ NumericMatrix cov_rns_classic(List& theta, NumericMatrix& locs, NumericMatrix& x
           
         } else{
           
-          dist_matrix(ii,jj) = dist_matrix(jj,ii) = std::pow(2.0 , -(smtns - 1)) / std::tgamma(smtns) * 
-            std::pow(smooth_s_Q_ij, smtns) * boost::math::cyl_bessel_k(smtns, smooth_s_Q_ij) * 
-            sigma_vector[ii] * sigma_vector[jj] * 
-            std::sqrt(dets_vector[ii] * std::sin(tilt_vector[ii]) * 
-            dets_vector[jj] * std::sin(tilt_vector[jj])) / std::sqrt(det_ij);
+          if(smooth_s_Q_ij < 706.0){
+            
+            dist_matrix(ii,jj) = dist_matrix(jj,ii) = std::pow(2.0 , -(smtns - 1)) / std::tgamma(smtns) * 
+              std::pow(smooth_s_Q_ij, smtns) * boost::math::cyl_bessel_k(smtns, smooth_s_Q_ij) * 
+              sigma_vector[ii] * sigma_vector[jj] * 
+              std::sqrt(dets_vector[ii] * std::sin(tilt_vector[ii]) * 
+              dets_vector[jj] * std::sin(tilt_vector[jj])) / std::sqrt(det_ij);
+            
+          } else {
+            
+            dist_matrix(ii,jj) = dist_matrix(jj,ii) = dist_matrix(jj,ii) = std::pow(2.0 , -(smtns - 1)) / std::tgamma(smtns) * 
+              std::pow(smooth_s_Q_ij, smtns) * std::sqrt(M_PI / (2.0 * smooth_s_Q_ij)) * std::exp(-smooth_s_Q_ij) * 
+              sigma_vector[ii] * sigma_vector[jj] * 
+              std::sqrt(dets_vector[ii] * std::sin(tilt_vector[ii]) * 
+              dets_vector[jj] * std::sin(tilt_vector[jj])) / std::sqrt(det_ij);
+            
+          }
           
         }
       }

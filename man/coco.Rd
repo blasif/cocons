@@ -52,7 +52,10 @@ where \eqn{\boldsymbol{\beta}}, \eqn{\boldsymbol{\alpha}}, \eqn{\boldsymbol{\the
 \eqn{\nu_{l}}, and \eqn{\nu_{u}} are the lower and upper bounds limiting the range of variation of the spatially-varying smoothness, and where \eqn{\boldsymbol{X}_{\ell}} relates to the design matrix defined by the specific models for each of the source of nonstationarity.
 
 Lastly, arguments for the \code{"info"} list argument involve: \itemize{
-\item \code{"lambda"}: (\code{numeric}) a positive scalar specifying the regularization parameter. Larger values penalizes highly-smoothed long-tailed covariance functions.
+\item \code{"lambda.reg"}: (\code{numeric}) a positive scalar specifying the regularization parameter. Larger values regularize highly-smoothed long-tailed covariance functions.
+\item \code{"lambda.Sigma"}: (\code{numeric}) a positive scalar specifying the penalization parameter for the covariate-driven covariance parameters.
+\item \code{"lambda.betas"}: (\code{numeric}) a positive scalar specifying the penalization parameter for the covariate-driven spatial mean parameters.
+\item \code{"sparse.point"}: (\code{numeric}) a cutting point for which smaller coefficients in absolute value will be set to zero after the smoothed L1 penalization optimization. Used in combination with \code{lambda.Sigma} and \code{lambda.betas}. By default, it is set to \code{1e-4}.
 \item \code{"smooth.limits"}: (\code{numeric vector}) specifying the range of variation for the spatially varying smoothness (e.g. c(0.5, 2.5)).
 \item \code{"taper"}: (\code{numeric}) specifying the desired taper function from the spam package (only for "sparse" coco objects).
 \item \code{"delta"}: (\code{numeric}) specifying the taper range/scale (only for "sparse" coco objects).

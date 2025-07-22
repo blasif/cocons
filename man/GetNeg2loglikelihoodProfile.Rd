@@ -24,7 +24,7 @@ smooth.limits, z, n, x_betas,lambda, safe = TRUE)
 
 \item{x_betas}{\code{(matrix) or (data.frame)} design matrix for the spatial mean.}
 
-\item{lambda}{\code{(numeric)} regularization parameter.}
+\item{lambda}{\code{(numeric vector)} a vector including lambda.Sigma, lambda.betas, lambda.reg (in this order)}
 
 \item{safe}{\code{(TRUE/FALSE)} if \code{TRUE} returns a large pre-defined value under Cholesky errors. Default \code{TRUE}.}
 }
