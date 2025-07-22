@@ -1,4 +1,4 @@
-0.1Package: cocons
+Package: cocons
 Type: Package
 Title: Covariate-Based Covariance Functions for Nonstationary Spatial Modeling
 Version: 0.1.5
