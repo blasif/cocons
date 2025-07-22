@@ -158,7 +158,7 @@ cocoOptim <- function(coco.object, boundaries = list(),
         optim.control
       ))
       
-      coco_pen <- cocons:::.cocons.update.coco.first.step(coco.object, output_dense, boundaries)
+      coco_pen <- .cocons.update.coco.first.step(coco.object, output_dense, boundaries)
       
       # .cocons.check.convergence(output_dense, boundaries)
       

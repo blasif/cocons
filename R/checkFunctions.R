@@ -538,7 +538,7 @@
     to_zero_covs <- sum(abs(parss[[ii]][par_pos[[ii]]]) <= coco.object@info$sparse.point)
     
     if( to_zero_covs == (number_parameters_models[[ii]] - 1) || (to_zero_covs == (number_parameters_models[[ii]]))){
-      new_formulas_list[[ii]] <- as.formula("~1", env = globalenv())
+      new_formulas_list[[ii]] <- stats::as.formula("~1", env = globalenv())
       next
     }
     
@@ -549,7 +549,7 @@
       next
     }
     
-    new_terms <- drop.terms(terms(coco.object@model.list[[ii]]), dropx = (to_zero - 1), keep.response = TRUE)
+    new_terms <- stats::drop.terms(stats::terms(coco.object@model.list[[ii]]), dropx = (to_zero - 1), keep.response = TRUE)
     
     if(attr(new_terms,"intercept") & (length(attr(new_terms,"term.labels")) > 0)){
       new_terms <- c("1",attr(new_terms, "term.labels"))
@@ -557,7 +557,7 @@
       new_terms <- attr(new_terms, "term.labels")
     }
     
-    new_formula <- reformulate(new_terms, response = NULL, env = globalenv())
+    new_formula <- stats::reformulate(new_terms, response = NULL, env = globalenv())
     new_formulas_list[[ii]] <- new_formula
   
   }

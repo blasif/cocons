@@ -617,15 +617,34 @@ getModelLists <- function(theta, par.pos, type = "diff"){
   }
 }
 
-getBoundariesV4 <- function(coco.object,lower.bound = 2, upper.bound = 2){
+#' Simple build of boundaries
+#' @description provides a set of upper and lower bounds for the L-BFGS-B routine
+#' 
+#' @usage getBoundariesV4(coco.object, lower.bound, upper.bound)
+#' @param coco.object \code{(S4)} a coco.object.
+#' @param lower.bound \code{(numeric vector)} lower bound for covariate-driven parameters of the nonstationary covariance function.
+#' @param upper.bound \code{(numeric vector)} upper bound for covariate-driven parameters of the nonstationary covariance function.
+#' @returns (\code{list}) a list with boundaries and simple init values for the optim L-BFGS-B routine
+#' @author Federico Blasi
+#' 
+getBoundariesV4 <- function(coco.object, lower.bound = 2, upper.bound = 2){
   
-  jeje <- getDesignMatrix(model.list = coco.object@model.list, data = coco.object@data)
+  designMatrix <- getDesignMatrix(model.list = coco.object@model.list, data = coco.object@data)
   
   term_labels <- paste("z", "~" , paste(coco.object@model.list$mean)[2])
   
-  scaled_df <- as.data.frame(scale(jeje$model.matrix))
+  # Skip scaling
+  if(any(colnames(coco.object@data[,coco.object@info$skip.scale]) %in% 
+         colnames(coco.object@data))){
+    tmp_info <- .cocons.setDesignMatrixCat(coco.object, designMatrix = designMatrix)
+    tmp_values <- tmp_info$tmp_values
+    mod_DM <- tmp_info$mod_DM
+  } else {
+    tmp_values <- cocons::getScale(designMatrix$model.matrix)
+    mod_DM <- tmp_values$std.covs      
+  }
   
-  coefs_lm <- coef(lm(term_labels,cbind.data.frame('z' = coco.object@z,scaled_df)))
+  coefs_lm <- stats::coef(stats::lm(term_labels,cbind.data.frame('z' = coco.object@z,mod_DM)))
   
   boundaries_B <- getBoundariesV2(coco.object = coco.object,
                                   mean.limits = c(-Inf, 0, Inf),
@@ -638,26 +657,20 @@ getBoundariesV4 <- function(coco.object,lower.bound = 2, upper.bound = 2){
   
   boundaries_B$theta_init[1:length(coefs_lm)] <- coefs_lm
   
-  first_var <- which(names(boundaries_B$theta_init) == "std.dev.limits")[1]
+  first_sd <- which(names(boundaries_B$theta_init) == "std.dev.limits")[1]
   n_var <- length(which(names(boundaries_B$theta_init) == "std.dev.limits")) - 1
   
   first_range <- which(names(boundaries_B$theta_init) == "scale.limits")[1]
   n_range <- length(which(names(boundaries_B$theta_init) == "scale.limits")) - 1
   
-  first_aniso <- which(names(boundaries_B$theta_init) == "aniso.limits")[1]
-  n_aniso <- length(which(names(boundaries_B$theta_init) == "aniso.limits")) - 1
-  
-  first_tilt <- which(names(boundaries_B$theta_init) == "tilt.limits")[1]
-  n_tilt <- length(which(names(boundaries_B$theta_init) == "tilt.limits")) - 1
-  
   first_smooth <- which(names(boundaries_B$theta_init) == "smooth.limits")[1]
   n_smooth <- length(which(names(boundaries_B$theta_init) == "smooth.limits")) - 1
   
-  boundaries_B$theta_init[first_range] <- (log(sd(coco.object@z)) -log(sd(c(dist(coco.object@locs)))))/2
-  boundaries_B$theta_init[first_var] <- (log(sd(coco.object@z)) +log(sd(c(dist(coco.object@locs)))))/2
+  boundaries_B$theta_init[first_range] <- (log(stats::sd(coco.object@z)) - log(stats::sd(c(stats::dist(coco.object@locs)))))/2
+  boundaries_B$theta_init[first_sd] <- (log(stats::sd(coco.object@z)) + log(stats::sd(c(stats::dist(coco.object@locs)))))/2
   
-  boundaries_B$theta_upper[c(first_var, first_range)] <- c(3 * abs(boundaries_B$theta_init[first_var]), 3 * abs(boundaries_B$theta_init[first_range]))
-  boundaries_B$theta_lower[c(first_var, first_range)] <- c(-3 * abs(boundaries_B$theta_init[first_var]), -3 * abs(boundaries_B$theta_init[first_range]))
+  boundaries_B$theta_upper[c(first_sd, first_range)] <- c(3 * abs(boundaries_B$theta_init[first_sd]), 3 * abs(boundaries_B$theta_init[first_range]))
+  boundaries_B$theta_lower[c(first_sd, first_range)] <- c(-3 * abs(boundaries_B$theta_init[first_sd]), -3 * abs(boundaries_B$theta_init[first_range]))
   
   boundaries_B$theta_upper[first_smooth] <- 3
   boundaries_B$theta_lower[first_smooth] <- -3.5

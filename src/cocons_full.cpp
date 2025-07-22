@@ -2,15 +2,14 @@
 
 using namespace Rcpp;
 
-//' penalization function
- //'
- //' @param theta vector of parameters
- //' @param locs a matrix with locations
- //' @param x_covariates design data.frame
- //' @param smooth_limits smooth limits
- //' @return dense covariance matrix
- // [[Rcpp::export]]
- double sumsmoothlone(NumericVector& x,
+//' smoothed-L1 penalization over the covariate-driven parameters
+//'
+//' @param x a vector of parameters to penalize
+//' @param lambda penalization hyperparameter
+//' @param alpha hyperparameter to approximate L1 penalization. By default 1e6 provides a decent approximation to L1, while also being a differentiable function
+//' @return penalization
+// [[Rcpp::export]]
+double sumsmoothlone(NumericVector& x,
                       double lambda,
                       double alpha = 1e6){
    
@@ -28,7 +27,7 @@ using namespace Rcpp;
    
    return lambda * sum;
    
- }
+}
 
 //' Dense covariance function (difference parameterization)
 //'

@@ -1,14 +1,14 @@
-Package: cocons
+0.1Package: cocons
 Type: Package
 Title: Covariate-Based Covariance Functions for Nonstationary Spatial Modeling
 Version: 0.1.5
 Author: Federico Blasi [aut, cre] (<https://orcid.org/0000-0001-9337-7154>), Reinhard Furrer [ctb] (<https://orcid.org/0000-0002-6319-2332>)
-Authors@R: c(person("Federico", "Blasi", email = "federico.blasi at gmail.com",
+Authors@R: c(person("Federico", "Blasi", email = "federicoblasi at gmail.com",
   role = c("aut", "cre"), comment = c(ORCID = "0000-0001-9337-7154")),
   person("Reinhard", "Furrer",
   role = c("ctb"), comment = c(ORCID = "0000-0002-6319-2332"))
   )
-Maintainer: Federico Blasi <federico.blasi@gmail.com>
+Maintainer: Federico Blasi <federicoblasi@gmail.com>
 Description: Estimation, prediction, and simulation of nonstationary Gaussian process with modular covariate-based covariance functions. 
   Sources of nonstationarity, such as spatial mean, variance, geometric anisotropy, smoothness, and nugget, can be considered based on spatial characteristics. 
   An induced compact-supported nonstationary covariance function is provided, enabling fast and memory-efficient computations when handling densely sampled domains.
