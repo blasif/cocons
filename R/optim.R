@@ -261,7 +261,7 @@ cocoOptim <- function(coco.object, boundaries = list(),
       
       coco.object@output <- output_dense
       
-      coco_pen@info$optim.control <- optim.control
+      coco.object@info$optim.control <- optim.control
       coco.object@info$boundaries <- boundaries
       coco.object@info$mean.vector <- tmp_values$mean.vector
       coco.object@info$sd.vector <- tmp_values$sd.vector
@@ -348,7 +348,7 @@ cocoOptim <- function(coco.object, boundaries = list(),
       
       .cocons.check.convergence(output_dense, tmp_boundaries)
       
-      coco_pen@info$optim.control <- optim.control
+      coco.object@info$optim.control <- optim.control
       coco.object@output <- output_dense
       coco.object@info$boundaries <- tmp_boundaries
       coco.object@info$mean.vector <- tmp_values$mean.vector
@@ -520,7 +520,7 @@ cocoOptim <- function(coco.object, boundaries = list(),
       
       .cocons.check.convergence(output_taper, boundaries)
       
-      coco_pen@info$optim.control <- optim.control
+      coco.object@info$optim.control <- optim.control
       coco.object@output <- output_taper
       coco.object@info$boundaries <- boundaries
       coco.object@info$mean.vector <- tmp_values$mean.vector
@@ -668,7 +668,7 @@ cocoOptim <- function(coco.object, boundaries = list(),
       
       .cocons.check.convergence(output_taper, boundaries_temp)
       
-      coco_pen@info$optim.control <- optim.control
+      coco.object@info$optim.control <- optim.control
       coco.object@output <- output_taper
       coco.object@info$boundaries <- boundaries_temp
       coco.object@info$mean.vector <- tmp_values$mean.vector
