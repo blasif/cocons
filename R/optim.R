@@ -382,7 +382,6 @@ cocoOptim <- function(coco.object, boundaries = list(),
       parallel::setDefaultCluster(cl = cl)
       parallel::clusterEvalQ(cl, library("cocons"))
       parallel::clusterEvalQ(cl, library("spam"))
-      #parallel::clusterEvalQ(cl, library("spam64"))
       parallel::clusterEvalQ(cl, options(spam.cholupdatesingular = "error"))
       parallel::clusterEvalQ(cl, options(spam.cholsymmetrycheck = FALSE))
       
@@ -547,7 +546,6 @@ cocoOptim <- function(coco.object, boundaries = list(),
       parallel::setDefaultCluster(cl = cl)
       parallel::clusterEvalQ(cl, library("cocons"))
       parallel::clusterEvalQ(cl, library("spam"))
-      #parallel::clusterEvalQ(cl, library("spam64"))
       parallel::clusterEvalQ(cl, options(spam.cholupdatesingular = "error"))
       parallel::clusterEvalQ(cl, options(spam.cholsymmetrycheck = FALSE))
       

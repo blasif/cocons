@@ -26,7 +26,7 @@
 #' \eqn{\nu_{l}}, and \eqn{\nu_{u}} are the lower and upper bounds limiting the range of variation of the spatially-varying smoothness, and where \eqn{\boldsymbol{X}_{\ell}} relates to the design matrix defined by the specific models for each of the source of nonstationarity.
 #' 
 #' Lastly, arguments for the \code{"info"} list argument involve: \itemize{
-#' \item \code{"lambda.reg"}: (\code{numeric}) a positive scalar specifying the regularization parameter. Larger values regularize highly-smoothed long-tailed covariance functions. 
+#' \item \code{"lambda.reg"}: (\code{numeric}) a positive scalar specifying the regularization parameter. Larger values discourage highly-smoothed long-tailed covariance functions. 
 #' \item \code{"lambda.Sigma"}: (\code{numeric}) a positive scalar specifying the penalization parameter for the covariate-driven covariance parameters. 
 #' \item \code{"lambda.betas"}: (\code{numeric}) a positive scalar specifying the penalization parameter for the covariate-driven spatial mean parameters. 
 #' \item \code{"sparse.point"}: (\code{numeric}) a cutting point for which smaller coefficients in absolute value will be set to zero after the smoothed L1 penalization optimization. Used in combination with \code{lambda.Sigma} and \code{lambda.betas}. By default, it is set to \code{1e-4}.
@@ -151,7 +151,7 @@ coco <- function(type,
   }
   
   if(any(c(info$lambda.betas,info$lambda.Sigma) > 0) && (is.null(info$sparse.point))){
-    info$sparse.point <- 1e-4
+    info$sparse.point <- getOption("cocons.sparse.point")
   }
   
   if(T){

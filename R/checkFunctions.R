@@ -269,6 +269,12 @@
 
 .cocons.check.info <- function(type, info, model.list, data){
   
+  if (!is.null(info$lambda)) {
+    info$lambda.reg <- info$lambda
+    warning("The regularization parameter lambda is now called lambda.reg . Seee help(coco)")
+    info$lambda <- NULL
+  }
+  
   if (is.null(info$smooth.limits) & is.formula(model.list[6]$smooth)) {
     stop("smooth limits not specified.")
   }
