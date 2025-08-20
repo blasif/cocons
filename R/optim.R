@@ -37,7 +37,7 @@
 #'                    'smooth' = 3/2,
 #'                    'nugget' = -Inf)
 #'                    
-#' sample_index <- sample(1:dim(holes[[1]])[1],100)
+#' sample_index <- sample(1:dim(holes[[1]])[1],200)
 #'                    
 #' coco_object <- coco(type = 'dense',
 #'                     data = holes[[1]][sample_index, ],
@@ -46,7 +46,7 @@
 #'                     model.list = model.list)
 #'                     
 #' optim_coco <- cocoOptim(coco_object,
-#' boundaries = getBoundaries(coco_object)
+#' boundaries = getBoundaries(coco_object,-3,3))
 #' 
 #' plotOptimInfo(optim_coco)
 #' 
@@ -56,7 +56,7 @@
 #' 
 #' plot(optim_coco, type = 'correlations', index = c(2,3,5))
 #' 
-#' summary(optim_coco)
+#' summary(optim_coco,inv.hess = getHessian(optim_coco))
 #'  
 #' getEstims(optim_coco)
 #' 

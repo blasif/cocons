@@ -698,7 +698,7 @@ getBoundariesV4 <- function(coco.object, lower.bound = 2, upper.bound = 2){
 #' @returns (\code{list}) a list with boundaries and simple init values for the optim L-BFGS-B routine
 #' @author Federico Blasi
 #' 
-getBoundaries <- function(x, lower.value, upper.value){
+getBoundaries <- function(x, lower.value = -2, upper.value = 2){
   
   if(upper.value < lower.value){stop("upper.value lower than lower.value")}
   
