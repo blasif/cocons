@@ -9,7 +9,7 @@
 #' optim.type, optim.control)
 #' 
 #' @param coco.object (\code{S4}) A \link{coco} object.
-#' @param boundaries (\code{list}) If provided, a list containing lower, initial, and upper values for the parameters, as defined by \link{getBoundaries}. If not provided, these values are automatically computed with global lower and upper bounds set to -2 and 2.
+#' @param boundaries (\code{list}) If provided, a list containing lower, initial, and upper values for the parameters, as defined by \link{getBoundaries}. If not provided, these values are automatically computed via getBoundariesV4 with global lower and upper bounds set to -3 and 3.
 #' @param ncores (\code{character} or \code{integer}) The number of threads to use for the optimization. If set to `"auto"`, the number of threads is chosen based on system capabilities or a fraction of the available cores.
 #' @param optim.type (\code{character}) The optimization approach. Options include:
 #' @param safe (\code{logical}) If `TRUE`, the function avoids Cholesky decomposition errors due to ill-posed covariance matrices by returning a pre-defined large value. Defaults to `TRUE`.
@@ -37,15 +37,16 @@
 #'                    'smooth' = 3/2,
 #'                    'nugget' = -Inf)
 #'                    
+#' sample_index <- sample(1:dim(holes[[1]])[1],100)
+#'                    
 #' coco_object <- coco(type = 'dense',
-#'                     data = holes[[1]][1:100,],
-#'                     locs = as.matrix(holes[[1]][1:100,1:2]),
-#'                     z = holes[[1]][1:100,]$z,
+#'                     data = holes[[1]][sample_index, ],
+#'                     locs = as.matrix(holes[[1]][sample_index,1:2]),
+#'                     z = holes[[1]][sample_index, ]$z,
 #'                     model.list = model.list)
 #'                     
 #' optim_coco <- cocoOptim(coco_object,
-#' boundaries = getBoundaries(coco_object,
-#' lower.value = -3, 3))
+#' boundaries = getBoundaries(coco_object)
 #' 
 #' plotOptimInfo(optim_coco)
 #' 
@@ -91,10 +92,10 @@ cocoOptim <- function(coco.object, boundaries = list(),
     
     # Check boundaries
     if(length(boundaries) == 0){
-      boundaries <- cocons::getBoundaries(
-        x = coco.object, 
-        lower.value = -2,
-        upper.value = 2)
+      boundaries <- cocons::getBoundariesV4(
+        coco.object = coco.object, 
+        lower.bound = -3,
+        upper.bound = 3)
     } else{
       .cocons.check.boundaries(coco.object, boundaries)
     }
