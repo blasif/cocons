@@ -644,7 +644,11 @@ getBoundariesV4 <- function(coco.object, lower.bound = 2, upper.bound = 2){
     mod_DM <- tmp_values$std.covs      
   }
   
-  coefs_lm <- stats::coef(stats::lm(term_labels,cbind.data.frame('z' = coco.object@z,mod_DM)))
+  if(is.formula(coco.object@model.list$mean)){
+    coefs_lm <- stats::coef(stats::lm(term_labels,cbind.data.frame('z' = coco.object@z,mod_DM)))
+  } else{
+    coefs_lm <- c()
+  }
   
   boundaries_B <- getBoundariesV2(coco.object = coco.object,
                                   mean.limits = c(-Inf, 0, Inf),
@@ -655,7 +659,9 @@ getBoundariesV4 <- function(coco.object, lower.bound = 2, upper.bound = 2){
                                   smooth.limits = c(-lower.bound, 0, upper.bound),
                                   nugget.limits = c(-lower.bound, 0, upper.bound))
   
-  boundaries_B$theta_init[1:length(coefs_lm)] <- coefs_lm
+  if(is.formula(coco.object@model.list$mean)){
+    boundaries_B$theta_init[1:length(coefs_lm)] <- coefs_lm
+  }
   
   first_sd <- which(names(boundaries_B$theta_init) == "std.dev.limits")[1]
   n_var <- length(which(names(boundaries_B$theta_init) == "std.dev.limits")) - 1

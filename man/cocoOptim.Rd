@@ -10,7 +10,7 @@ optim.type, optim.control)
 \arguments{
 \item{coco.object}{(\code{S4}) A \link{coco} object.}
 
-\item{boundaries}{(\code{list}) If provided, a list containing lower, initial, and upper values for the parameters, as defined by \link{getBoundaries}. If not provided, these values are automatically computed with global lower and upper bounds set to -2 and 2.}
+\item{boundaries}{(\code{list}) If provided, a list containing lower, initial, and upper values for the parameters, as defined by \link{getBoundaries}. If not provided, these values are automatically computed via getBoundariesV4 with global lower and upper bounds set to -3 and 3.}
 
 \item{ncores}{(\code{character} or \code{integer}) The number of threads to use for the optimization. If set to \code{"auto"}, the number of threads is chosen based on system capabilities or a fraction of the available cores.}
 
@@ -40,15 +40,16 @@ model.list <- list('mean' = 0,
                    'smooth' = 3/2,
                    'nugget' = -Inf)
                    
+sample_index <- sample(1:dim(holes[[1]])[1],100)
+                   
 coco_object <- coco(type = 'dense',
-                    data = holes[[1]][1:100,],
-                    locs = as.matrix(holes[[1]][1:100,1:2]),
-                    z = holes[[1]][1:100,]$z,
+                    data = holes[[1]][sample_index, ],
+                    locs = as.matrix(holes[[1]][sample_index,1:2]),
+                    z = holes[[1]][sample_index, ]$z,
                     model.list = model.list)
                     
 optim_coco <- cocoOptim(coco_object,
-boundaries = getBoundaries(coco_object,
-lower.value = -3, 3))
+boundaries = getBoundaries(coco_object)
 
 plotOptimInfo(optim_coco)
 
