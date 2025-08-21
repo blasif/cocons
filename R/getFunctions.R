@@ -38,12 +38,13 @@ getCovMatrix <- function(coco.object, type = "global", index = NULL){
   
   par.pos <- getDesignMatrix(coco.object@model.list, data = coco.object@data)$par.pos
   
+  theta_list <- cocons::getModelLists(coco.object@output$par,par.pos = par.pos, 
+                                      type = "diff")
+  
   if(coco.object@type == "dense"){
     
     if(type == "global"){
-      theta_list <- cocons::getModelLists(coco.object@output$par,par.pos = par.pos, 
-                                         type = "diff")
-      
+
       return(cocons::cov_rns(theta = theta_list,
                             locs = coco.object@locs,
                             x_covariates = x_covs,
@@ -59,10 +60,7 @@ getCovMatrix <- function(coco.object, type = "global", index = NULL){
   if(coco.object@type == "sparse"){
     
     if(type == "global"){
-      
-      theta_list <- cocons::getModelLists(coco.object@output$par,par.pos = par.pos, 
-                                         type = "diff")
-      
+
       # taper
       ref_taper <- coco.object@info$taper(
         spam::nearest.dist(coco.object@locs, delta = coco.object@info$delta, upper = NULL),
@@ -143,7 +141,7 @@ getDensityFromDelta <- function(coco.object, delta){
   
   coco.object@info$delta <- delta
   
-  return(summary(getCovMatrix(coco.object))$density)
+  return(summary(getCovMatrix(coco.object))$density / 100)
   
 }
 
@@ -698,7 +696,7 @@ getBoundariesV4 <- function(coco.object, lower.bound = 2, upper.bound = 2){
 #' @returns (\code{list}) a list with boundaries and simple init values for the optim L-BFGS-B routine
 #' @author Federico Blasi
 #' 
-getBoundaries <- function(x, lower.value, upper.value){
+getBoundaries <- function(x, lower.value = -2, upper.value = 2){
   
   if(upper.value < lower.value){stop("upper.value lower than lower.value")}
   
