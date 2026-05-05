@@ -23,6 +23,6 @@ For a brief introduction:
 
 or you can check the vignette directly [here](https://github.com/blasif/cocons/blob/main/inst/doc/cocons.pdf).
 
-For a description of the class of modular covariate-based covariance functions implemented in this package, please check the following [article](https://arxiv.org/abs/2410.16716#).
+**UPDATE!** Our article has been published in Environmetrics! Learn more about the type of modular and flexible Gaussian Process models you can fit here [article](https://doi.org/10.1002/env.70038)
 
 **Bugs and/or errors?:** feel free to add new issues on [https://github.com/blasif/cocons/issues](https://github.com/blasif/cocons/issues).
