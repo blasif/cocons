@@ -1,3 +1,4 @@
 useDynLib(cocons, .registration=TRUE)
 importFrom(Rcpp, evalCpp)
 exportPattern("^[[:alpha:]]+")
+importFrom(fields, quilt.plot, tim.colors)
