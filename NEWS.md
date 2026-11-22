@@ -1,3 +1,24 @@
+## cocons 0.1.7
+
+### Fixes
+
+- `getBoundariesV4` (default boundaries of `cocoOptim`):
+  - `lower.bound` is now a signed value (default `-2`), as documented for `cocoOptim` (`-3`, `3`). Previously the default boundaries pinned every covariate-driven coefficient of `std.dev`, `scale`, `aniso`, `tilt`, `smooth`, and `nugget` at the upper bound.
+  - the mean intercept is only initialized/bounded when it is estimated (with a fixed mean, the `std.dev` intercept was overwritten), and its bounds are now valid for negative or near-zero means.
+  - bounds of the global `std.dev` and `scale` parameters no longer collapse when their initial value is close to 0.
+- `getAIC` now penalizes by `2 * number of parameters` (was `2 * log(n)`).
+- covariance functions: a fixed smoothness other than 0.5, 1.5, or 2.5 (e.g. `smooth = 1`) produced a constant covariance matrix.
+- `skip.scale`: a single index was silently ignored, and multiple indices failed in `getBoundariesV4`. `getScale` on fitted objects now reuses the standardization employed during the optimization.
+- `coco`: the deprecated `info$lambda` is now mapped to `lambda.reg` (it was discarded); `z = NULL` now creates an object for simulation; sparse objects require a taper function and `delta > 0`.
+- `cocoPredict` now honors `index.pred`.
+- `cocoSim(sim.type = "cond")` used the columns of `newdataset` as locations instead of `newlocs`.
+- `plot(type = "ellipse")` for sparse objects failed when a grid point had no neighbors.
+
+### Changes
+
+- `knitr` removed from Imports; `fields` is now imported in the NAMESPACE.
+- more unit tests.
+
 ## cocons 0.1.5
 
 - Vignette updated
