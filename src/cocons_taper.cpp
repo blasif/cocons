@@ -190,7 +190,10 @@ NumericVector cov_rns_taper(List& theta,
     smooth_value = smooth_limits[0];
     smooth_switch =  mapSmoothValue(smooth_value);
     
-  } else{
+  }
+  
+  // general case (also fixed smoothness other than 0.5, 1.5, 2.5)
+  if(smooth_switch == 0){
     
     for(int ww = 0; ww < m_dim; ww++){
       smooth_vector[ww] = std::sqrt(Pexpfma_new_smoothness(smooth, x_covariates(ww,_), smooth_limits[0], smooth_limits[1]));
