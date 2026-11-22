@@ -118,7 +118,7 @@ getEstims(test_optim)
 
 plot(test_optim)
 
-test_Hess <- getHessian(test_optim)
+test_Hess <- getHessian(test_optim, ncores = 1)
 
 getCIs(test_optim,solve(test_Hess))
 
@@ -182,7 +182,7 @@ getEstims(test_optim)
 
 plot(test_optim)
 
-getHessian(test_optim)
+getHessian(test_optim, ncores = 1)
 
 cmat <- as.matrix(getCovMatrix(test_optim))
 stopifnot(is.matrix(cmat), nrow(cmat) == 100, ncol(cmat) == 100)
