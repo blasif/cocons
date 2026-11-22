@@ -1,0 +1,15 @@
+# R session files
+.Rhistory
+.RData
+.Ruserdata
+.Rproj.user/
+
+# Compiled objects
+src/*.o
+src/*.so
+src/*.dll
+
+# Build and check artifacts
+*.tar.gz
+*.Rcheck/
+Rplots.pdf

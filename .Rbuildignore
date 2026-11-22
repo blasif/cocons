@@ -1,0 +1,6 @@
+^\.github$
+^dev$
+^.*\.Rproj$
+^\.Rproj\.user$
+^LICENSE$
+^gifs$

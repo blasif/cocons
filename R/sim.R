@@ -97,7 +97,7 @@ cocoSim <- function(coco.object,
                                            smooth_limits = coco.object@info$smooth.limits)
         
         covmat_unobs <- cocons::cov_rns(theta = to_pass[-1], 
-                                       locs = as.matrix(cond.info$newdataset),
+                                       locs = as.matrix(cond.info$newlocs),
                                        x_covariates = std_pred,
                                        smooth_limits = coco.object@info$smooth.limits)
         

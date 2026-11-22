@@ -104,6 +104,11 @@ coco <- function(type,
   
   .cocons.check.z(z, data)
   
+  # no response: store an n x 0 matrix (object meant for simulation)
+  if(is.null(z)){
+    z <- matrix(numeric(0), nrow = dim(data)[1], ncol = 0)
+  }
+  
   .cocons.check.model.list(model.list,
                           data)
   
@@ -130,6 +135,14 @@ coco <- function(type,
   }
   
   model.list <- model.list[getOption("cocons.Dictionary")]
+  
+  if (!is.null(info$lambda)) {
+    if (is.null(info$lambda.reg)) {
+      info$lambda.reg <- info$lambda
+    }
+    warning("The regularization parameter lambda is now called lambda.reg . See help(coco)")
+    info$lambda <- NULL
+  }
   
   .cocons.check.info(type = type, 
                     info = info,

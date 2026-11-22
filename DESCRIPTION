@@ -1,9 +1,9 @@
 Package: cocons
 Type: Package
 Title: Covariate-Based Covariance Functions for Nonstationary Spatial Modeling
-Version: 0.1.5
+Version: 0.1.7
 Author: Federico Blasi [aut, cre] (<https://orcid.org/0000-0001-9337-7154>), Reinhard Furrer [ctb] (<https://orcid.org/0000-0002-6319-2332>)
-Authors@R: c(person("Federico", "Blasi", email = "federicoblasi at gmail.com",
+Authors@R: c(person("Federico", "Blasi", email = "federicoblasi@gmail.com",
   role = c("aut", "cre"), comment = c(ORCID = "0000-0001-9337-7154")),
   person("Reinhard", "Furrer",
   role = c("ctb"), comment = c(ORCID = "0000-0002-6319-2332"))
@@ -20,10 +20,8 @@ Imports: Rcpp (>= 1.0.10),
           spam (>= 2.9.1),
           fields,
           optimParallel,
-          methods,
-          knitr
+          methods
 LinkingTo: Rcpp, BH
 BugReports: https://github.com/blasif/cocons/issues
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
-VignetteBuilder: knitr

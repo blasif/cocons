@@ -67,6 +67,10 @@ cocoOptim <- function(coco.object, boundaries = list(),
                       optim.type = "ml",
                       optim.control = NULL){
   
+  if(dim(coco.object@z)[2] == 0){
+    stop("coco object has no response z; cannot be optimized.")
+  }
+  
   # Init objects
   if(T){
     
@@ -101,8 +105,7 @@ cocoOptim <- function(coco.object, boundaries = list(),
     }
     
     # Skip scaling
-    if(any(colnames(coco.object@data[,coco.object@info$skip.scale]) %in% 
-           colnames(coco.object@data))){
+    if(length(coco.object@info$skip.scale) > 0){
       tmp_info <- .cocons.setDesignMatrixCat(coco.object, designMatrix = designMatrix)
       tmp_values <- tmp_info$tmp_values
       mod_DM <- tmp_info$mod_DM
@@ -173,8 +176,7 @@ cocoOptim <- function(coco.object, boundaries = list(),
         )
         
         # Skip scaling
-        if(any(colnames(coco_pen@data[,coco_pen@info$skip.scale]) %in% 
-               colnames(coco_pen@data))){
+        if(length(coco_pen@info$skip.scale) > 0){
           tmp_info <- .cocons.setDesignMatrixCat(coco_pen, designMatrix = designMatrix)
           tmp_values <- tmp_info$tmp_values
           mod_DM <- tmp_info$mod_DM
@@ -422,8 +424,7 @@ cocoOptim <- function(coco.object, boundaries = list(),
         )
         
         # Skip scaling
-        if(any(colnames(coco_pen@data[,coco_pen@info$skip.scale]) %in% 
-               colnames(coco_pen@data))){
+        if(length(coco_pen@info$skip.scale) > 0){
           tmp_info <- .cocons.setDesignMatrixCat(coco_pen, designMatrix = designMatrix)
           tmp_values <- tmp_info$tmp_values
           mod_DM <- tmp_info$mod_DM

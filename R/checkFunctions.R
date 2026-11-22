@@ -269,12 +269,6 @@
 
 .cocons.check.info <- function(type, info, model.list, data){
   
-  if (!is.null(info$lambda)) {
-    info$lambda.reg <- info$lambda
-    warning("The regularization parameter lambda is now called lambda.reg . Seee help(coco)")
-    info$lambda <- NULL
-  }
-  
   if (is.null(info$smooth.limits) & is.formula(model.list[6]$smooth)) {
     stop("smooth limits not specified.")
   }
@@ -316,7 +310,7 @@
   # sparse
   if (type == "sparse") {
     # taper function
-    if (is.null(info$taper) && identical(info$taper, function() {})) {
+    if (!is.function(info$taper)) {
       stop("taper must be one compact supported function from package spam")
     }
     
@@ -326,8 +320,8 @@
     }
     
     # delta
-    if (info$delta < 0) {
-      stop("taper argument must be non-negative")
+    if (info$delta <= 0) {
+      stop("taper type requires specifying a delta > 0")
     }
   }
   
@@ -450,10 +444,11 @@
   to_not_std <- colnames(coco.object@data)[coco.object@info$skip.scale]
   to_avoid_std <- colnames(designMatrix$model.matrix) %in% to_not_std
   
-  tmp_values <- cocons::getScale(designMatrix$model.matrix[,!to_avoid_std])
+  tmp_values <- cocons::getScale(designMatrix$model.matrix[, !to_avoid_std, drop = FALSE])
   
   empty_matrix <- matrix(0, ncol = dim(designMatrix$model.matrix)[2], 
-                         nrow = dim(designMatrix$model.matrix)[1])
+                         nrow = dim(designMatrix$model.matrix)[1],
+                         dimnames = dimnames(designMatrix$model.matrix))
   
   empty_matrix[, !to_avoid_std] <- tmp_values$std.covs
   empty_matrix[, to_avoid_std] <- designMatrix$model.matrix[, to_avoid_std]
