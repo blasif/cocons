@@ -343,7 +343,7 @@ getAIC <- function(coco.object){
     stop("object has not been fitted yet.")
   }
   
-  return( coco.object@output$value +  2 * log(dim(coco.object@data)[1]))
+  return( coco.object@output$value +  2 * .cocons.get.npars(coco.object))
 }
 
 #' Retrieve estimates from a fitted coco object
