@@ -131,6 +131,14 @@ coco <- function(type,
   
   model.list <- model.list[getOption("cocons.Dictionary")]
   
+  if (!is.null(info$lambda)) {
+    if (is.null(info$lambda.reg)) {
+      info$lambda.reg <- info$lambda
+    }
+    warning("The regularization parameter lambda is now called lambda.reg . See help(coco)")
+    info$lambda <- NULL
+  }
+  
   .cocons.check.info(type = type, 
                     info = info,
                     model.list = model.list,
