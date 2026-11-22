@@ -337,3 +337,44 @@ if (requireNamespace("spam", quietly = TRUE)) {
 } else {
   message("Skipping sparse/taper density check (package 'spam' not available).")
 }
+## --- Regression tests ------------------------------------------------------
+
+## info$lambda is mapped to lambda.reg
+obj_l <- suppressWarnings(coco("dense", toydata, as.matrix(locs), z, model.list,
+                               info = list(lambda = 0.7)))
+stopifnot(identical(obj_l@info$lambda.reg, 0.7), is.null(obj_l@info$lambda))
+
+## z = NULL creates an object for simulation; cocoOptim refuses it
+obj_n <- suppressWarnings(coco("dense", toydata, as.matrix(locs), NULL, model.list))
+stopifnot(methods::is(obj_n, "coco"), ncol(obj_n@z) == 0)
+stopifnot(nrow(cocoSim(obj_n, pars = c(0, 0, 0), n = 1, seed = 1)) == nrow(locs))
+expect_error(cocoOptim(obj_n, ncores = 1), pattern = "no response")
+
+## sparse objects require a taper function and delta > 0
+expect_error(coco("sparse", toydata, as.matrix(locs), z, model.list,
+                  info = list(delta = 0.3)), pattern = "taper")
+expect_error(coco("sparse", toydata, as.matrix(locs), z, model.list,
+                  info = list(taper = spam::cov.wend1, delta = 0)), pattern = "delta")
+
+## skip.scale with a single index is honored
+obj_s <- coco("dense", toydata_xy, as.matrix(locs), z, ml_cov,
+              info = list(skip.scale = 2L))
+stopifnot(valid_box(getBoundariesV4(obj_s)))
+
+## fixed smoothness nu = 1 gives a Matern covariance (dense and sparse)
+ml_nu <- list(mean = 0, std.dev = ~ 1, scale = ~ 1, aniso = 0, tilt = 0,
+              smooth = 1, nugget = -Inf)
+obj_nu <- coco("dense", toydata, as.matrix(locs), z, ml_nu)
+par_pos_nu <- getDesignMatrix(obj_nu@model.list, obj_nu@data)$par.pos
+theta_nu <- getModelLists(c(0, 0), par.pos = par_pos_nu, type = "diff")
+h <- as.matrix(dist(locs))
+matern_nu1 <- ifelse(h == 0, 1, sqrt(8) * h * besselK(sqrt(8) * h, 1))
+aeq(c(cov_rns(theta_nu[-1], as.matrix(locs), getScale(obj_nu)$std.covs,
+              obj_nu@info$smooth.limits)), c(matern_nu1))
+
+obj_nu_sp <- coco("sparse", toydata, as.matrix(locs), z, ml_nu,
+                  info = list(taper = spam::cov.wend1, delta = 0.4))
+obj_nu_sp@output$par <- c(0, 0)
+taper_nu <- as.matrix(spam::cov.wend1(spam::nearest.dist(as.matrix(locs), delta = 0.4, upper = NULL),
+                                      theta = c(0.4, 1)))
+aeq(c(as.matrix(getCovMatrix(obj_nu_sp))), c(matern_nu1 * taper_nu))
