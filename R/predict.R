@@ -93,17 +93,14 @@ cocoPredict <- function(coco.object,
     stop("coco object has not yet been fitted.")
   }
   
-  if(dim(coco.object@z)[2] == 1){
+  index.pred <- list(...)$index.pred
+  
+  if(is.null(index.pred)){
     index.pred <- 1
-  } else{
-    
-    if(!exists("index.pred")){
-      index.pred <- 1
-    } else{
-      if(index.pred > dim(coco.object@z)[2]){
-        stop("index.pred is larger than dim(coco.object@z)[2]")
-      }
-      }
+  }
+  
+  if(length(index.pred) != 1 || index.pred < 1 || index.pred > dim(coco.object@z)[2]){
+    stop("index.pred must be a single index between 1 and dim(coco.object@z)[2]")
   }
   
   .cocons.check.newdataset(newdataset, coco.object)
