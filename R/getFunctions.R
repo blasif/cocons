@@ -379,6 +379,15 @@ getScale <- function(x, mean.vector = NULL, sd.vector = NULL){
     
     x_std <- getDesignMatrix(x@model.list, x@data)$model.matrix
     
+    # fitted objects: reuse the standardization employed during the optimization
+    if(is.null(mean.vector)){
+      mean.vector <- x@info$mean.vector
+    }
+    
+    if(is.null(sd.vector)){
+      sd.vector <- x@info$sd.vector
+    }
+    
     if(is.null(mean.vector)){
       mean.vector <- apply(x_std, MARGIN = 2, base::mean)
       mean.vector[1] <- 0
@@ -636,8 +645,7 @@ getBoundariesV4 <- function(coco.object, lower.bound = -2, upper.bound = 2){
   term_labels <- paste("z", "~" , paste(coco.object@model.list$mean)[2])
   
   # Skip scaling
-  if(any(colnames(coco.object@data[,coco.object@info$skip.scale]) %in% 
-         colnames(coco.object@data))){
+  if(length(coco.object@info$skip.scale) > 0){
     tmp_info <- .cocons.setDesignMatrixCat(coco.object, designMatrix = designMatrix)
     tmp_values <- tmp_info$tmp_values
     mod_DM <- tmp_info$mod_DM

@@ -450,10 +450,11 @@
   to_not_std <- colnames(coco.object@data)[coco.object@info$skip.scale]
   to_avoid_std <- colnames(designMatrix$model.matrix) %in% to_not_std
   
-  tmp_values <- cocons::getScale(designMatrix$model.matrix[,!to_avoid_std])
+  tmp_values <- cocons::getScale(designMatrix$model.matrix[, !to_avoid_std, drop = FALSE])
   
   empty_matrix <- matrix(0, ncol = dim(designMatrix$model.matrix)[2], 
-                         nrow = dim(designMatrix$model.matrix)[1])
+                         nrow = dim(designMatrix$model.matrix)[1],
+                         dimnames = dimnames(designMatrix$model.matrix))
   
   empty_matrix[, !to_avoid_std] <- tmp_values$std.covs
   empty_matrix[, to_avoid_std] <- designMatrix$model.matrix[, to_avoid_std]
