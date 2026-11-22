@@ -255,6 +255,28 @@ stopifnot(identical(coco_dense@type, "dense"))
 stopifnot(nrow(coco_dense@locs) == nrow(toydata))
 stopifnot(nrow(coco_dense@locs) == length(z))
 
+## --- getBoundariesV4: valid boxes (lower <= init <= upper, lower < upper) ---
+
+valid_box <- function(b) {
+  all(b$theta_lower <= b$theta_init & b$theta_init <= b$theta_upper &
+        b$theta_lower < b$theta_upper)
+}
+
+toydata_xy <- data.frame(x = locs[, 1], y = locs[, 2])
+
+ml_cov <- list(mean = formula(~ 1 + x), std.dev = formula(~ 1 + x),
+               scale = formula(~ 1 + x), aniso = 0, tilt = 0,
+               smooth = 3/2, nugget = -Inf)
+ml_one <- list(mean = formula(~ 1), std.dev = formula(~ 1), scale = formula(~ 1),
+               aniso = 0, tilt = 0, smooth = 3/2, nugget = -Inf)
+
+stopifnot(valid_box(getBoundariesV4(coco("dense", toydata_xy, as.matrix(locs), z, ml_cov), -3, 3)))
+stopifnot(valid_box(getBoundariesV4(coco_dense)))
+stopifnot(valid_box(getBoundariesV4(coco("dense", toydata_xy, as.matrix(locs), z - 5, ml_one))))
+stopifnot(valid_box(getBoundariesV4(coco("dense", toydata_xy, as.matrix(locs), z - mean(z), ml_one))))
+expect_error(getBoundariesV4(coco_dense, lower.bound = 2, upper.bound = 2),
+             pattern = "lower.bound")
+
 ## --- 2) invalid 'type' should error ---------------------------------------
 
 expect_error(

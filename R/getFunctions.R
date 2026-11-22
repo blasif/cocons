@@ -618,14 +618,18 @@ getModelLists <- function(theta, par.pos, type = "diff"){
 #' Simple build of boundaries
 #' @description provides a set of upper and lower bounds for the L-BFGS-B routine
 #' 
-#' @usage getBoundariesV4(coco.object, lower.bound, upper.bound)
+#' @usage getBoundariesV4(coco.object, lower.bound = -2, upper.bound = 2)
 #' @param coco.object \code{(S4)} a coco.object.
-#' @param lower.bound \code{(numeric vector)} lower bound for covariate-driven parameters of the nonstationary covariance function.
-#' @param upper.bound \code{(numeric vector)} upper bound for covariate-driven parameters of the nonstationary covariance function.
+#' @param lower.bound \code{(numeric)} lower bound (\code{<= 0}) for covariate-driven parameters of the nonstationary covariance function.
+#' @param upper.bound \code{(numeric)} upper bound (\code{>= 0}) for covariate-driven parameters of the nonstationary covariance function.
 #' @returns (\code{list}) a list with boundaries and simple init values for the optim L-BFGS-B routine
 #' @author Federico Blasi
 #' 
-getBoundariesV4 <- function(coco.object, lower.bound = 2, upper.bound = 2){
+getBoundariesV4 <- function(coco.object, lower.bound = -2, upper.bound = 2){
+  
+  if(lower.bound > 0 || upper.bound < 0 || lower.bound >= upper.bound){
+    stop("lower.bound must be <= 0, upper.bound must be >= 0, and lower.bound < upper.bound.")
+  }
   
   designMatrix <- getDesignMatrix(model.list = coco.object@model.list, data = coco.object@data)
   
@@ -650,38 +654,48 @@ getBoundariesV4 <- function(coco.object, lower.bound = 2, upper.bound = 2){
   
   boundaries_B <- getBoundariesV2(coco.object = coco.object,
                                   mean.limits = c(-Inf, 0, Inf),
-                                  std.dev.limits = c(-lower.bound, 0, upper.bound),
-                                  scale.limits = c(-lower.bound, 0, upper.bound),
-                                  aniso.limits =  c(-lower.bound, 0, upper.bound),
-                                  tilt.limits =  c(-lower.bound, 0, upper.bound),
-                                  smooth.limits = c(-lower.bound, 0, upper.bound),
-                                  nugget.limits = c(-lower.bound, 0, upper.bound))
+                                  std.dev.limits = c(lower.bound, 0, upper.bound),
+                                  scale.limits = c(lower.bound, 0, upper.bound),
+                                  aniso.limits =  c(lower.bound, 0, upper.bound),
+                                  tilt.limits =  c(lower.bound, 0, upper.bound),
+                                  smooth.limits = c(lower.bound, 0, upper.bound),
+                                  nugget.limits = c(lower.bound, 0, upper.bound))
   
   if(is.formula(coco.object@model.list$mean)){
     boundaries_B$theta_init[1:length(coefs_lm)] <- coefs_lm
   }
   
   first_sd <- which(names(boundaries_B$theta_init) == "std.dev.limits")[1]
-  n_var <- length(which(names(boundaries_B$theta_init) == "std.dev.limits")) - 1
-  
   first_range <- which(names(boundaries_B$theta_init) == "scale.limits")[1]
-  n_range <- length(which(names(boundaries_B$theta_init) == "scale.limits")) - 1
-  
   first_smooth <- which(names(boundaries_B$theta_init) == "smooth.limits")[1]
-  n_smooth <- length(which(names(boundaries_B$theta_init) == "smooth.limits")) - 1
   
-  boundaries_B$theta_init[first_range] <- (log(stats::sd(coco.object@z)) - log(stats::sd(c(stats::dist(coco.object@locs)))))/2
-  boundaries_B$theta_init[first_sd] <- (log(stats::sd(coco.object@z)) + log(stats::sd(c(stats::dist(coco.object@locs)))))/2
+  log_sd_z <- log(stats::sd(coco.object@z))
+  log_sd_dist <- log(stats::sd(c(stats::dist(coco.object@locs))))
   
-  boundaries_B$theta_upper[c(first_sd, first_range)] <- c(3 * abs(boundaries_B$theta_init[first_sd]), 3 * abs(boundaries_B$theta_init[first_range]))
-  boundaries_B$theta_lower[c(first_sd, first_range)] <- c(-3 * abs(boundaries_B$theta_init[first_sd]), -3 * abs(boundaries_B$theta_init[first_range]))
+  # global std.dev and scale: data-driven init, bounds at least as wide as the global ones
+  if(!is.na(first_sd)){
+    boundaries_B$theta_init[first_sd] <- (log_sd_z + log_sd_dist) / 2
+    boundaries_B$theta_upper[first_sd] <- max(3 * abs(boundaries_B$theta_init[first_sd]), upper.bound)
+    boundaries_B$theta_lower[first_sd] <- min(-3 * abs(boundaries_B$theta_init[first_sd]), lower.bound)
+  }
   
-  boundaries_B$theta_upper[first_smooth] <- 3
-  boundaries_B$theta_lower[first_smooth] <- -3.5
-
-  boundaries_B$theta_init[1] <- mean(coco.object@z)
-  boundaries_B$theta_upper[1] <- boundaries_B$theta_init[1] + 3 * boundaries_B$theta_init[1]
-  boundaries_B$theta_lower[1] <- boundaries_B$theta_init[1] - 3 * boundaries_B$theta_init[1]
+  if(!is.na(first_range)){
+    boundaries_B$theta_init[first_range] <- (log_sd_z - log_sd_dist) / 2
+    boundaries_B$theta_upper[first_range] <- max(3 * abs(boundaries_B$theta_init[first_range]), upper.bound)
+    boundaries_B$theta_lower[first_range] <- min(-3 * abs(boundaries_B$theta_init[first_range]), lower.bound)
+  }
+  
+  if(!is.na(first_smooth)){
+    boundaries_B$theta_upper[first_smooth] <- 3
+    boundaries_B$theta_lower[first_smooth] <- -3.5
+  }
+  
+  # mean intercept (only when estimated): bounds centered at its init value
+  if(is.logical(designMatrix$par.pos$mean) && designMatrix$par.pos$mean[1]){
+    mean_spread <- 3 * max(abs(boundaries_B$theta_init[1]), stats::sd(coco.object@z))
+    boundaries_B$theta_upper[1] <- boundaries_B$theta_init[1] + mean_spread
+    boundaries_B$theta_lower[1] <- boundaries_B$theta_init[1] - mean_spread
+  }
   
   return(boundaries_B)
 }

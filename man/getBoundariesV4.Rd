@@ -4,14 +4,14 @@
 \alias{getBoundariesV4}
 \title{Simple build of boundaries}
 \usage{
-getBoundariesV4(coco.object, lower.bound, upper.bound)
+getBoundariesV4(coco.object, lower.bound = -2, upper.bound = 2)
 }
 \arguments{
 \item{coco.object}{\code{(S4)} a coco.object.}
 
-\item{lower.bound}{\code{(numeric vector)} lower bound for covariate-driven parameters of the nonstationary covariance function.}
+\item{lower.bound}{\code{(numeric)} lower bound (\code{<= 0}) for covariate-driven parameters of the nonstationary covariance function.}
 
-\item{upper.bound}{\code{(numeric vector)} upper bound for covariate-driven parameters of the nonstationary covariance function.}
+\item{upper.bound}{\code{(numeric)} upper bound (\code{>= 0}) for covariate-driven parameters of the nonstationary covariance function.}
 }
 \value{
 (\code{list}) a list with boundaries and simple init values for the optim L-BFGS-B routine
