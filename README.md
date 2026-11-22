@@ -25,4 +25,21 @@ or you can check the vignette directly [here](https://github.com/blasif/cocons/b
 
 **UPDATE!** Our article has been published in Environmetrics! Learn more about the type of modular and flexible Gaussian Process models you can fit here [article](https://doi.org/10.1002/env.70038)
 
+**Citation:** if you use `cocons` in your work, please cite the article (`citation("cocons")` in R):
+
+> Blasi, F. and Furrer, R. (2025). A Class of Modular and Flexible Covariate-Based Covariance Functions for Nonstationary Spatial Modeling. *Environmetrics*, 36(8), e70038. [doi:10.1002/env.70038](https://doi.org/10.1002/env.70038)
+
+```bibtex
+@Article{blasi2025cocons,
+  title   = {A Class of Modular and Flexible Covariate-Based Covariance Functions for Nonstationary Spatial Modeling},
+  author  = {Federico Blasi and Reinhard Furrer},
+  journal = {Environmetrics},
+  year    = {2025},
+  volume  = {36},
+  number  = {8},
+  pages   = {e70038},
+  doi     = {10.1002/env.70038}
+}
+```
+
 **Bugs and/or errors?:** feel free to add new issues on [https://github.com/blasif/cocons/issues](https://github.com/blasif/cocons/issues).

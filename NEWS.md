@@ -16,6 +16,7 @@
 
 ### Changes
 
+- new `CITATION` file: `citation("cocons")` now returns the Environmetrics article (Blasi and Furrer, 2025) and the package reference.
 - `knitr` removed from Imports; `fields` is now imported in the NAMESPACE.
 - more unit tests.
 

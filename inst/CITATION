@@ -1,0 +1,27 @@
+bibentry(
+  bibtype = "Article",
+  header = "To cite cocons in publications, please use:",
+  title = "A Class of Modular and Flexible Covariate-Based Covariance Functions for Nonstationary Spatial Modeling",
+  author = c(person("Federico", "Blasi"), person("Reinhard", "Furrer")),
+  journal = "Environmetrics",
+  year = "2025",
+  volume = "36",
+  number = "8",
+  pages = "e70038",
+  doi = "10.1002/env.70038"
+)
+
+bibentry(
+  bibtype = "Manual",
+  header = "To cite the software itself, please use:",
+  title = "{cocons}: Covariate-Based Covariance Functions for Nonstationary Spatial Modeling",
+  author = c(person("Federico", "Blasi"), person("Reinhard", "Furrer")),
+  year = local({
+    d <- meta$`Date/Publication`
+    if (is.null(d)) d <- meta$Packaged
+    if (is.null(d)) d <- format(Sys.Date())
+    substr(d, 1, 4)
+  }),
+  note = paste("R package version", meta$Version),
+  url = "https://github.com/blasif/cocons"
+)
