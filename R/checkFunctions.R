@@ -310,7 +310,7 @@
   # sparse
   if (type == "sparse") {
     # taper function
-    if (is.null(info$taper) && identical(info$taper, function() {})) {
+    if (!is.function(info$taper)) {
       stop("taper must be one compact supported function from package spam")
     }
     
@@ -320,8 +320,8 @@
     }
     
     # delta
-    if (info$delta < 0) {
-      stop("taper argument must be non-negative")
+    if (info$delta <= 0) {
+      stop("taper type requires specifying a delta > 0")
     }
   }
   
