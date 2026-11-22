@@ -104,6 +104,11 @@ coco <- function(type,
   
   .cocons.check.z(z, data)
   
+  # no response: store an n x 0 matrix (object meant for simulation)
+  if(is.null(z)){
+    z <- matrix(numeric(0), nrow = dim(data)[1], ncol = 0)
+  }
+  
   .cocons.check.model.list(model.list,
                           data)
   

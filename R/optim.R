@@ -67,6 +67,10 @@ cocoOptim <- function(coco.object, boundaries = list(),
                       optim.type = "ml",
                       optim.control = NULL){
   
+  if(dim(coco.object@z)[2] == 0){
+    stop("coco object has no response z; cannot be optimized.")
+  }
+  
   # Init objects
   if(T){
     
